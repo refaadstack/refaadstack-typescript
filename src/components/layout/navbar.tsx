@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, MessageCircle } from 'lucide-react';
@@ -39,13 +40,16 @@ export function Navbar() {
     >
       <div className="container mx-auto px-4 md:px-6">
         <nav className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-lg font-bold tracking-tight"
-          >
-            <span className="text-primary">Refaad</span>
-            <span className="text-foreground">Stack</span>
+{/* Logo */}
+<Link href="/" className="flex items-center gap-2">
+            <Image
+              src="/logo.png"
+              alt={COMPANY.name}
+              width={800}
+              height={150}
+              className="h-24 w-auto object-contain"
+              priority
+            />
           </Link>
 
           {/* Desktop Navigation */}
