@@ -28,6 +28,10 @@ export const metadata: Metadata = {
     'react',
   ],
   authors: [{ name: 'RefaadStack' }],
+icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
   openGraph: {
     title: 'RefaadStack – Build Better Digital Solutions',
     description:
@@ -35,6 +39,14 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'id_ID',
     siteName: 'RefaadStack',
+    images: [
+      {
+        url: '/logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'RefaadStack - Build Better Digital Solutions',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
@@ -54,9 +66,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" suppressHydrationWarning>
-      <body
-        className={`${dmSans.variable} ${syne.variable} font-sans antialiased`}
+<html lang="id" suppressHydrationWarning className="overflow-x-hidden">
+<body
+        className={`${dmSans.variable} ${syne.variable} font-sans antialiased overflow-x-hidden`}
       >
         <ThemeProvider
           attribute="class"
