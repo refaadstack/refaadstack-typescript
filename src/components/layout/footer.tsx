@@ -32,21 +32,21 @@ export function Footer() {
             </p>
             <div className="flex gap-3">
               <a
-                href="#"
+                href="https://www.instagram.com/refaadstack/"
                 className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card hover:border-primary/30 hover:bg-primary/5 transition-colors"
                 aria-label="Instagram"
               >
                 <Instagram className="h-4 w-4 text-muted-foreground" />
               </a>
               <a
-                href="#"
+                href="https://github.com/refaadstack"
                 className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card hover:border-primary/30 hover:bg-primary/5 transition-colors"
                 aria-label="GitHub"
               >
                 <Github className="h-4 w-4 text-muted-foreground" />
               </a>
               <a
-                href="#"
+                href="https://www.linkedin.com/in/redho-fadillah-adha/"
                 className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card hover:border-primary/30 hover:bg-primary/5 transition-colors"
                 aria-label="LinkedIn"
               >
@@ -132,7 +132,7 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-border">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
             <p>© {new Date().getFullYear()} RefaadStack. All rights reserved.</p>
-            <p>Built with ❤️ in Palembang, Indonesia</p>
+            <p>Built with ❤️ in Jambi, Indonesia</p>
           </div>
         </div>
       </div>

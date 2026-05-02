@@ -3,11 +3,11 @@ export const COMPANY = {
   tagline: 'Build Better Digital Solutions',
   description:
     'Software house modern yang membantu bisnis Anda tumbuh melalui solusi digital yang scalable, cepat, dan elegan.',
-  email: 'hello@refaadstack.dev',
-  phone: '+62 859 1234 5678',
-  location: 'Palembang, South Sumatra',
-  whatsapp: '6285912345678',
-  workingHours: 'Mon-Fri, 09.00 - 17.00',
+  email: 'refaad16@gmail.com',
+  phone: '+62 823 7433 8273',
+  location: 'Jambi, Indonesia',
+  whatsapp: '6282374338273',
+  workingHours: 'Every day, 09.00 - 17.00',
 } as const;
 
 export const NAV_LINKS = [
