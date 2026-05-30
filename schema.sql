@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS products (
   description TEXT,
   features TEXT[] DEFAULT '{}',
   price INTEGER,
+  image_url TEXT,
   is_active BOOLEAN DEFAULT true,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -228,6 +229,14 @@ CREATE POLICY "Admins can manage testimonials" ON testimonials FOR ALL USING (
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('portfolio-images', 'portfolio-images', true)
 ON CONFLICT (id) DO NOTHING;
+
+-- Create storage bucket for product images
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('product-images', 'product-images', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Upgrade helper for existing databases
+ALTER TABLE products ADD COLUMN IF NOT EXISTS image_url TEXT;
 
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_portfolios_slug ON portfolios(slug);

@@ -18,18 +18,12 @@ export function Footer() {
     <footer className="border-t border-border bg-background">
       <div className="container mx-auto px-4 md:px-6 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-          {/* Brand */}
-          <div className="lg:col-span-1">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-lg font-bold tracking-tight mb-4"
-            >
+          <div>
+            <Link href="/" className="flex items-center gap-2 text-lg font-bold tracking-tight mb-4">
               <span className="text-primary">Refaad</span>
               <span className="text-foreground">Stack</span>
             </Link>
-            <p className="text-sm text-muted-foreground mb-6">
-              {COMPANY.description}
-            </p>
+            <p className="text-sm text-muted-foreground mb-6">{COMPANY.description}</p>
             <div className="flex gap-3">
               <a
                 href="https://www.instagram.com/refaadstack/"
@@ -64,7 +58,6 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
           <div>
             <h3 className="font-semibold text-sm mb-4">Quick Links</h3>
             <nav className="flex flex-col gap-3">
@@ -80,7 +73,6 @@ export function Footer() {
             </nav>
           </div>
 
-          {/* Services */}
           <div>
             <h3 className="font-semibold text-sm mb-4">Services</h3>
             <nav className="flex flex-col gap-3">
@@ -96,7 +88,6 @@ export function Footer() {
             </nav>
           </div>
 
-          {/* Contact */}
           <div>
             <h3 className="font-semibold text-sm mb-4">Contact</h3>
             <div className="flex flex-col gap-3">
@@ -128,11 +119,10 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Bottom */}
         <div className="mt-12 pt-8 border-t border-border">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-            <p>© {new Date().getFullYear()} RefaadStack. All rights reserved.</p>
-            <p>Built with ❤️ in Jambi, Indonesia</p>
+            <p>Copyright {new Date().getFullYear()} RefaadStack. All rights reserved.</p>
+            <p>Built with care in Jambi, Indonesia</p>
           </div>
         </div>
       </div>

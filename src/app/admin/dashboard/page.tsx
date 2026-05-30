@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAdminSession, logoutAdmin, AdminUser } from '@/lib/auth';
+import { getAdminStats } from '@/lib/crud';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
@@ -19,10 +20,25 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 
+interface AdminStats {
+  totalPortfolios: number;
+  totalProducts: number;
+  activeProducts: number;
+  totalTestimonials: number;
+  totalServices: number;
+}
+
 export default function AdminDashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<AdminUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<AdminStats>({
+    totalPortfolios: 0,
+    totalProducts: 0,
+    activeProducts: 0,
+    totalTestimonials: 0,
+    totalServices: 0,
+  });
 
   useEffect(() => {
     checkSession();
@@ -36,6 +52,8 @@ export default function AdminDashboardPage() {
         return;
       }
       setUser(sessionUser);
+      const data = await getAdminStats();
+      setStats(data);
     } catch (error) {
       console.error('Session error:', error);
       router.push('/admin/login');
@@ -57,11 +75,31 @@ export default function AdminDashboardPage() {
     );
   }
 
-  const stats = [
-    { title: 'Total Portfolios', value: '6', icon: Package, color: 'text-cyan-500' },
-    { title: 'Active Products', value: '2', icon: ShoppingCart, color: 'text-violet-500' },
-    { title: 'Testimonials', value: '3', icon: MessageSquare, color: 'text-emerald-500' },
-    { title: 'Total Views', value: '1.2K', icon: Eye, color: 'text-amber-500' },
+  const statCards = [
+    {
+      title: 'Total Portfolio',
+      value: stats.totalPortfolios,
+      icon: Package,
+      color: 'text-cyan-500',
+    },
+    {
+      title: 'Produk Aktif',
+      value: stats.activeProducts,
+      icon: ShoppingCart,
+      color: 'text-violet-500',
+    },
+    {
+      title: 'Testimonial',
+      value: stats.totalTestimonials,
+      icon: MessageSquare,
+      color: 'text-emerald-500',
+    },
+    {
+      title: 'Layanan',
+      value: stats.totalServices,
+      icon: Eye,
+      color: 'text-amber-500',
+    },
   ];
 
   const menuItems = [
@@ -116,12 +154,12 @@ export default function AdminDashboardPage() {
       <main className="ml-64 p-8">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-          <p className="text-slate-400">Welcome back, {user?.name || 'Admin'}!</p>
+          <p className="text-slate-400">Selamat datang, {user?.name || 'Admin'}.</p>
         </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {stats.map((stat, index) => (
+          {statCards.map((stat) => (
             <Card key={stat.title} className="bg-slate-900/50 border-slate-800">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -144,20 +182,20 @@ export default function AdminDashboardPage() {
             <CardHeader>
               <CardTitle className="text-white">Quick Actions</CardTitle>
               <CardDescription className="text-slate-400">
-                Common tasks and shortcuts
+                Shortcut untuk pekerjaan yang paling sering dilakukan
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               <Link href="/admin/portfolio/new">
                 <Button variant="outline" className="w-full justify-start border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white">
                   <Package className="w-4 h-4 mr-2" />
-                  Add New Portfolio
+                  Tambah Portfolio
                 </Button>
               </Link>
               <Link href="/admin/products/new">
                 <Button variant="outline" className="w-full justify-start border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white">
                   <ShoppingCart className="w-4 h-4 mr-2" />
-                  Add New Product
+                  Tambah Produk
                 </Button>
               </Link>
             </CardContent>
@@ -165,24 +203,30 @@ export default function AdminDashboardPage() {
 
           <Card className="bg-slate-900/50 border-slate-800">
             <CardHeader>
-              <CardTitle className="text-white">Recent Activity</CardTitle>
+              <CardTitle className="text-white">Ringkasan Konten</CardTitle>
               <CardDescription className="text-slate-400">
-                Latest updates and changes
+                Snapshot data yang tampil di website
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 rounded-full bg-cyan-500"></div>
-                  <p className="text-slate-300 text-sm">Portfolio "Toko Maju POS" updated</p>
+                  <p className="text-slate-300 text-sm">
+                    {stats.totalPortfolios} portfolio siap ditampilkan.
+                  </p>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 rounded-full bg-violet-500"></div>
-                  <p className="text-slate-300 text-sm">New testimonial added</p>
+                  <p className="text-slate-300 text-sm">
+                    {stats.totalProducts} produk tersimpan, {stats.activeProducts} aktif.
+                  </p>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                  <p className="text-slate-300 text-sm">Product "RefaadPOS" activated</p>
+                  <p className="text-slate-300 text-sm">
+                    {stats.totalTestimonials} testimonial tersedia.
+                  </p>
                 </div>
               </div>
             </CardContent>

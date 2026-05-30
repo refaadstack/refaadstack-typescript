@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { MessageCircle, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,7 +9,6 @@ import { COMPANY } from '@/lib/constants';
 export function CTA() {
   return (
     <section id="cta" className="py-20 md:py-32 relative overflow-hidden">
-      {/* Background Effects */}
       <div
         className="glow-blob"
         style={{
@@ -36,7 +36,7 @@ export function CTA() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
               </span>
-              Mulai Sekarang – Konsultasi Gratis
+              Mulai Sekarang - Konsultasi Gratis
             </Badge>
           </motion.div>
 
@@ -47,8 +47,8 @@ export function CTA() {
             transition={{ delay: 0.1 }}
             className="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4"
           >
-            Ready to Build Your{' '}
-            <span className="gradient-text-primary">Digital Product?</span>
+            Siap Bangun{' '}
+            <span className="gradient-text-primary">Produk Digital?</span>
           </motion.h2>
 
           <motion.p
@@ -69,24 +69,20 @@ export function CTA() {
             transition={{ delay: 0.3 }}
             className="flex flex-wrap gap-4 justify-center"
           >
-            <Button
-              asChild
-              size="lg"
-              className="glow-primary"
-            >
+            <Button asChild size="lg" className="glow-primary">
               <a
                 href={`https://wa.me/${COMPANY.whatsapp}?text=Halo RefaadStack, saya ingin konsultasi project`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <MessageCircle className="mr-2 h-5 w-5" />
-                Start Project
+                Konsultasi Project
               </a>
             </Button>
             <Button asChild variant="ghostPrimary" size="lg">
               <a href={`mailto:${COMPANY.email}`}>
                 <Mail className="mr-2 h-5 w-5" />
-                Contact Us
+                Kirim Email
               </a>
             </Button>
           </motion.div>
@@ -95,6 +91,3 @@ export function CTA() {
     </section>
   );
 }
-
-// Need to add motion import
-import { motion } from 'framer-motion';

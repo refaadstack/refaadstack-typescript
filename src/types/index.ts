@@ -48,6 +48,7 @@ export interface Product {
   description: string | null;
   features: string[] | null;
   price: string | null;
+  image_url: string | null;
   is_active: boolean;
   created_at: string;
 }

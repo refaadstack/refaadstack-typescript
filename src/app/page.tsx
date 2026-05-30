@@ -16,7 +16,7 @@ export default function HomePage() {
   return (
     <>
       <Navbar />
-<main>
+      <main>
         <Hero />
         <Stats />
         <Services />

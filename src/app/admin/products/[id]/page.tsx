@@ -3,7 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { getAdminSession, AdminUser } from '@/lib/auth';
-import { getProductById, updateProduct, ProductInput } from '@/lib/crud';
+import { getProductById, updateProduct, ProductInput, uploadProductImage } from '@/lib/crud';
+import {
+  createPendingImages,
+  fileToUploadData,
+  PendingImage,
+  revokePendingImages,
+  validateImageFile,
+} from '@/lib/image-upload';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +23,9 @@ import {
   ShoppingCart, 
   MessageSquare, 
   LogOut,
-  ArrowLeft
+  ArrowLeft,
+  ImagePlus,
+  X
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -27,6 +36,7 @@ interface Product {
   description: string | null;
   features: string[] | null;
   price: string | null;
+  image_url: string | null;
   is_active: boolean;
   created_at: string;
 }
@@ -39,6 +49,7 @@ export default function EditProductPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [product, setProduct] = useState<Product | null>(null);
+  const [pendingImage, setPendingImage] = useState<PendingImage | null>(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -51,6 +62,11 @@ export default function EditProductPage() {
 
   useEffect(() => {
     checkSession();
+
+    return () => {
+      if (pendingImage) revokePendingImages([pendingImage]);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkSession = async () => {
@@ -97,6 +113,32 @@ export default function EditProductPage() {
     }));
   };
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validationError = validateImageFile(file);
+    if (validationError) {
+      setError(validationError);
+      e.target.value = '';
+      return;
+    }
+
+    if (pendingImage) {
+      revokePendingImages([pendingImage]);
+    }
+
+    setPendingImage(createPendingImages([file])[0]);
+    e.target.value = '';
+  };
+
+  const removePendingImage = () => {
+    if (pendingImage) {
+      revokePendingImages([pendingImage]);
+      setPendingImage(null);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -115,6 +157,12 @@ export default function EditProductPage() {
       };
 
       await updateProduct(id, input);
+      if (pendingImage) {
+        const fileData = await fileToUploadData(pendingImage.file);
+        await uploadProductImage(id, fileData);
+        revokePendingImages([pendingImage]);
+      }
+
       router.push('/admin/products');
     } catch (err: unknown) {
       console.error('Error updating product:', err);
@@ -283,6 +331,60 @@ export default function EditProductPage() {
               </CardContent>
             </Card>
           </div>
+
+          <Card className="bg-slate-900/50 border-slate-800 mt-6">
+            <CardHeader>
+              <CardTitle className="text-white">Product Image</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="product-image" className="text-slate-300">
+                  Replace Image
+                </Label>
+                <Input
+                  id="product-image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageSelect}
+                  className="bg-slate-800 border-slate-700 text-white mt-1"
+                />
+                <p className="text-slate-500 text-xs mt-1">
+                  Pilih gambar baru kalau ingin mengganti thumbnail produk.
+                </p>
+              </div>
+
+              {pendingImage ? (
+                <div className="relative w-full max-w-sm group">
+                  <img
+                    src={pendingImage.previewUrl}
+                    alt={pendingImage.file.name}
+                    className="w-full aspect-video object-cover rounded-lg border border-slate-700"
+                  />
+                  <button
+                    type="button"
+                    onClick={removePendingImage}
+                    className="absolute top-2 right-2 h-8 w-8 rounded-full bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                    aria-label="Remove selected image"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : product?.image_url ? (
+                <img
+                  src={product.image_url}
+                  alt={product.name}
+                  className="w-full max-w-sm aspect-video object-cover rounded-lg border border-slate-700"
+                />
+              ) : (
+                <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/60 p-8 text-center">
+                  <ImagePlus className="w-10 h-10 text-slate-600 mx-auto mb-3" />
+                  <p className="text-slate-400 text-sm">
+                    Produk ini belum punya gambar.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           {error && (
             <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400">

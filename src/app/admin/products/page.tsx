@@ -29,6 +29,7 @@ interface Product {
   description: string | null;
   features: string[] | null;
   price: string | null;
+  image_url: string | null;
   is_active: boolean;
   created_at: string;
 }
@@ -181,12 +182,25 @@ const handleDelete = async (id: string) => {
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <CardTitle className="text-white text-lg">{product.name}</CardTitle>
-                      {product.is_active ? (
-                        <CheckCircle className="w-4 h-4 text-emerald-500" />
+                      {product.image_url ? (
+                        <img
+                          src={product.image_url}
+                          alt={product.name}
+                          className="h-12 w-16 rounded-lg object-cover border border-slate-700"
+                        />
                       ) : (
-                        <XCircle className="w-4 h-4 text-red-500" />
+                        <div className="h-12 w-16 rounded-lg border border-slate-700 bg-slate-800 flex items-center justify-center">
+                          <ShoppingCart className="w-5 h-5 text-slate-500" />
+                        </div>
                       )}
+                      <div className="flex items-center gap-2">
+                        <CardTitle className="text-white text-lg">{product.name}</CardTitle>
+                        {product.is_active ? (
+                          <CheckCircle className="w-4 h-4 text-emerald-500" />
+                        ) : (
+                          <XCircle className="w-4 h-4 text-red-500" />
+                        )}
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <Link href={`/admin/products/${product.id}`}>

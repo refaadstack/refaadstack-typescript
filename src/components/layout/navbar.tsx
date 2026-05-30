@@ -40,14 +40,14 @@ export function Navbar() {
     >
       <div className="container mx-auto px-4 md:px-6">
         <nav className="flex h-16 items-center justify-between">
-{/* Logo */}
-<Link href="/" className="flex items-center gap-2">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2">
             <Image
               src="/logo.png"
               alt={COMPANY.name}
               width={800}
               height={150}
-              className="h-24 w-auto object-contain"
+              className="h-12 w-auto object-contain"
               priority
             />
           </Link>

@@ -1,5 +1,3 @@
-// lib/crud.ts - Versi yang PASTI jalan
-
 'use server';
 
 import { createClient } from '@supabase/supabase-js';
@@ -12,10 +10,13 @@ if (!supabaseUrl || !serviceKey) {
 }
 
 const supabaseAdmin = createClient(supabaseUrl, serviceKey, {
-  auth: { persistSession: false }
+  auth: { persistSession: false },
 });
 
-// ===== TYPES =====
+const IMAGE_BUCKETS = {
+  portfolio: 'portfolio-images',
+  product: 'product-images',
+} as const;
 
 export interface PortfolioInput {
   title: string;
@@ -36,6 +37,7 @@ export interface ProductInput {
   description: string | null;
   features: string[] | null;
   price: string | null;
+  image_url?: string | null;
   is_active: boolean;
 }
 
@@ -56,12 +58,66 @@ export interface TestimonialInput {
   is_active: boolean;
 }
 
-// ===== PORTFOLIO =====
+export interface ImageUploadInput {
+  name: string;
+  type: string;
+  data: string;
+}
+
+function getFileExtension(fileName: string, fileType: string) {
+  const extension = fileName.split('.').pop();
+  if (extension) return extension.toLowerCase();
+
+  return fileType.split('/').pop() || 'jpg';
+}
+
+function getSafeFileName(fileName: string) {
+  return fileName
+    .replace(/\.[^/.]+$/, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
+async function uploadBase64Image(
+  bucket: string,
+  folderId: string,
+  fileData: ImageUploadInput
+) {
+  const fileExt = getFileExtension(fileData.name, fileData.type);
+  const safeName = getSafeFileName(fileData.name) || 'image';
+  const fileName = `${folderId}/${Date.now()}-${safeName}.${fileExt}`;
+  const buffer = Buffer.from(fileData.data, 'base64');
+
+  const { error } = await supabaseAdmin.storage.from(bucket).upload(fileName, buffer, {
+    cacheControl: '3600',
+    contentType: fileData.type,
+    upsert: false,
+  });
+
+  if (error) {
+    throw new Error(`Upload failed: ${error.message}`);
+  }
+
+  const { data } = supabaseAdmin.storage.from(bucket).getPublicUrl(fileName);
+  return data.publicUrl;
+}
+
+async function deleteImageFile(bucket: string, imageUrl: string) {
+  const marker = `/storage/v1/object/public/${bucket}/`;
+  const urlParts = imageUrl.split(marker);
+  if (urlParts.length < 2) return;
+
+  const filePath = decodeURIComponent(urlParts[1]);
+  await supabaseAdmin.storage.from(bucket).remove([filePath]);
+}
+
 export async function getPortfolios() {
   const { data, error } = await supabaseAdmin
     .from('portfolios')
     .select('*, portfolio_images(*)')
     .order('created_at', { ascending: false });
+
   if (error) throw new Error(error.message);
   return data || [];
 }
@@ -72,153 +128,109 @@ export async function getPortfolioById(id: string) {
     .select('*, portfolio_images(*)')
     .eq('id', id)
     .single();
+
   if (error) throw new Error(error.message);
   if (!data) throw new Error('Portfolio not found');
   return data;
 }
 
-export async function createPortfolio(input: any) {
+export async function createPortfolio(input: PortfolioInput) {
   const { data, error } = await supabaseAdmin
     .from('portfolios')
-    .insert(input as any) // ✅ PAKAI as any
+    .insert(input as any)
     .select()
     .single();
+
   if (error) throw new Error(error.message);
   return data;
 }
 
-export async function updatePortfolio(id: string, input: any) {
+export async function updatePortfolio(id: string, input: Partial<PortfolioInput>) {
   const { data, error } = await supabaseAdmin
     .from('portfolios')
     .update({
       ...input,
       updated_at: new Date().toISOString(),
-    } as any) // ✅ PAKAI as any
+    } as any)
     .eq('id', id)
     .select()
     .single();
+
   if (error) throw new Error(error.message);
   return data;
 }
 
 export async function deletePortfolio(id: string) {
-  const { error } = await supabaseAdmin
-    .from('portfolios')
-    .delete()
-    .eq('id', id);
+  const images = await getPortfolioImages(id);
+
+  const { error } = await supabaseAdmin.from('portfolios').delete().eq('id', id);
   if (error) throw new Error(error.message);
+
+  await Promise.all(
+    images.map((image) => deleteImageFile(IMAGE_BUCKETS.portfolio, image.image_url))
+  );
+
   return { success: true };
 }
 
-// ===== STORAGE =====
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-
-export async function uploadPortfolioImage(
-  portfolioId: string, 
-  fileData: { name: string; type: string; data: string } // base64 data
-): Promise<{ url: string; id: string }> {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  
-  if (!supabaseUrl || !serviceKey) {
-    throw new Error('Missing Supabase environment variables');
-  }
-  
-  const supabase = createSupabaseClient(supabaseUrl, serviceKey);
-  
-  // Decode base64 to buffer
-  const binaryString = atob(fileData.data);
-  const bytes = new Uint8Array(binaryString.length);
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  
-  const blob = new Blob([bytes], { type: fileData.type });
-  const file = new File([blob], fileData.name, { type: fileData.type });
-  
-  const fileExt = fileData.name.split('.').pop();
-  const fileName = `${portfolioId}/${Date.now()}.${fileExt}`;
-  
-  console.log('Uploading to Supabase Storage:', {
-    bucket: 'portfolio-images',
-    fileName,
-    fileType: fileData.type
-  });
-  
-  const { data, error } = await supabase.storage
-    .from('portfolio-images')
-    .upload(fileName, file, {
-      cacheControl: '3600',
-      upsert: false,
-    });
-  
-  if (error) {
-    console.error('Storage upload error:', error);
-    throw new Error(`Upload failed: ${error.message}`);
-  }
-  
-  console.log('Upload success:', data);
-  
-  const { data: urlData } = supabase.storage
-    .from('portfolio-images')
-    .getPublicUrl(fileName);
-  
-  console.log('Public URL:', urlData.publicUrl);
-  
-  // Add to portfolio_images table
-  const imageRecord = await addPortfolioImage(portfolioId, urlData.publicUrl, 0);
-  
-  return { url: urlData.publicUrl, id: imageRecord.id };
-}
-
-export async function deletePortfolioImageFile(imageUrl: string) {
-  const supabase = createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-  
-  // Extract file path from URL
-  const urlParts = imageUrl.split('/storage/v1/object/public/portfolio-images/');
-  if (urlParts.length < 2) return;
-  
-  const filePath = urlParts[1];
-  
-  await supabase.storage
-    .from('portfolio-images')
-    .remove([filePath]);
-}
-
-// ===== PORTFOLIO IMAGES =====
 export async function getPortfolioImages(portfolioId: string) {
   const { data, error } = await supabaseAdmin
     .from('portfolio_images')
     .select('*')
     .eq('portfolio_id', portfolioId)
     .order('sort_order', { ascending: true });
+
   if (error) throw new Error(error.message);
   return data || [];
 }
 
-export async function addPortfolioImage(portfolioId: string, imageUrl: string, sortOrder: number = 0) {
+export async function addPortfolioImage(
+  portfolioId: string,
+  imageUrl: string,
+  sortOrder = 0
+) {
   const { data, error } = await supabaseAdmin
     .from('portfolio_images')
     .insert({
       portfolio_id: portfolioId,
       image_url: imageUrl,
-      sort_order: sortOrder
+      sort_order: sortOrder,
     })
     .select()
     .single();
+
   if (error) throw new Error(error.message);
   return data;
 }
 
+export async function uploadPortfolioImage(
+  portfolioId: string,
+  fileData: ImageUploadInput
+): Promise<{ url: string; id: string }> {
+  const imageUrl = await uploadBase64Image(IMAGE_BUCKETS.portfolio, portfolioId, fileData);
+  const imageRecord = await addPortfolioImage(portfolioId, imageUrl, 0);
+
+  return { url: imageUrl, id: imageRecord.id };
+}
+
+export async function deletePortfolioImageFile(imageUrl: string) {
+  await deleteImageFile(IMAGE_BUCKETS.portfolio, imageUrl);
+}
+
 export async function deletePortfolioImage(id: string) {
-  const { error } = await supabaseAdmin
+  const { data: image } = await supabaseAdmin
     .from('portfolio_images')
-    .delete()
-    .eq('id', id);
+    .select('image_url')
+    .eq('id', id)
+    .single();
+
+  const { error } = await supabaseAdmin.from('portfolio_images').delete().eq('id', id);
   if (error) throw new Error(error.message);
+
+  if (image?.image_url) {
+    await deletePortfolioImageFile(image.image_url);
+  }
+
   return { success: true };
 }
 
@@ -229,16 +241,17 @@ export async function updatePortfolioImageOrder(id: string, sortOrder: number) {
     .eq('id', id)
     .select()
     .single();
+
   if (error) throw new Error(error.message);
   return data;
 }
 
-// ===== PRODUCTS =====
 export async function getProducts() {
   const { data, error } = await supabaseAdmin
     .from('products')
     .select('*')
     .order('created_at', { ascending: false });
+
   if (error) throw new Error(error.message);
   return data || [];
 }
@@ -249,50 +262,81 @@ export async function getProductById(id: string) {
     .select('*')
     .eq('id', id)
     .single();
+
   if (error) throw new Error(error.message);
   if (!data) throw new Error('Product not found');
   return data;
 }
 
-export async function createProduct(input: any) {
+export async function createProduct(input: ProductInput) {
   const { data, error } = await supabaseAdmin
     .from('products')
-    .insert(input as any) // ✅ PAKAI as any
+    .insert(input as any)
     .select()
     .single();
+
   if (error) throw new Error(error.message);
   return data;
 }
 
-export async function updateProduct(id: string, input: any) {
+export async function updateProduct(id: string, input: Partial<ProductInput>) {
   const { data, error } = await supabaseAdmin
     .from('products')
     .update({
       ...input,
       updated_at: new Date().toISOString(),
-    } as any) // ✅ PAKAI as any
+    } as any)
     .eq('id', id)
     .select()
     .single();
+
   if (error) throw new Error(error.message);
   return data;
 }
 
-export async function deleteProduct(id: string) {
-  const { error } = await supabaseAdmin
+export async function uploadProductImage(
+  productId: string,
+  fileData: ImageUploadInput
+): Promise<{ url: string }> {
+  const { data: product } = await supabaseAdmin
     .from('products')
-    .delete()
-    .eq('id', id);
+    .select('image_url')
+    .eq('id', productId)
+    .single();
+
+  const imageUrl = await uploadBase64Image(IMAGE_BUCKETS.product, productId, fileData);
+  await updateProduct(productId, { image_url: imageUrl });
+
+  if (product?.image_url) {
+    await deleteImageFile(IMAGE_BUCKETS.product, product.image_url);
+  }
+
+  return { url: imageUrl };
+}
+
+export async function deleteProduct(id: string) {
+  const { data: product } = await supabaseAdmin
+    .from('products')
+    .select('image_url')
+    .eq('id', id)
+    .single();
+
+  const { error } = await supabaseAdmin.from('products').delete().eq('id', id);
   if (error) throw new Error(error.message);
+
+  if (product?.image_url) {
+    await deleteImageFile(IMAGE_BUCKETS.product, product.image_url);
+  }
+
   return { success: true };
 }
 
-// ===== SERVICES =====
 export async function getServices() {
   const { data, error } = await supabaseAdmin
     .from('services')
     .select('*')
     .order('sort_order', { ascending: true });
+
   if (error) throw new Error(error.message);
   return data || [];
 }
@@ -303,50 +347,50 @@ export async function getServiceById(id: string) {
     .select('*')
     .eq('id', id)
     .single();
+
   if (error) throw new Error(error.message);
   if (!data) throw new Error('Service not found');
   return data;
 }
 
-export async function createService(input: any) {
+export async function createService(input: ServiceInput) {
   const { data, error } = await supabaseAdmin
     .from('services')
-    .insert(input as any) // ✅ PAKAI as any
+    .insert(input as any)
     .select()
     .single();
+
   if (error) throw new Error(error.message);
   return data;
 }
 
-export async function updateService(id: string, input: any) {
+export async function updateService(id: string, input: Partial<ServiceInput>) {
   const { data, error } = await supabaseAdmin
     .from('services')
     .update({
       ...input,
       updated_at: new Date().toISOString(),
-    } as any) // ✅ PAKAI as any
+    } as any)
     .eq('id', id)
     .select()
     .single();
+
   if (error) throw new Error(error.message);
   return data;
 }
 
 export async function deleteService(id: string) {
-  const { error } = await supabaseAdmin
-    .from('services')
-    .delete()
-    .eq('id', id);
+  const { error } = await supabaseAdmin.from('services').delete().eq('id', id);
   if (error) throw new Error(error.message);
   return { success: true };
 }
 
-// ===== TESTIMONIALS =====
 export async function getTestimonials() {
   const { data, error } = await supabaseAdmin
     .from('testimonials')
     .select('*')
     .order('created_at', { ascending: false });
+
   if (error) throw new Error(error.message);
   return data || [];
 }
@@ -357,55 +401,60 @@ export async function getTestimonialById(id: string) {
     .select('*')
     .eq('id', id)
     .single();
+
   if (error) throw new Error(error.message);
   if (!data) throw new Error('Testimonial not found');
   return data;
 }
 
-export async function createTestimonial(input: any) {
+export async function createTestimonial(input: TestimonialInput) {
   const { data, error } = await supabaseAdmin
     .from('testimonials')
-    .insert(input as any) // ✅ PAKAI as any
+    .insert(input as any)
     .select()
     .single();
+
   if (error) throw new Error(error.message);
   return data;
 }
 
-export async function updateTestimonial(id: string, input: any) {
+export async function updateTestimonial(id: string, input: Partial<TestimonialInput>) {
   const { data, error } = await supabaseAdmin
     .from('testimonials')
     .update({
       ...input,
       updated_at: new Date().toISOString(),
-    } as any) // ✅ PAKAI as any
+    } as any)
     .eq('id', id)
     .select()
     .single();
+
   if (error) throw new Error(error.message);
   return data;
 }
 
 export async function deleteTestimonial(id: string) {
-  const { error } = await supabaseAdmin
-    .from('testimonials')
-    .delete()
-    .eq('id', id);
+  const { error } = await supabaseAdmin.from('testimonials').delete().eq('id', id);
   if (error) throw new Error(error.message);
   return { success: true };
 }
 
-// ===== STATS =====
 export async function getAdminStats() {
-  const [portfolios, products, testimonials, services] = await Promise.all([
+  const [portfolios, products, activeProducts, testimonials, services] = await Promise.all([
     supabaseAdmin.from('portfolios').select('id', { count: 'exact', head: true }),
     supabaseAdmin.from('products').select('id', { count: 'exact', head: true }),
+    supabaseAdmin
+      .from('products')
+      .select('id', { count: 'exact', head: true })
+      .eq('is_active', true),
     supabaseAdmin.from('testimonials').select('id', { count: 'exact', head: true }),
     supabaseAdmin.from('services').select('id', { count: 'exact', head: true }),
   ]);
+
   return {
     totalPortfolios: portfolios.count || 0,
     totalProducts: products.count || 0,
+    activeProducts: activeProducts.count || 0,
     totalTestimonials: testimonials.count || 0,
     totalServices: services.count || 0,
   };

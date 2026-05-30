@@ -14,7 +14,8 @@ const syne = Syne({
 });
 
 export const metadata: Metadata = {
-  title: 'RefaadStack – Build Better Digital Solutions',
+  metadataBase: new URL('https://refaadstack.dev'),
+  title: 'RefaadStack - Build Better Digital Solutions',
   description:
     'RefaadStack adalah software house modern yang membangun website, aplikasi web, POS system, dan SaaS untuk UMKM, startup, dan perusahaan yang ingin digitalisasi.',
   keywords: [
@@ -28,12 +29,12 @@ export const metadata: Metadata = {
     'react',
   ],
   authors: [{ name: 'RefaadStack' }],
-icons: {
+  icons: {
     icon: '/favicon.ico',
     apple: '/apple-touch-icon.png',
   },
   openGraph: {
-    title: 'RefaadStack – Build Better Digital Solutions',
+    title: 'RefaadStack - Build Better Digital Solutions',
     description:
       'RefaadStack adalah software house modern yang membangun website, aplikasi web, POS system, dan SaaS untuk bisnis Anda.',
     type: 'website',
@@ -50,7 +51,7 @@ icons: {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'RefaadStack – Build Better Digital Solutions',
+    title: 'RefaadStack - Build Better Digital Solutions',
     description:
       'RefaadStack adalah software house modern yang membangun website, aplikasi web, POS system, dan SaaS untuk bisnis Anda.',
   },
@@ -66,8 +67,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-<html lang="id" suppressHydrationWarning className="overflow-x-hidden">
-<body
+    <html lang="id" suppressHydrationWarning className="overflow-x-hidden">
+      <body
         className={`${dmSans.variable} ${syne.variable} font-sans antialiased overflow-x-hidden`}
       >
         <ThemeProvider

@@ -3,7 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAdminSession, logoutAdmin, AdminUser } from '@/lib/auth';
-import { createPortfolio, PortfolioInput } from '@/lib/crud';
+import { createPortfolio, PortfolioInput, uploadPortfolioImage } from '@/lib/crud';
+import {
+  createPendingImages,
+  fileToUploadData,
+  PendingImage,
+  revokePendingImages,
+  validateImageFile,
+} from '@/lib/image-upload';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,7 +24,8 @@ import {
   MessageSquare, 
   LogOut,
   ArrowLeft,
-  Plus
+  ImagePlus,
+  X
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -27,6 +35,7 @@ export default function NewPortfolioPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [pendingImages, setPendingImages] = useState<PendingImage[]>([]);
 
   const [formData, setFormData] = useState<PortfolioInput>({
     title: '',
@@ -43,6 +52,11 @@ export default function NewPortfolioPage() {
 
   useEffect(() => {
     checkSession();
+
+    return () => {
+      revokePendingImages(pendingImages);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkSession = async () => {
@@ -75,6 +89,38 @@ export default function NewPortfolioPage() {
     setFormData(prev => ({ ...prev, tech_stack: techStack }));
   };
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const validImages: File[] = [];
+    const errors: string[] = [];
+
+    Array.from(files).forEach((file) => {
+      const validationError = validateImageFile(file);
+      if (validationError) {
+        errors.push(`${file.name}: ${validationError}`);
+        return;
+      }
+      validImages.push(file);
+    });
+
+    if (errors.length > 0) {
+      setError(errors.join(' '));
+    }
+
+    setPendingImages((prev) => [...prev, ...createPendingImages(validImages)]);
+    e.target.value = '';
+  };
+
+  const removePendingImage = (imageId: string) => {
+    setPendingImages((prev) => {
+      const image = prev.find((item) => item.id === imageId);
+      if (image) URL.revokeObjectURL(image.previewUrl);
+      return prev.filter((item) => item.id !== imageId);
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -86,7 +132,16 @@ export default function NewPortfolioPage() {
         formData.slug = formData.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
       }
 
-      await createPortfolio(formData);
+      const createdPortfolio = await createPortfolio(formData);
+
+      if (pendingImages.length > 0) {
+        for (const image of pendingImages) {
+          const fileData = await fileToUploadData(image.file);
+          await uploadPortfolioImage(createdPortfolio.id, fileData);
+        }
+      }
+
+      revokePendingImages(pendingImages);
       router.push('/admin/portfolio');
     } catch (err: unknown) {
       console.error('Error creating portfolio:', err);
@@ -309,6 +364,60 @@ const handleLogout = async () => {
               </CardContent>
             </Card>
           </div>
+
+          {/* Images */}
+          <Card className="bg-slate-900/50 border-slate-800 mt-6">
+            <CardHeader>
+              <CardTitle className="text-white">Project Images</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="portfolio-images" className="text-slate-300">
+                  Upload Images
+                </Label>
+                <Input
+                  id="portfolio-images"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageSelect}
+                  className="bg-slate-800 border-slate-700 text-white mt-1"
+                />
+                <p className="text-slate-500 text-xs mt-1">
+                  Kamu bisa pilih beberapa gambar sekaligus. Maksimal 5MB per gambar.
+                </p>
+              </div>
+
+              {pendingImages.length > 0 ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {pendingImages.map((image) => (
+                    <div key={image.id} className="relative group">
+                      <img
+                        src={image.previewUrl}
+                        alt={image.file.name}
+                        className="w-full h-32 object-cover rounded-lg border border-slate-700"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removePendingImage(image.id)}
+                        className="absolute top-2 right-2 h-8 w-8 rounded-full bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                        aria-label={`Remove ${image.file.name}`}
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/60 p-8 text-center">
+                  <ImagePlus className="w-10 h-10 text-slate-600 mx-auto mb-3" />
+                  <p className="text-slate-400 text-sm">
+                    Belum ada gambar. Upload sekarang supaya tidak perlu masuk edit lagi.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           {error && (
             <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400">
