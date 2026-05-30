@@ -4,6 +4,8 @@ export interface SiteSettingsInput {
   site_keywords: string[];
   og_image_url: string;
   canonical_url: string;
+  author_name: string;
+  published_time: string;
   robots_index: boolean;
   robots_follow: boolean;
 }
@@ -23,7 +25,9 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsInput = {
     'react',
   ],
   og_image_url: '/og-image.png',
-  canonical_url: 'https://refaadstack.dev',
+  canonical_url: 'https://www.refaadstack.com',
+  author_name: 'RefaadStack',
+  published_time: '2026-05-01T00:00:00.000Z',
   robots_index: true,
   robots_follow: true,
 };

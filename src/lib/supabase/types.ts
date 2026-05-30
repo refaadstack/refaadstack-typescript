@@ -206,6 +206,8 @@ export interface Database {
           site_keywords: string[] | null;
           og_image_url: string | null;
           canonical_url: string | null;
+          author_name: string | null;
+          published_time: string | null;
           robots_index: boolean;
           robots_follow: boolean;
           updated_at: string;
@@ -217,6 +219,8 @@ export interface Database {
           site_keywords?: string[] | null;
           og_image_url?: string | null;
           canonical_url?: string | null;
+          author_name?: string | null;
+          published_time?: string | null;
           robots_index?: boolean;
           robots_follow?: boolean;
           updated_at?: string;
@@ -228,6 +232,8 @@ export interface Database {
           site_keywords?: string[] | null;
           og_image_url?: string | null;
           canonical_url?: string | null;
+          author_name?: string | null;
+          published_time?: string | null;
           robots_index?: boolean;
           robots_follow?: boolean;
           updated_at?: string;

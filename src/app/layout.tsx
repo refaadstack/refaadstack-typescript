@@ -22,16 +22,30 @@ function getSafeUrl(url: string, fallback: string) {
   }
 }
 
+function getSafeIsoDate(value: string, fallback: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return fallback;
+  }
+
+  return date.toISOString();
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
-  const canonicalUrl = getSafeUrl(settings.canonical_url, 'https://refaadstack.dev');
+  const canonicalUrl = getSafeUrl(settings.canonical_url, 'https://www.refaadstack.com');
+  const publishedTime = getSafeIsoDate(
+    settings.published_time,
+    '2026-05-01T00:00:00.000Z'
+  );
+  const modifiedTime = new Date().toISOString();
 
   return {
     metadataBase: canonicalUrl,
     title: settings.site_title,
     description: settings.site_description,
     keywords: settings.site_keywords,
-    authors: [{ name: 'RefaadStack' }],
+    authors: [{ name: settings.author_name }],
     alternates: {
       canonical: canonicalUrl.toString(),
     },
@@ -42,10 +56,13 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: settings.site_title,
       description: settings.site_description,
-      type: 'website',
+      type: 'article',
       locale: 'id_ID',
       siteName: 'RefaadStack',
       url: canonicalUrl.toString(),
+      publishedTime,
+      modifiedTime,
+      authors: [settings.author_name],
       images: [
         {
           url: settings.og_image_url,
@@ -64,6 +81,13 @@ export async function generateMetadata(): Promise<Metadata> {
     robots: {
       index: settings.robots_index,
       follow: settings.robots_follow,
+    },
+    other: {
+      author: settings.author_name,
+      'article:author': settings.author_name,
+      'article:published_time': publishedTime,
+      'article:modified_time': modifiedTime,
+      'og:updated_time': modifiedTime,
     },
   };
 }

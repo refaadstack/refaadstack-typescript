@@ -84,7 +84,9 @@ CREATE TABLE IF NOT EXISTS site_settings (
   site_description TEXT NOT NULL DEFAULT 'RefaadStack adalah software house modern yang membangun website, aplikasi web, POS system, dan SaaS untuk bisnis Anda.',
   site_keywords TEXT[] DEFAULT ARRAY['software house', 'website development', 'POS system', 'SaaS'],
   og_image_url TEXT DEFAULT '/og-image.png',
-  canonical_url TEXT DEFAULT 'https://refaadstack.dev',
+  canonical_url TEXT DEFAULT 'https://www.refaadstack.com',
+  author_name TEXT DEFAULT 'RefaadStack',
+  published_time TIMESTAMPTZ DEFAULT '2026-05-01T00:00:00.000Z',
   robots_index BOOLEAN DEFAULT true,
   robots_follow BOOLEAN DEFAULT true,
   updated_at TIMESTAMPTZ DEFAULT NOW(),
@@ -260,6 +262,8 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Upgrade helper for existing databases
 ALTER TABLE products ADD COLUMN IF NOT EXISTS image_url TEXT;
+ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS author_name TEXT DEFAULT 'RefaadStack';
+ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS published_time TIMESTAMPTZ DEFAULT '2026-05-01T00:00:00.000Z';
 
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_portfolios_slug ON portfolios(slug);

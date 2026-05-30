@@ -479,6 +479,8 @@ export async function getSiteSettings(): Promise<SiteSettingsInput> {
       site_keywords: data.site_keywords || DEFAULT_SITE_SETTINGS.site_keywords,
       og_image_url: data.og_image_url || DEFAULT_SITE_SETTINGS.og_image_url,
       canonical_url: data.canonical_url || DEFAULT_SITE_SETTINGS.canonical_url,
+      author_name: data.author_name || DEFAULT_SITE_SETTINGS.author_name,
+      published_time: data.published_time || DEFAULT_SITE_SETTINGS.published_time,
       robots_index: data.robots_index ?? DEFAULT_SITE_SETTINGS.robots_index,
       robots_follow: data.robots_follow ?? DEFAULT_SITE_SETTINGS.robots_follow,
     };

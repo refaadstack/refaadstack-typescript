@@ -86,7 +86,10 @@ export default function AdminSettingsPage() {
           .map((keyword) => keyword.trim())
           .filter(Boolean),
         og_image_url: formData.og_image_url.trim() || '/og-image.png',
-        canonical_url: formData.canonical_url.trim() || 'https://refaadstack.dev',
+        canonical_url: formData.canonical_url.trim() || 'https://www.refaadstack.com',
+        author_name: formData.author_name.trim() || 'RefaadStack',
+        published_time:
+          formData.published_time.trim() || DEFAULT_SITE_SETTINGS.published_time,
         robots_index: formData.robots_index,
         robots_follow: formData.robots_follow,
       };
@@ -228,6 +231,43 @@ export default function AdminSettingsPage() {
                   />
                   <p className="text-slate-500 text-xs mt-1">Pisahkan keyword dengan koma.</p>
                 </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="author_name" className="text-slate-300">
+                      Author
+                    </Label>
+                    <Input
+                      id="author_name"
+                      name="author_name"
+                      value={formData.author_name}
+                      onChange={handleChange}
+                      placeholder="RefaadStack"
+                      className="bg-slate-800 border-slate-700 text-white mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="published_time" className="text-slate-300">
+                      Publish Date
+                    </Label>
+                    <Input
+                      id="published_time"
+                      name="published_time"
+                      type="datetime-local"
+                      value={formData.published_time.slice(0, 16)}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          published_time: e.target.value
+                            ? new Date(e.target.value).toISOString()
+                            : '',
+                        }))
+                      }
+                      className="bg-slate-800 border-slate-700 text-white mt-1"
+                    />
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
@@ -301,7 +341,7 @@ export default function AdminSettingsPage() {
                   name="canonical_url"
                   value={formData.canonical_url}
                   onChange={handleChange}
-                  placeholder="https://refaadstack.dev"
+                  placeholder="https://www.refaadstack.com"
                   className="bg-slate-800 border-slate-700 text-white mt-1"
                 />
               </div>
