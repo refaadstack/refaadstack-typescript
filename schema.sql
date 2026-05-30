@@ -77,6 +77,20 @@ CREATE TABLE IF NOT EXISTS testimonials (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 7. Site Settings Table
+CREATE TABLE IF NOT EXISTS site_settings (
+  id INTEGER PRIMARY KEY DEFAULT 1,
+  site_title TEXT NOT NULL DEFAULT 'RefaadStack - Build Better Digital Solutions',
+  site_description TEXT NOT NULL DEFAULT 'RefaadStack adalah software house modern yang membangun website, aplikasi web, POS system, dan SaaS untuk bisnis Anda.',
+  site_keywords TEXT[] DEFAULT ARRAY['software house', 'website development', 'POS system', 'SaaS'],
+  og_image_url TEXT DEFAULT '/logo.png',
+  canonical_url TEXT DEFAULT 'https://refaadstack.dev',
+  robots_index BOOLEAN DEFAULT true,
+  robots_follow BOOLEAN DEFAULT true,
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  CONSTRAINT site_settings_singleton CHECK (id = 1)
+);
+
 -- Insert default admin (Password: admin123 - CHANGE THIS IN PRODUCTION)
 -- Using bcrypt hash - you'll need to generate this properly
 -- For development, use a simple hash. In production, use proper bcrypt.
@@ -203,6 +217,7 @@ ALTER TABLE portfolio_images ENABLE ROW LEVEL SECURITY;
 ALTER TABLE services ENABLE ROW LEVEL SECURITY;
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE testimonials ENABLE ROW LEVEL SECURITY;
+ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
 
 -- Public read policies
 CREATE POLICY "Public can read portfolios" ON portfolios FOR SELECT USING (true);
@@ -210,6 +225,7 @@ CREATE POLICY "Public can read portfolio_images" ON portfolio_images FOR SELECT 
 CREATE POLICY "Public can read services" ON services FOR SELECT USING (is_active = true);
 CREATE POLICY "Public can read products" ON products FOR SELECT USING (is_active = true);
 CREATE POLICY "Public can read testimonials" ON testimonials FOR SELECT USING (is_active = true);
+CREATE POLICY "Public can read site_settings" ON site_settings FOR SELECT USING (true);
 
 -- Admin policies (only authenticated admins can modify)
 CREATE POLICY "Admins can manage portfolios" ON portfolios FOR ALL USING (
@@ -224,6 +240,13 @@ CREATE POLICY "Admins can manage products" ON products FOR ALL USING (
 CREATE POLICY "Admins can manage testimonials" ON testimonials FOR ALL USING (
   exists (select 1 from admins where id::text = current_user::text)
 );
+CREATE POLICY "Admins can manage site_settings" ON site_settings FOR ALL USING (
+  exists (select 1 from admins where id::text = current_user::text)
+);
+
+INSERT INTO site_settings (id)
+VALUES (1)
+ON CONFLICT (id) DO NOTHING;
 
 -- Create storage bucket for portfolio images
 INSERT INTO storage.buckets (id, name, public)

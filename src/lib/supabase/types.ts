@@ -198,6 +198,41 @@ export interface Database {
           created_at?: string;
         };
       };
+      site_settings: {
+        Row: {
+          id: number;
+          site_title: string;
+          site_description: string;
+          site_keywords: string[] | null;
+          og_image_url: string | null;
+          canonical_url: string | null;
+          robots_index: boolean;
+          robots_follow: boolean;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          site_title?: string;
+          site_description?: string;
+          site_keywords?: string[] | null;
+          og_image_url?: string | null;
+          canonical_url?: string | null;
+          robots_index?: boolean;
+          robots_follow?: boolean;
+          updated_at?: string;
+        };
+        Update: {
+          id?: number;
+          site_title?: string;
+          site_description?: string;
+          site_keywords?: string[] | null;
+          og_image_url?: string | null;
+          canonical_url?: string | null;
+          robots_index?: boolean;
+          robots_follow?: boolean;
+          updated_at?: string;
+        };
+      };
     };
     Enums: {};
   };

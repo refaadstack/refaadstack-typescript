@@ -41,7 +41,7 @@ export default function AdminLoginPage() {
       
       <Card className="w-full max-w-md mx-4 relative z-10 border-slate-700/50 bg-slate-900/80 backdrop-blur-xl">
         <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
+          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-cyan-500/20">
             <LockKeyhole className="w-8 h-8 text-white" />
           </div>
           <div>

@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@supabase/supabase-js';
+import { DEFAULT_SITE_SETTINGS, SiteSettingsInput } from '@/lib/site-settings';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -458,4 +459,48 @@ export async function getAdminStats() {
     totalTestimonials: testimonials.count || 0,
     totalServices: services.count || 0,
   };
+}
+
+export async function getSiteSettings(): Promise<SiteSettingsInput> {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('site_settings')
+      .select('*')
+      .eq('id', 1)
+      .single();
+
+    if (error || !data) {
+      return DEFAULT_SITE_SETTINGS;
+    }
+
+    return {
+      site_title: data.site_title || DEFAULT_SITE_SETTINGS.site_title,
+      site_description: data.site_description || DEFAULT_SITE_SETTINGS.site_description,
+      site_keywords: data.site_keywords || DEFAULT_SITE_SETTINGS.site_keywords,
+      og_image_url: data.og_image_url || DEFAULT_SITE_SETTINGS.og_image_url,
+      canonical_url: data.canonical_url || DEFAULT_SITE_SETTINGS.canonical_url,
+      robots_index: data.robots_index ?? DEFAULT_SITE_SETTINGS.robots_index,
+      robots_follow: data.robots_follow ?? DEFAULT_SITE_SETTINGS.robots_follow,
+    };
+  } catch {
+    return DEFAULT_SITE_SETTINGS;
+  }
+}
+
+export async function updateSiteSettings(input: SiteSettingsInput) {
+  const { data, error } = await supabaseAdmin
+    .from('site_settings')
+    .upsert(
+      {
+        id: 1,
+        ...input,
+        updated_at: new Date().toISOString(),
+      } as any,
+      { onConflict: 'id' }
+    )
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
 }

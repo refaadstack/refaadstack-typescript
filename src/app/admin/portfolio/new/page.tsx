@@ -177,7 +177,7 @@ const handleLogout = async () => {
       {/* Sidebar */}
       <aside className="fixed left-0 top-0 h-full w-64 bg-slate-900/50 border-r border-slate-800 p-4">
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-lg">R</span>
           </div>
           <div>
@@ -191,7 +191,7 @@ const handleLogout = async () => {
             <Link
               key={item.title}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                 item.active 
                   ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' 
                   : 'text-slate-400 hover:bg-slate-800 hover:text-white'
@@ -205,7 +205,7 @@ const handleLogout = async () => {
 
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors w-full mt-auto absolute bottom-4 left-4 right-4"
+          className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors w-full mt-auto absolute bottom-4 left-4 right-4"
         >
           <LogOut className="w-5 h-5" />
           <span className="text-sm font-medium">Logout</span>
@@ -409,7 +409,7 @@ const handleLogout = async () => {
                   ))}
                 </div>
               ) : (
-                <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/60 p-8 text-center">
+                <div className="rounded-lg border border-dashed border-slate-700 bg-slate-900/60 p-8 text-center">
                   <ImagePlus className="w-10 h-10 text-slate-600 mx-auto mb-3" />
                   <p className="text-slate-400 text-sm">
                     Belum ada gambar. Upload sekarang supaya tidak perlu masuk edit lagi.
