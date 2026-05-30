@@ -22,7 +22,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsInput = {
     'Next.js',
     'react',
   ],
-  og_image_url: '/logo.png',
+  og_image_url: '/og-image.png',
   canonical_url: 'https://refaadstack.dev',
   robots_index: true,
   robots_follow: true,

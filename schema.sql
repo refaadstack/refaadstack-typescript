@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS site_settings (
   site_title TEXT NOT NULL DEFAULT 'RefaadStack - Build Better Digital Solutions',
   site_description TEXT NOT NULL DEFAULT 'RefaadStack adalah software house modern yang membangun website, aplikasi web, POS system, dan SaaS untuk bisnis Anda.',
   site_keywords TEXT[] DEFAULT ARRAY['software house', 'website development', 'POS system', 'SaaS'],
-  og_image_url TEXT DEFAULT '/logo.png',
+  og_image_url TEXT DEFAULT '/og-image.png',
   canonical_url TEXT DEFAULT 'https://refaadstack.dev',
   robots_index BOOLEAN DEFAULT true,
   robots_follow BOOLEAN DEFAULT true,

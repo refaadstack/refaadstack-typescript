@@ -85,7 +85,7 @@ export default function AdminSettingsPage() {
           .split(',')
           .map((keyword) => keyword.trim())
           .filter(Boolean),
-        og_image_url: formData.og_image_url.trim() || '/logo.png',
+        og_image_url: formData.og_image_url.trim() || '/og-image.png',
         canonical_url: formData.canonical_url.trim() || 'https://refaadstack.dev',
         robots_index: formData.robots_index,
         robots_follow: formData.robots_follow,
@@ -287,7 +287,7 @@ export default function AdminSettingsPage() {
                   name="og_image_url"
                   value={formData.og_image_url}
                   onChange={handleChange}
-                  placeholder="/logo.png"
+                  placeholder="/og-image.png"
                   className="bg-slate-800 border-slate-700 text-white mt-1"
                 />
               </div>
