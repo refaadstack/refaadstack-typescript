@@ -4,6 +4,9 @@ import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { getSiteSettings } from '@/lib/crud';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 const dmSans = DM_Sans({
   subsets: ['latin'],
   variable: '--font-dm-sans',
