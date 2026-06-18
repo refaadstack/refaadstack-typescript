@@ -19,7 +19,13 @@ const syne = Syne({
 
 function getSafeUrl(url: string, fallback: string) {
   try {
-    return new URL(url);
+    const parsedUrl = new URL(url);
+
+    if (parsedUrl.hostname === 'refaadstack.com') {
+      parsedUrl.hostname = 'www.refaadstack.com';
+    }
+
+    return parsedUrl;
   } catch {
     return new URL(fallback);
   }
