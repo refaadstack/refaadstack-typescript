@@ -17,19 +17,22 @@ const syne = Syne({
   variable: '--font-syne',
 });
 
-function getSafeUrl(url: string, fallback: string) {
-  try {
-    const parsedUrl = new URL(url);
-
-    if (parsedUrl.hostname === 'refaadstack.com') {
-      parsedUrl.hostname = 'www.refaadstack.com';
-    }
-
-    return parsedUrl;
-  } catch {
-    return new URL(fallback);
-  }
-}
+const SITE_URL = 'https://www.refaadstack.com';
+const SEO_TITLE = 'RefaadStack — Software House & Web Development Jambi';
+const SEO_DESCRIPTION =
+  'RefaadStack software house Jambi. Jasa pembuatan website, POS system, SaaS, dan aplikasi web untuk bisnis Anda. Konsultasi gratis.';
+const SEO_KEYWORDS = [
+  'RefaadStack',
+  'Refaadstack Jambi',
+  'Redho Fadillah Adha',
+  'software house Jambi',
+  'jasa pembuatan website Jambi',
+  'jasa web application',
+  'POS system Indonesia',
+  'SaaS development',
+  'IT Consultant Jambi',
+  'Web Design Jambi',
+];
 
 function getSafeIsoDate(value: string, fallback: string) {
   const date = new Date(value);
@@ -42,7 +45,6 @@ function getSafeIsoDate(value: string, fallback: string) {
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
-  const canonicalUrl = getSafeUrl(settings.canonical_url, 'https://www.refaadstack.com');
   const publishedTime = getSafeIsoDate(
     settings.published_time,
     '2026-05-01T00:00:00.000Z'
@@ -50,25 +52,29 @@ export async function generateMetadata(): Promise<Metadata> {
   const modifiedTime = new Date().toISOString();
 
   return {
-    metadataBase: canonicalUrl,
-    title: settings.site_title,
-    description: settings.site_description,
-    keywords: settings.site_keywords,
+    metadataBase: new URL(SITE_URL),
+    title: SEO_TITLE,
+    description: SEO_DESCRIPTION,
+    keywords: SEO_KEYWORDS,
     authors: [{ name: settings.author_name }],
     alternates: {
-      canonical: canonicalUrl.toString(),
+      canonical: SITE_URL,
+    },
+    verification: {
+      // TODO: Ganti "PASTE_GSC_CODE" dengan verification code dari Google Search Console > Settings > Verification
+      google: 'hJ9FmOJNR4HnyOdx2LyMpo2GWauL3417fdofT6rR4Tg',
     },
     icons: {
       icon: '/favicon.ico',
       apple: '/apple-touch-icon.png',
     },
     openGraph: {
-      title: settings.site_title,
-      description: settings.site_description,
+      title: SEO_TITLE,
+      description: SEO_DESCRIPTION,
       type: 'article',
       locale: 'id_ID',
       siteName: 'RefaadStack',
-      url: canonicalUrl.toString(),
+      url: SITE_URL,
       publishedTime,
       modifiedTime,
       authors: [settings.author_name],
@@ -77,14 +83,14 @@ export async function generateMetadata(): Promise<Metadata> {
           url: settings.og_image_url,
           width: 1200,
           height: 630,
-          alt: settings.site_title,
+          alt: SEO_TITLE,
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: settings.site_title,
-      description: settings.site_description,
+      title: SEO_TITLE,
+      description: SEO_DESCRIPTION,
       images: [settings.og_image_url],
     },
     robots: {
