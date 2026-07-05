@@ -12,10 +12,10 @@ export function CTA() {
         <Reveal>
           <div className="mx-auto max-w-4xl text-center">
             <h2 className="text-balance font-heading text-4xl font-bold leading-[1.02] tracking-[-0.05em] text-foreground sm:text-5xl lg:text-6xl">
-              Punya bisnis yang perlu dibantu digitalin?
+              Punya bisnis yang perlu dibantu digitalisasi?
             </h2>
             <p className="mx-auto mt-6 max-w-[55ch] text-pretty text-lg leading-8 text-muted-foreground">
-              Ceritain ke gue masalahnya. Bisa jadi loe butuh website baru, aplikasi, atau cuma perlu ditunjukin langkah yang cocok. Konsultasi gratis, gak ada kewajiban.
+              Ceritakan masalahnya kepada kami. Bisa jadi kamu butuh website baru, aplikasi, atau sekadar perlu arahan langkah yang tepat. Konsultasi gratis, tanpa kewajiban.
             </p>
             <Button asChild size="lg" className="mt-9">
               <a
@@ -24,7 +24,7 @@ export function CTA() {
                 rel="noopener noreferrer"
               >
                 <ChatCircle className="mr-2 size-5" weight="bold" />
-                Ceritain bisnis loe
+                Ceritakan bisnis kamu
               </a>
             </Button>
           </div>
