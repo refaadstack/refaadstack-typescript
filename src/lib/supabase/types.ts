@@ -79,6 +79,115 @@ export interface Database {
           updated_at?: string;
         };
       };
+      projects: {
+        Row: {
+          id: string;
+          title: string;
+          slug: string;
+          category: string;
+          summary: string | null;
+          description: string | null;
+          challenge: string | null;
+          approach: string | null;
+          outcome: string | null;
+          services: string[] | null;
+          stack: string[] | null;
+          year: string | null;
+          image_url: string | null;
+          featured: boolean;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          slug: string;
+          category: string;
+          summary?: string | null;
+          description?: string | null;
+          challenge?: string | null;
+          approach?: string | null;
+          outcome?: string | null;
+          services?: string[] | null;
+          stack?: string[] | null;
+          year?: string | null;
+          image_url?: string | null;
+          featured?: boolean;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          slug?: string;
+          category?: string;
+          summary?: string | null;
+          description?: string | null;
+          challenge?: string | null;
+          approach?: string | null;
+          outcome?: string | null;
+          services?: string[] | null;
+          stack?: string[] | null;
+          year?: string | null;
+          image_url?: string | null;
+          featured?: boolean;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      blog_posts: {
+        Row: {
+          id: string;
+          title: string;
+          slug: string;
+          excerpt: string | null;
+          content: string | null;
+          category: string | null;
+          reading_time: string | null;
+          image_url: string | null;
+          author_name: string | null;
+          published_at: string | null;
+          is_published: boolean;
+          featured: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          slug: string;
+          excerpt?: string | null;
+          content?: string | null;
+          category?: string | null;
+          reading_time?: string | null;
+          image_url?: string | null;
+          author_name?: string | null;
+          published_at?: string | null;
+          is_published?: boolean;
+          featured?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          slug?: string;
+          excerpt?: string | null;
+          content?: string | null;
+          category?: string | null;
+          reading_time?: string | null;
+          image_url?: string | null;
+          author_name?: string | null;
+          published_at?: string | null;
+          is_published?: boolean;
+          featured?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
       portfolio_images: {
         Row: {
           id: string;
@@ -111,6 +220,7 @@ export interface Database {
           sort_order: number;
           is_active: boolean;
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
@@ -120,6 +230,7 @@ export interface Database {
           sort_order?: number;
           is_active?: boolean;
           created_at?: string;
+          updated_at?: string;
         };
         Update: {
           id?: string;
@@ -129,6 +240,7 @@ export interface Database {
           sort_order?: number;
           is_active?: boolean;
           created_at?: string;
+          updated_at?: string;
         };
       };
       products: {
@@ -142,6 +254,7 @@ export interface Database {
           image_url: string | null;
           is_active: boolean;
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
@@ -153,6 +266,7 @@ export interface Database {
           image_url?: string | null;
           is_active?: boolean;
           created_at?: string;
+          updated_at?: string;
         };
         Update: {
           id?: string;
@@ -164,6 +278,7 @@ export interface Database {
           image_url?: string | null;
           is_active?: boolean;
           created_at?: string;
+          updated_at?: string;
         };
       };
       testimonials: {
@@ -176,6 +291,7 @@ export interface Database {
           rating: number;
           is_active: boolean;
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
@@ -186,6 +302,7 @@ export interface Database {
           rating?: number;
           is_active?: boolean;
           created_at?: string;
+          updated_at?: string;
         };
         Update: {
           id?: string;
@@ -196,6 +313,7 @@ export interface Database {
           rating?: number;
           is_active?: boolean;
           created_at?: string;
+          updated_at?: string;
         };
       };
       site_settings: {

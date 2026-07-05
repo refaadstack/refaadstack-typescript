@@ -1,28 +1,15 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { getAdminSession, logoutAdmin, AdminUser } from '@/lib/auth';
-import { getPortfolios, deletePortfolio, PortfolioInput } from '@/lib/crud';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { 
-  LayoutDashboard, 
-  Package, 
-  Image, 
-  Settings, 
-  ShoppingCart, 
-  MessageSquare, 
-  LogOut,
-  Plus,
-  Pencil,
-  Trash2,
-  Eye,
-  EyeOff,
-  Star
-} from 'lucide-react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Image as ImageIcon, Pencil, Plus, Star, Trash2 } from 'lucide-react';
+import { AdminNotice } from '@/components/admin/admin-form';
+import { AdminEmptyState, AdminLoading, AdminPageHeader, AdminPanel, AdminShell, AdminStatusPill } from '@/components/admin/admin-shell';
+import { Button } from '@/components/ui/button';
+import { getAdminSession, type AdminUser } from '@/lib/auth';
+import { deletePortfolio, getPortfolios } from '@/lib/crud';
+import { formatDate } from '@/lib/utils';
 
 interface Portfolio {
   id: string;
@@ -30,9 +17,9 @@ interface Portfolio {
   slug: string;
   category: string;
   short_description: string | null;
-  full_description: string | null;
   featured: boolean;
   created_at: string;
+  portfolio_images?: { image_url: string }[];
 }
 
 export default function PortfolioListPage() {
@@ -41,191 +28,159 @@ export default function PortfolioListPage() {
   const [loading, setLoading] = useState(true);
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    checkSession();
-  }, []);
+    let mounted = true;
 
-  const checkSession = async () => {
-    try {
-      const sessionUser = await getAdminSession();
-      if (!sessionUser) {
-        router.push('/admin/login');
-        return;
+    async function boot() {
+      try {
+        const sessionUser = await getAdminSession();
+        if (!sessionUser) {
+          router.push('/admin/login');
+          return;
+        }
+
+        const data = await getPortfolios();
+        if (!mounted) return;
+
+        setUser(sessionUser);
+        setPortfolios((data || []) as Portfolio[]);
+      } catch (caught) {
+        console.error('Portfolio load error:', caught);
+        if (mounted) setError('Gagal memuat portfolio dari database.');
+      } finally {
+        if (mounted) setLoading(false);
       }
-      setUser(sessionUser);
-      await fetchPortfolios();
-    } catch (error) {
-      console.error('Session error:', error);
-      router.push('/admin/login');
-    } finally {
-      setLoading(false);
     }
-  };
 
-  const fetchPortfolios = async () => {
-    try {
-      const data = await getPortfolios();
-      setPortfolios(data || []);
-    } catch (error) {
-      console.error('Error fetching portfolios:', error);
-    }
+    boot();
+
+    return () => {
+      mounted = false;
+    };
+  }, [router]);
+
+  const refreshPortfolios = async () => {
+    const data = await getPortfolios();
+    setPortfolios((data || []) as Portfolio[]);
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this portfolio?')) return;
-    
+    if (!confirm('Hapus portfolio ini beserta gambarnya?')) return;
+
     setDeleting(id);
+    setError('');
     try {
       await deletePortfolio(id);
-      await fetchPortfolios();
-    } catch (error) {
-      console.error('Error deleting portfolio:', error);
-      alert('Failed to delete portfolio');
+      await refreshPortfolios();
+    } catch (caught) {
+      console.error('Portfolio delete error:', caught);
+      setError(caught instanceof Error ? caught.message : 'Gagal menghapus portfolio.');
     } finally {
       setDeleting(null);
     }
   };
 
-  const handleLogout = async () => {
-    await logoutAdmin();
-    router.push('/admin/login');
-  };
-
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('id-ID', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500"></div>
-      </div>
-    );
-  }
-
-  const menuItems = [
-    { title: 'Dashboard', icon: LayoutDashboard, href: '/admin/dashboard' },
-    { title: 'Portfolios', icon: Image, href: '/admin/portfolio', active: true },
-    { title: 'Products', icon: ShoppingCart, href: '/admin/products' },
-    { title: 'Testimonials', icon: MessageSquare, href: '/admin/testimonials' },
-    { title: 'Settings', icon: Settings, href: '/admin/settings' },
-  ];
+  if (loading) return <AdminLoading />;
 
   return (
-    <div className="min-h-screen bg-slate-950">
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-slate-900/50 border-r border-slate-800 p-4">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-lg">R</span>
-          </div>
-          <div>
-            <h1 className="text-white font-bold">RefaadStack</h1>
-            <p className="text-slate-500 text-xs">Admin Panel</p>
-          </div>
-        </div>
-
-        <nav className="space-y-1">
-          {menuItems.map((item) => (
-            <Link
-              key={item.title}
-              href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                item.active 
-                  ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' 
-                  : 'text-slate-400 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              <item.icon className="w-5 h-5" />
-              <span className="text-sm font-medium">{item.title}</span>
+    <AdminShell user={user}>
+      <AdminPageHeader
+        eyebrow="Portfolio"
+        title="Case study yang tampil di public portfolio."
+        description="Portfolio dibaca langsung dari database dan masuk ke sitemap detail berdasarkan slug."
+        actions={
+          <Button asChild className="rounded-full">
+            <Link href="/admin/portfolio/new">
+              <Plus className="mr-2 size-4" />
+              Tambah portfolio
             </Link>
-          ))}
-        </nav>
+          </Button>
+        }
+      />
 
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors w-full mt-auto absolute bottom-4 left-4 right-4"
-        >
-          <LogOut className="w-5 h-5" />
-          <span className="text-sm font-medium">Logout</span>
-        </button>
-      </aside>
+      {error && <AdminNotice tone="error" className="mb-6">{error}</AdminNotice>}
 
-      {/* Main Content */}
-      <main className="ml-64 p-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Portfolios</h1>
-            <p className="text-slate-400">Manage your portfolio projects</p>
-          </div>
-          <Link href="/admin/portfolio/new">
-            <Button className="bg-cyan-500 hover:bg-cyan-600 text-white">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Portfolio
-            </Button>
-          </Link>
-        </div>
+      <AdminPanel
+        title="Portfolio database"
+        description={`${portfolios.length} portfolio tersimpan di Supabase.`}
+      >
+        {portfolios.length === 0 ? (
+          <AdminEmptyState label="Belum ada portfolio. Tambah portfolio pertama untuk mengisi public case study." />
+        ) : (
+          <div className="space-y-3">
+            {portfolios.map((portfolio) => {
+              const cover = portfolio.portfolio_images?.[0]?.image_url;
 
-        {/* Portfolio List */}
-        <div className="grid gap-4">
-          {portfolios.length === 0 ? (
-            <Card className="bg-slate-900/50 border-slate-800">
-              <CardContent className="p-8 text-center">
-                <Package className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-                <p className="text-slate-400">No portfolios yet. Create your first portfolio!</p>
-              </CardContent>
-            </Card>
-          ) : (
-            portfolios.map((portfolio) => (
-              <Card key={portfolio.id} className="bg-slate-900/50 border-slate-800">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <CardTitle className="text-white text-lg">{portfolio.title}</CardTitle>
+              return (
+                <article
+                  key={portfolio.id}
+                  className="grid gap-4 rounded-3xl border border-border bg-surface p-4 transition hover:border-primary/40 md:grid-cols-[7rem_1fr_auto]"
+                >
+                  {cover ? (
+                    <img
+                      src={cover}
+                      alt={portfolio.title}
+                      className="aspect-video w-28 rounded-2xl border border-border object-cover"
+                    />
+                  ) : (
+                    <div className="grid aspect-video w-28 place-items-center rounded-2xl border border-dashed border-border bg-background text-primary">
+                      <ImageIcon className="size-5" />
+                    </div>
+                  )}
+
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2 className="font-heading text-xl font-bold tracking-[-0.035em] text-foreground">
+                        {portfolio.title}
+                      </h2>
                       {portfolio.featured && (
-                        <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                        <AdminStatusPill tone="active">
+                          <Star className="mr-1 size-3 fill-current" />
+                          featured
+                        </AdminStatusPill>
                       )}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Link href={`/admin/portfolio/${portfolio.id}`}>
-                        <Button variant="outline" size="sm" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white">
-                          <Pencil className="w-4 h-4 mr-1" />
-                          Edit
-                        </Button>
-                      </Link>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="border-slate-700 text-slate-300 hover:bg-red-500/10 hover:text-red-400"
-                        onClick={() => handleDelete(portfolio.id)}
-                        disabled={deleting === portfolio.id}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                    <div className="mt-2 flex flex-wrap items-center gap-2 text-xs font-semibold text-muted-foreground">
+                      <span className="rounded-full border border-border bg-background px-2.5 py-1 text-foreground">
+                        {portfolio.category}
+                      </span>
+                      <span>{portfolio.slug}</span>
+                      <span>{formatDate(portfolio.created_at)}</span>
                     </div>
+                    {portfolio.short_description && (
+                      <p className="mt-3 line-clamp-2 text-sm leading-6 text-muted-foreground">
+                        {portfolio.short_description}
+                      </p>
+                    )}
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center gap-4 text-sm">
-                    <span className="px-2 py-1 bg-cyan-500/10 text-cyan-400 rounded">{portfolio.category}</span>
-                    <span className="text-slate-500">{portfolio.slug}</span>
-                    <span className="text-slate-500">•</span>
-                    <span className="text-slate-500">{formatDate(portfolio.created_at)}</span>
+
+                  <div className="flex items-start gap-2 md:justify-end">
+                    <Button asChild variant="outline" size="sm" className="rounded-full">
+                      <Link href={`/admin/portfolio/${portfolio.id}`}>
+                        <Pencil className="mr-2 size-4" />
+                        Edit
+                      </Link>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="rounded-full"
+                      onClick={() => handleDelete(portfolio.id)}
+                      disabled={deleting === portfolio.id}
+                      aria-label={`Hapus ${portfolio.title}`}
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
                   </div>
-                  {portfolio.short_description && (
-                    <p className="text-slate-400 mt-2 text-sm">{portfolio.short_description}</p>
-                  )}
-                </CardContent>
-              </Card>
-            ))
-          )}
-        </div>
-      </main>
-    </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </AdminPanel>
+    </AdminShell>
   );
 }

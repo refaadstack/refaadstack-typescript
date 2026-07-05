@@ -1,8 +1,8 @@
 export const COMPANY = {
   name: 'RefaadStack',
-  tagline: 'Build Better Digital Solutions',
+  tagline: 'Bikin digital simpel, bisnis loe jalan sendiri',
   description:
-    'Software house modern yang membantu bisnis Anda tumbuh melalui solusi digital yang scalable, cepat, dan elegan.',
+    'Software house dari Jambi yang bantu UMKM bikin website, aplikasi, dan sistem otomatis biar bisnis jadi lebih gampang. Gak perlu pusing urus teknis, kami yang handle dari nol sampai jadi.',
   email: 'refaad16@gmail.com',
   phone: '+62 823 7433 8273',
   location: 'Jambi, Indonesia',
@@ -11,56 +11,18 @@ export const COMPANY = {
 } as const;
 
 export const NAV_LINKS = [
-  { href: '#services', label: 'Layanan' },
-  { href: '#why', label: 'Tentang' },
-  { href: '#products', label: 'Produk' },
-  { href: '#portfolio', label: 'Portfolio' },
+  { href: '/#services', label: 'Layanan' },
+  { href: '/projects', label: 'Project' },
+  { href: '/products', label: 'Produk' },
+  { href: '/portfolio', label: 'Portfolio' },
+  { href: '/blog', label: 'Blog' },
 ] as const;
 
 export const STATS = [
-  { value: '10+', label: 'Projects Delivered' },
-  { value: 'Fast', label: 'Delivery Guarantee' },
-  { value: 'Modern', label: 'Tech Stack Used' },
-  { value: '100%', label: 'Mobile Responsive' },
-] as const;
-
-export const PRODUCTS = [
-  {
-    id: 'refaadpos',
-    name: 'RefaadPOS',
-    tagline: 'Sistem kasir modern untuk UMKM dan bisnis retail Indonesia',
-    description:
-      'Sistem kasir digital yang ringan, cepat, dan mendukung multi-outlet. Sangat cocok untuk UMKM dan bisnis retail di Indonesia.',
-    features: [
-      'Multi-outlet & multi-user',
-      'Laporan real-time & export Excel',
-      'Integrasi printer thermal',
-      'Manajemen stok & kategori',
-    ],
-    price: 'Hubungi untuk harga',
-    cta: 'Coba Sekarang',
-    ctaLink: '#cta',
-    trial: 'Free trial 14 hari',
-    color: 'cyan',
-  },
-  {
-    id: 'refainvite',
-    name: 'RefaadInvite',
-    tagline: 'Undangan digital premium dengan RSVP, ucapan, dan galeri foto',
-    description:
-      'Undangan digital premium dengan desain elegant, RSVP interaktif, ucapan digital, dan galeri foto. Membuat acara Anda lebih berkesan.',
-    features: [
-      'Desain premium & customizable',
-      'RSVP & ucapan digital interaktif',
-      'Galeri foto & countdown wedding',
-      'Share via link & QR code',
-    ],
-    price: 'Mulai dari Rp 199K',
-    cta: 'Lihat Demo',
-    ctaLink: '#cta',
-    trial: null,
-    color: 'violet',
-  },
+  { value: 'Web dan SaaS', label: 'Produk yang kami bangun' },
+  { value: 'SEO-ready', label: 'Fondasi pencarian organik' },
+  { value: 'Mobile-first', label: 'Pengalaman lintas perangkat' },
+  { value: 'Direct support', label: 'Komunikasi dengan tim pembuat' },
 ] as const;
 
 export const PROCESS_STEPS = [
@@ -68,7 +30,7 @@ export const PROCESS_STEPS = [
     number: '01',
     title: 'Konsultasi',
     description:
-      'Kita diskusi kebutuhan, tujuan, dan scope project. Gratis & tanpa komitmen.',
+      'Kita diskusi kebutuhan, tujuan, dan scope project. Gratis dan tanpa komitmen.',
   },
   {
     number: '02',

@@ -1,93 +1,35 @@
-'use client';
-
-import { motion } from 'framer-motion';
-import { MessageCircle, Mail } from 'lucide-react';
+import { ChatCircle } from '@phosphor-icons/react/dist/ssr';
+import { Container } from '@/components/public/container';
+import { Reveal } from '@/components/public/reveal';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { COMPANY } from '@/lib/constants';
 
 export function CTA() {
   return (
-    <section id="cta" className="py-20 md:py-32 relative overflow-hidden">
-      <div
-        className="glow-blob"
-        style={{
-          width: '700px',
-          height: '700px',
-          left: '50%',
-          top: '50%',
-          transform: 'translate(-50%, -50%)',
-          background:
-            'radial-gradient(circle, hsl(var(--primary) / 0.08), transparent 65%)',
-        }}
-      />
-      <div className="grid-bg opacity-40" />
-
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="max-w-2xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-6"
-          >
-            <Badge variant="cyan" className="gap-2">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
-              </span>
-              Mulai Sekarang - Konsultasi Gratis
-            </Badge>
-          </motion.div>
-
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4"
-          >
-            Siap Bangun{' '}
-            <span className="gradient-text-primary">Produk Digital?</span>
-          </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="text-muted-foreground mb-8"
-          >
-            Ceritakan kebutuhan Anda dan kami akan bantu menentukan solusi terbaik.
-            Tanpa biaya konsultasi, tanpa tekanan.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-            className="flex flex-wrap gap-4 justify-center"
-          >
-            <Button asChild size="lg" className="glow-primary">
+    <section id="cta" className="relative overflow-hidden py-20 sm:py-28 lg:py-36">
+      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[linear-gradient(to_top,rgba(255,102,196,0.11),transparent)]" />
+      <Container className="relative">
+        <Reveal>
+          <div className="mx-auto max-w-4xl text-center">
+            <h2 className="text-balance font-heading text-4xl font-bold leading-[1.02] tracking-[-0.05em] text-foreground sm:text-5xl lg:text-6xl">
+              Punya bisnis yang perlu dibantu digitalin?
+            </h2>
+            <p className="mx-auto mt-6 max-w-[55ch] text-pretty text-lg leading-8 text-muted-foreground">
+              Ceritain ke gue masalahnya. Bisa jadi loe butuh website baru, aplikasi, atau cuma perlu ditunjukin langkah yang cocok. Konsultasi gratis, gak ada kewajiban.
+            </p>
+            <Button asChild size="lg" className="mt-9">
               <a
-                href={`https://wa.me/${COMPANY.whatsapp}?text=Halo RefaadStack, saya ingin konsultasi project`}
+                href={`https://wa.me/${COMPANY.whatsapp}?text=Halo RefaadStack, saya mau cerita bisnis saya`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <MessageCircle className="mr-2 h-5 w-5" />
-                Konsultasi Project
+                <ChatCircle className="mr-2 size-5" weight="bold" />
+                Ceritain bisnis loe
               </a>
             </Button>
-            <Button asChild variant="ghostPrimary" size="lg">
-              <a href={`mailto:${COMPANY.email}`}>
-                <Mail className="mr-2 h-5 w-5" />
-                Kirim Email
-              </a>
-            </Button>
-          </motion.div>
-        </div>
-      </div>
+          </div>
+        </Reveal>
+      </Container>
     </section>
   );
 }

@@ -1,120 +1,78 @@
-'use client';
+import {
+  Code,
+  DeviceMobile,
+  MagnifyingGlass,
+  Path,
+  Stack,
+  Strategy,
+} from '@phosphor-icons/react/dist/ssr';
+import { Container } from '@/components/public/container';
+import { Reveal } from '@/components/public/reveal';
 
-import { motion } from 'framer-motion';
-import { WHY_US } from '@/data/portfolio';
+const REASONS = [
+  {
+    icon: Strategy,
+    title: 'Mulai dari masalah bisnis',
+    description: 'Fitur dipilih karena berguna, bukan hanya karena terlihat menarik.',
+  },
+  {
+    icon: Path,
+    title: 'Proses yang terbuka',
+    description: 'Scope, progres, dan keputusan teknis dibicarakan dengan bahasa yang jelas.',
+  },
+  {
+    icon: Stack,
+    title: 'Arsitektur yang dapat tumbuh',
+    description: 'Fondasi dibuat modular agar perubahan berikutnya tidak selalu dimulai dari nol.',
+  },
+  {
+    icon: Code,
+    title: 'Kode yang dapat dirawat',
+    description: 'Struktur dan dokumentasi membantu produk tetap sehat setelah diluncurkan.',
+  },
+  {
+    icon: DeviceMobile,
+    title: 'Pengalaman lintas perangkat',
+    description: 'Tampilan dan interaksi diuji dari layar kecil hingga desktop.',
+  },
+  {
+    icon: MagnifyingGlass,
+    title: 'SEO tetap menjadi fondasi',
+    description: 'Metadata, struktur semantik, performa, dan tautan internal dibangun sejak awal.',
+  },
+];
 
 export function WhyUs() {
   return (
-    <section id="why" className="py-20 md:py-32 bg-background-secondary">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Left Content */}
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="h-px w-8 bg-primary" />
-              <span className="text-sm font-bold uppercase tracking-widest text-primary">
-                Why RefaadStack
-              </span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-extrabold mb-6">
-              Kenapa Pilih <span className="text-primary">Kami?</span>
+    <section id="why" className="border-y border-border bg-surface py-20 sm:py-28 lg:py-36">
+      <Container className="grid gap-14 lg:grid-cols-[0.82fr_1.18fr] lg:gap-20">
+        <Reveal>
+          <div className="lg:sticky lg:top-28">
+            <h2 className="text-balance font-heading text-4xl font-bold leading-[1.02] tracking-[-0.045em] text-foreground sm:text-5xl">
+              Teknologi yang terasa masuk akal bagi orang yang memakainya.
             </h2>
-            <p className="text-muted-foreground mb-10">
-              Kami bukan hanya vendor — kami adalah mitra teknologi yang peduli
-              terhadap pertumbuhan bisnis Anda jangka panjang.
+            <p className="mt-6 max-w-[48ch] text-pretty text-lg leading-8 text-muted-foreground">
+              Kami menjaga keputusan desain dan teknis tetap dekat dengan pekerjaan nyata di dalam bisnis.
             </p>
-
-            {/* Reasons Grid */}
-            <div className="grid sm:grid-cols-2 gap-4">
-              {WHY_US.map((item, index) => (
-                <motion.div
-                  key={item.title}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
-                  viewport={{ once: true }}
-                  className="p-4 rounded-xl border border-border bg-card hover:border-primary/20 transition-colors"
-                >
-                  <div className="text-2xl mb-3">{item.icon}</div>
-                  <h3 className="font-bold text-sm mb-2">{item.title}</h3>
-                  <p className="text-xs text-muted-foreground">{item.description}</p>
-                </motion.div>
-              ))}
-            </div>
           </div>
+        </Reveal>
 
-          {/* Right Visual - Code Block */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="hidden lg:block"
-          >
-            <div className="rounded-2xl border border-border bg-card overflow-hidden font-mono text-sm">
-              {/* Code Header */}
-              <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-secondary/50">
-                <div className="h-3 w-3 rounded-full bg-destructive/80" />
-                <div className="h-3 w-3 rounded-full bg-yellow-500/80" />
-                <div className="h-3 w-3 rounded-full bg-green-500/80" />
-                <span className="ml-auto text-xs text-muted-foreground">
-                  refaadstack.config.ts
-                </span>
-              </div>
-
-              {/* Code Content */}
-              <div className="p-5 leading-relaxed">
-                <div className="text-muted-foreground/50">// RefaadStack – Production Config</div>
-                <div>&nbsp;</div>
-                <div>
-                  <span className="text-primary">export const</span>{' '}
-                  <span className="text-cyan-400">config</span> = {'{'}
-                </div>
-                <div className="pl-4">
-                  <span className="text-primary">"stack"</span>: [
-                </div>
-                <div className="pl-8">
-                  <span className="text-yellow-300">"Next.js 14"</span>,
-                </div>
-                <div className="pl-8">
-                  <span className="text-yellow-300">"TypeScript"</span>,
-                </div>
-                <div className="pl-8">
-                  <span className="text-yellow-300">"Tailwind CSS"</span>,
-                </div>
-                <div className="pl-8">
-                  <span className="text-yellow-300">"PostgreSQL"</span>,
-                </div>
-                <div className="pl-8">
-                  <span className="text-yellow-300">"Supabase"</span>
-                </div>
-                <div className="pl-4">],</div>
-                <div className="pl-4">
-                  <span className="text-primary">"quality"</span>: {'{'}
-                </div>
-                <div className="pl-8">
-                  <span className="text-cyan-400">coverage</span>:{' '}
-                  <span className="text-green-400">95</span>,
-                </div>
-                <div className="pl-8">
-                  <span className="text-cyan-400">lighthouse</span>:{' '}
-                  <span className="text-green-400">98</span>,
-                </div>
-                <div className="pl-8">
-                  <span className="text-cyan-400">uptime</span>:{' '}
-                  <span className="text-yellow-300">"99.9%"</span>,
-                </div>
-                <div className="pl-8">
-                  <span className="text-cyan-400">mobile</span>:{' '}
-                  <span className="text-green-400">true</span>
-                </div>
-                <div className="pl-4">{'}'}</div>
-                <div>{'}'}<span className="animate-pulse">|</span></div>
-              </div>
-            </div>
-          </motion.div>
+        <div className="grid gap-x-8 sm:grid-cols-2">
+          {REASONS.map((reason, index) => (
+            <Reveal key={reason.title} delay={(index % 2) * 0.06}>
+              <article className="border-t border-border py-7">
+                <reason.icon className="size-6 text-primary" weight="bold" />
+                <h3 className="mt-5 font-heading text-lg font-bold tracking-[-0.02em] text-foreground">
+                  {reason.title}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  {reason.description}
+                </p>
+              </article>
+            </Reveal>
+          ))}
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

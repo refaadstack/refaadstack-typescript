@@ -1,26 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { getAdminSession, logoutAdmin, AdminUser } from '@/lib/auth';
-import { getServices, deleteService } from '@/lib/crud';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { 
-  LayoutDashboard, 
-  Package, 
-  Image, 
-  Settings, 
-  ShoppingCart, 
-  MessageSquare, 
-  LogOut,
-  Plus,
-  Pencil,
-  Trash2,
-  CheckCircle,
-  XCircle
-} from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { CheckCircle, Package, Pencil, Plus, Trash2, XCircle } from 'lucide-react';
+import { AdminNotice } from '@/components/admin/admin-form';
+import { AdminEmptyState, AdminLoading, AdminPageHeader, AdminPanel, AdminShell, AdminStatusPill } from '@/components/admin/admin-shell';
+import { Button } from '@/components/ui/button';
+import { getAdminSession, type AdminUser } from '@/lib/auth';
+import { deleteService, getServices } from '@/lib/crud';
 
 interface Service {
   id: string;
@@ -29,7 +17,6 @@ interface Service {
   icon: string | null;
   sort_order: number;
   is_active: boolean;
-  created_at: string;
 }
 
 export default function ServiceListPage() {
@@ -38,184 +25,150 @@ export default function ServiceListPage() {
   const [loading, setLoading] = useState(true);
   const [services, setServices] = useState<Service[]>([]);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    checkSession();
-  }, []);
+    let mounted = true;
 
-  const checkSession = async () => {
-    try {
-      const sessionUser = await getAdminSession();
-      if (!sessionUser) {
-        router.push('/admin/login');
-        return;
+    async function boot() {
+      try {
+        const sessionUser = await getAdminSession();
+        if (!sessionUser) {
+          router.push('/admin/login');
+          return;
+        }
+
+        const data = await getServices();
+        if (!mounted) return;
+
+        setUser(sessionUser);
+        setServices((data || []) as Service[]);
+      } catch (caught) {
+        console.error('Services load error:', caught);
+        if (mounted) setError('Gagal memuat services dari database.');
+      } finally {
+        if (mounted) setLoading(false);
       }
-      setUser(sessionUser);
-      await fetchServices();
-    } catch (error) {
-      console.error('Session error:', error);
-      router.push('/admin/login');
-    } finally {
-      setLoading(false);
     }
+
+    boot();
+
+    return () => {
+      mounted = false;
+    };
+  }, [router]);
+
+  const refreshServices = async () => {
+    const data = await getServices();
+    setServices((data || []) as Service[]);
   };
 
-  const fetchServices = async () => {
-    try {
-      const data = await getServices();
-      setServices(data || []);
-    } catch (error) {
-      console.error('Error fetching services:', error);
-    }
-  };
+  const handleDelete = async (id: string) => {
+    if (!confirm('Hapus service ini?')) return;
 
-const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this service?')) return;
-    
     setDeleting(id);
+    setError('');
     try {
       await deleteService(id);
-      await fetchServices();
-    } catch (error) {
-      console.error('Error deleting service:', error);
-      alert('Failed to delete service');
+      await refreshServices();
+    } catch (caught) {
+      console.error('Service delete error:', caught);
+      setError(caught instanceof Error ? caught.message : 'Gagal menghapus service.');
     } finally {
       setDeleting(null);
     }
   };
 
-  const handleLogout = async () => {
-    await logoutAdmin();
-    router.push('/admin/login');
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500"></div>
-      </div>
-    );
-  }
-
-  const menuItems = [
-    { title: 'Dashboard', icon: LayoutDashboard, href: '/admin/dashboard' },
-    { title: 'Portfolios', icon: Image, href: '/admin/portfolio' },
-    { title: 'Products', icon: ShoppingCart, href: '/admin/products' },
-    { title: 'Testimonials', icon: MessageSquare, href: '/admin/testimonials' },
-    { title: 'Settings', icon: Settings, href: '/admin/settings' },
-    { title: 'Services', icon: Package, href: '/admin/services', active: true },
-  ];
+  if (loading) return <AdminLoading />;
 
   return (
-    <div className="min-h-screen bg-slate-950">
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-slate-900/50 border-r border-slate-800 p-4">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-lg">R</span>
-          </div>
-          <div>
-            <h1 className="text-white font-bold">RefaadStack</h1>
-            <p className="text-slate-500 text-xs">Admin Panel</p>
-          </div>
-        </div>
-
-        <nav className="space-y-1">
-          {menuItems.map((item) => (
-            <Link
-              key={item.title}
-              href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                item.active 
-                  ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' 
-                  : 'text-slate-400 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              <item.icon className="w-5 h-5" />
-              <span className="text-sm font-medium">{item.title}</span>
+    <AdminShell user={user}>
+      <AdminPageHeader
+        eyebrow="Services"
+        title="Layanan yang mengisi section homepage."
+        description="Urutan services mengikuti field sort order dari database. Service aktif tampil di public site."
+        actions={
+          <Button asChild className="rounded-full">
+            <Link href="/admin/services/new">
+              <Plus className="mr-2 size-4" />
+              Tambah service
             </Link>
-          ))}
-        </nav>
+          </Button>
+        }
+      />
 
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors w-full mt-auto absolute bottom-4 left-4 right-4"
-        >
-          <LogOut className="w-5 h-5" />
-          <span className="text-sm font-medium">Logout</span>
-        </button>
-      </aside>
+      {error && <AdminNotice tone="error" className="mb-6">{error}</AdminNotice>}
 
-      {/* Main Content */}
-      <main className="ml-64 p-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Services</h1>
-            <p className="text-slate-400">Manage services</p>
-          </div>
-          <Link href="/admin/services/new">
-            <Button className="bg-cyan-500 hover:bg-cyan-600 text-white">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Service
-            </Button>
-          </Link>
-        </div>
-
-        {/* Service List */}
-        <div className="grid gap-4">
-          {services.length === 0 ? (
-            <Card className="bg-slate-900/50 border-slate-800">
-              <CardContent className="p-8 text-center">
-                <Package className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-                <p className="text-slate-400">No services yet. Create your first service!</p>
-              </CardContent>
-            </Card>
-          ) : (
-            services.map((service) => (
-              <Card key={service.id} className="bg-slate-900/50 border-slate-800">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      {service.icon && <span className="text-2xl">{service.icon}</span>}
-                      <CardTitle className="text-white text-lg">{service.name}</CardTitle>
+      <AdminPanel
+        title="Service database"
+        description={`${services.length} service tersimpan di Supabase.`}
+      >
+        {services.length === 0 ? (
+          <AdminEmptyState label="Belum ada service. Tambah service pertama untuk mengisi homepage." />
+        ) : (
+          <div className="grid gap-3 lg:grid-cols-2">
+            {services.map((service) => (
+              <article
+                key={service.id}
+                className="rounded-3xl border border-border bg-surface p-4 transition hover:border-primary/40"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="grid size-11 place-items-center rounded-2xl bg-background text-lg">
+                        {service.icon || <Package className="size-5 text-primary" />}
+                      </span>
+                      <div>
+                        <h2 className="font-heading text-xl font-bold tracking-[-0.035em] text-foreground">
+                          {service.name}
+                        </h2>
+                        <p className="mt-1 text-xs font-semibold text-muted-foreground">
+                          Order {service.sort_order}
+                        </p>
+                      </div>
+                    </div>
+                    {service.description && (
+                      <p className="mt-4 line-clamp-3 text-sm leading-6 text-muted-foreground">
+                        {service.description}
+                      </p>
+                    )}
+                    <div className="mt-4 flex items-center gap-2">
+                      <AdminStatusPill tone={service.is_active ? 'active' : 'muted'}>
+                        {service.is_active ? 'aktif' : 'nonaktif'}
+                      </AdminStatusPill>
                       {service.is_active ? (
-                        <CheckCircle className="w-4 h-4 text-emerald-500" />
+                        <CheckCircle className="size-4 text-primary" />
                       ) : (
-                        <XCircle className="w-4 h-4 text-red-500" />
+                        <XCircle className="size-4 text-muted-foreground" />
                       )}
                     </div>
-                    <div className="flex items-center gap-2">
+                  </div>
+
+                  <div className="flex shrink-0 gap-2">
+                    <Button asChild variant="outline" size="sm" className="rounded-full">
                       <Link href={`/admin/services/${service.id}`}>
-                        <Button variant="outline" size="sm" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white">
-                          <Pencil className="w-4 h-4 mr-1" />
-                          Edit
-                        </Button>
+                        <Pencil className="mr-2 size-4" />
+                        Edit
                       </Link>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="border-slate-700 text-slate-300 hover:bg-red-500/10 hover:text-red-400"
-                        onClick={() => handleDelete(service.id)}
-                        disabled={deleting === service.id}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="rounded-full"
+                      onClick={() => handleDelete(service.id)}
+                      disabled={deleting === service.id}
+                      aria-label={`Hapus ${service.name}`}
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center gap-4 text-sm">
-                    <span className="text-cyan-400">Order: {service.sort_order}</span>
-                  </div>
-                  {service.description && (
-                    <p className="text-slate-400 mt-2 text-sm line-clamp-2">{service.description}</p>
-                  )}
-                </CardContent>
-              </Card>
-            ))
-          )}
-        </div>
-      </main>
-    </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </AdminPanel>
+    </AdminShell>
   );
 }
