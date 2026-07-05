@@ -1,6 +1,6 @@
 export const COMPANY = {
   name: 'RefaadStack',
-  tagline: 'Bikin digital simpel, bisnis loe jalan sendiri',
+  tagline: 'Bikin digital simpel, bisnis kamu jalan sendiri',
   description:
     'Software house dari Jambi yang bantu UMKM bikin website, aplikasi, dan sistem otomatis biar bisnis jadi lebih gampang. Gak perlu pusing urus teknis, kami yang handle dari nol sampai jadi.',
   email: 'refaad16@gmail.com',

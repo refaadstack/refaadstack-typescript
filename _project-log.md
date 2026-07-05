@@ -11,3 +11,7 @@
 - Done: Mapping file component & copy yang mengandung 'loe/gue'.
 - Next: Dispatch copy revision ke Luna.
 - Blocker: None.
+### 2026-07-06 09:45 — Jelly: Done
+- Done: Rewrite hero & cta copy.
+- Next: Dispatch Artur review.
+- Blocker: None.
