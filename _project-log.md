@@ -7,3 +7,7 @@
   2. Luna — copy draft (hero, services, CTA, Why Us), dependency Mercury
   3. Athena — creative styling voice parallel, logo palette locked
 - **Blocker:** none yet
+### 2026-07-05 09:30 — Jelly: Researching
+- Done: Mapping file component & copy yang mengandung 'loe/gue'.
+- Next: Dispatch copy revision ke Luna.
+- Blocker: None.

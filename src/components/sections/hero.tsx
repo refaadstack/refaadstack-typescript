@@ -17,10 +17,10 @@ export function Hero() {
               Software house untuk UMKM Jambi
             </p>
             <h1 className="text-balance font-heading text-5xl font-bold leading-[0.96] tracking-[-0.055em] text-foreground sm:text-6xl lg:text-7xl">
-              Bikin website & aplikasi untuk bisnis loe — tanpa pusing teknis
+              Bikin website & aplikasi untuk bisnis kamu — tanpa pusing teknis
             </h1>
             <p className="mt-6 max-w-[54ch] text-pretty text-lg leading-8 text-muted-foreground">
-              Gue handle desain, coding, dan maintenance. Loe tinggal fokus jualan dan layanan pelanggan. Pertama kali? Konsultasi gratis via WA.
+              Kami urus desain, coding, dan maintenance. Kamu tinggal fokus jualan dan melayani pelanggan. Pertama kali? Konsultasi gratis via WhatsApp.
             </p>
           </Reveal>
 
