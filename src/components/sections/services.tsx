@@ -1,117 +1,59 @@
-'use client';
+import {
+  ArrowsClockwise,
+  Browser,
+  ChartLineUp,
+  Cloud,
+  CreditCard,
+  PlugsConnected,
+} from '@phosphor-icons/react/dist/ssr';
+import { Container } from '@/components/public/container';
+import { Reveal } from '@/components/public/reveal';
+import { SectionHeading } from '@/components/public/section-heading';
+import type { PublicService } from '@/lib/public-data';
 
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
-import { getServices } from '@/lib/crud';
-import { Card } from '@/components/ui/card';
+const ICONS = [
+  Browser,
+  ChartLineUp,
+  CreditCard,
+  Cloud,
+  PlugsConnected,
+  ArrowsClockwise,
+];
 
-interface ServiceData {
-  id: string;
-  name: string;
-  description: string | null;
-  icon: string | null;
-  sort_order: number;
-  is_active: boolean;
-}
-
-export function Services() {
-  const [services, setServices] = useState<ServiceData[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchServices();
-  }, []);
-
-  const fetchServices = async () => {
-    try {
-      const data = await getServices();
-      setServices(data.filter((s: ServiceData) => s.is_active));
-    } catch (error) {
-      console.error('Error fetching services:', error);
-      // Fallback ke data statis kalo gagal
-      const { SERVICES } = await import('@/data/portfolio');
-      setServices(SERVICES.map((s: any) => ({
-        ...s,
-        is_active: true,
-        sort_order: parseInt(s.id)
-      })));
-    } finally {
-      setLoading(false);
-    }
-  };
-
+export function Services({ services }: { services: PublicService[] }) {
   return (
-    <section id="services" className="py-20 md:py-32 relative">
-      {/* Glow Effect */}
-      <div
-        className="glow-blob hidden lg:block"
-        style={{
-          width: '400px',
-          height: '400px',
-          left: '50%',
-          top: '50%',
-          transform: 'translate(-50%, -50%)',
-          background: 'radial-gradient(circle, hsl(var(--primary) / 0.08), transparent 70%)',
-        }}
-      />
+    <section id="services" className="py-20 sm:py-28 lg:py-36">
+      <Container>
+        <SectionHeading
+          eyebrow="Layanan"
+          title="Dari kebutuhan bisnis menuju sistem yang dapat dipakai."
+          description="Kami menggabungkan strategi, desain, dan engineering untuk membangun pengalaman digital yang utuh."
+        />
 
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
-        {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="h-px w-8 bg-primary" />
-            <span className="text-sm font-bold uppercase tracking-widest text-primary">
-              Our Services
-            </span>
-            <div className="h-px w-8 bg-primary" />
-          </div>
-          <h2 className="text-3xl md:text-4xl font-extrabold mb-4">
-            Solusi Digital yang{' '}
-            <span className="text-primary">Kami Bangun</span>
-          </h2>
-          <p className="text-muted-foreground">
-            Dari landing page sederhana hingga platform SaaS kompleks — kami
-            punya keahlian dan teknologi yang tepat untuk mewujudkan visi digital
-            Anda.
-          </p>
-        </div>
+        <div className="mt-14 grid gap-x-12 lg:grid-cols-2">
+          {services.slice(0, 6).map((service, index) => {
+            const Icon = ICONS[index % ICONS.length];
 
-        {/* Services Grid */}
-        {loading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="animate-pulse">
-                <div className="h-48 bg-slate-800 rounded-xl" />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service, index) => (
-              <motion.div
-                key={service.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <Card className="p-6 h-full group hover:border-primary/30 hover:-translate-y-1 transition-all duration-300">
-                  <div className="text-4xl mb-4">{service.icon || '💻'}</div>
-                  <h3 className="text-lg font-bold mb-3">{service.name}</h3>
-                  <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
-                    {service.description}
-                  </p>
-                  <div className="flex items-center gap-2 text-sm text-primary opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0">
-                    Pelajari lebih lanjut
-                    <ArrowRight className="h-4 w-4" />
+            return (
+              <Reveal key={service.id} delay={(index % 2) * 0.06}>
+                <article className="group grid grid-cols-[3rem_1fr] gap-4 border-t border-border py-7 sm:grid-cols-[4rem_1fr] sm:gap-6 sm:py-9">
+                  <div className="flex size-11 items-center justify-center rounded-xl bg-primary/12 text-primary transition group-hover:bg-primary group-hover:text-black">
+                    <Icon className="size-5" weight="bold" />
                   </div>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        )}
-      </div>
+                  <div>
+                    <h3 className="font-heading text-xl font-bold tracking-[-0.025em] text-foreground sm:text-2xl">
+                      {service.name}
+                    </h3>
+                    <p className="mt-3 max-w-[52ch] leading-7 text-muted-foreground">
+                      {service.description}
+                    </p>
+                  </div>
+                </article>
+              </Reveal>
+            );
+          })}
+        </div>
+      </Container>
     </section>
   );
 }

@@ -1,68 +1,33 @@
-'use client';
-
-import { motion } from 'framer-motion';
+import { Container } from '@/components/public/container';
+import { Reveal } from '@/components/public/reveal';
+import { SectionHeading } from '@/components/public/section-heading';
 import { PROCESS_STEPS } from '@/lib/constants';
 
 export function Process() {
   return (
-    <section id="process" className="py-20 md:py-32 bg-background-secondary">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="h-px w-8 bg-primary" />
-            <span className="text-sm font-bold uppercase tracking-widest text-primary">
-              Proses Kerja
-            </span>
-            <div className="h-px w-8 bg-primary" />
-          </div>
-          <h2 className="text-3xl md:text-4xl font-extrabold mb-4">
-            Cara Kami <span className="text-primary">Bekerja</span>
-          </h2>
-          <p className="text-muted-foreground">
-            Proses transparan dan terstruktur, dari brief pertama hingga produk
-            live di server.
-          </p>
+    <section id="process" className="border-y border-border bg-surface py-20 sm:py-28 lg:py-36">
+      <Container>
+        <SectionHeading
+          eyebrow="Cara kerja"
+          title="Satu alur dari percakapan hingga produk live."
+          description="Setiap tahap menghasilkan keputusan yang dapat diperiksa sebelum pekerjaan bergerak lebih jauh."
+        />
+
+        <div className="mt-14 grid gap-x-8 sm:grid-cols-2 lg:grid-cols-5">
+          {PROCESS_STEPS.map((step, index) => (
+            <Reveal key={step.title} delay={index * 0.05}>
+              <article className="border-t border-border py-6 lg:min-h-56">
+                <h3 className="font-heading text-xl font-bold tracking-[-0.025em] text-foreground">
+                  {step.title}
+                </h3>
+                <p className="mt-4 text-sm leading-6 text-muted-foreground">
+                  {step.description}
+                </p>
+              </article>
+            </Reveal>
+          ))}
         </div>
-
-        <div className="relative max-w-4xl mx-auto">
-          <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-primary to-transparent -translate-x-1/2 hidden md:block" />
-
-          <div className="space-y-8 md:space-y-0">
-            {PROCESS_STEPS.map((step, index) => (
-              <motion.div
-                key={step.number}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="relative md:grid md:grid-cols-2 md:gap-8 items-center"
-              >
-                <div
-                  className={`p-5 rounded-xl border border-border bg-card hover:border-primary/20 transition-colors ${
-                    index % 2 === 0
-                      ? 'md:text-right'
-                      : 'md:col-start-2 md:text-left'
-                  }`}
-                >
-                  <div className="text-sm font-bold text-primary mb-2">
-                    Step {step.number}
-                  </div>
-                  <h3 className="font-bold mb-2">{step.title}</h3>
-                  <p className="text-sm text-muted-foreground">{step.description}</p>
-                </div>
-
-                <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center justify-center">
-                  <div className="w-12 h-12 rounded-full bg-card border-2 border-primary flex items-center justify-center font-bold text-primary shadow-lg shadow-primary/20 z-10">
-                    {step.number}
-                  </div>
-                </div>
-
-                <div className={index % 2 === 0 ? 'md:col-start-2' : ''} />
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </div>
+      </Container>
     </section>
   );
 }

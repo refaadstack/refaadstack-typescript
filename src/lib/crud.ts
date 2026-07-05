@@ -17,7 +17,10 @@ const supabaseAdmin = createClient(supabaseUrl, serviceKey, {
 const IMAGE_BUCKETS = {
   portfolio: 'portfolio-images',
   product: 'product-images',
+  content: 'content-media',
 } as const;
+
+const ensuredBuckets = new Set<string>();
 
 export interface PortfolioInput {
   title: string;
@@ -59,6 +62,37 @@ export interface TestimonialInput {
   is_active: boolean;
 }
 
+export interface ProjectInput {
+  title: string;
+  slug: string;
+  category: string;
+  summary: string | null;
+  description: string | null;
+  challenge: string | null;
+  approach: string | null;
+  outcome: string | null;
+  services: string[] | null;
+  stack: string[] | null;
+  year: string | null;
+  image_url: string | null;
+  featured: boolean;
+  is_active: boolean;
+}
+
+export interface BlogPostInput {
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  content: string | null;
+  category: string | null;
+  reading_time: string | null;
+  image_url: string | null;
+  author_name: string | null;
+  published_at: string | null;
+  is_published: boolean;
+  featured: boolean;
+}
+
 export interface ImageUploadInput {
   name: string;
   type: string;
@@ -80,14 +114,45 @@ function getSafeFileName(fileName: string) {
     .replace(/(^-|-$)/g, '');
 }
 
+function getSafeFolderName(folderId: string) {
+  return folderId
+    .split('/')
+    .map((part) => getSafeFileName(part))
+    .filter(Boolean)
+    .join('/') || 'uploads';
+}
+
+async function ensurePublicBucket(bucket: string) {
+  if (ensuredBuckets.has(bucket)) return;
+
+  const { error } = await supabaseAdmin.storage.getBucket(bucket);
+  if (!error) {
+    ensuredBuckets.add(bucket);
+    return;
+  }
+
+  const { error: createError } = await supabaseAdmin.storage.createBucket(bucket, {
+    public: true,
+  });
+
+  if (createError && !/already exists/i.test(createError.message)) {
+    throw new Error(`Storage bucket unavailable: ${createError.message}`);
+  }
+
+  ensuredBuckets.add(bucket);
+}
+
 async function uploadBase64Image(
   bucket: string,
   folderId: string,
   fileData: ImageUploadInput
 ) {
+  await ensurePublicBucket(bucket);
+
   const fileExt = getFileExtension(fileData.name, fileData.type);
   const safeName = getSafeFileName(fileData.name) || 'image';
-  const fileName = `${folderId}/${Date.now()}-${safeName}.${fileExt}`;
+  const safeFolder = getSafeFolderName(folderId);
+  const fileName = `${safeFolder}/${Date.now()}-${safeName}.${fileExt}`;
   const buffer = Buffer.from(fileData.data, 'base64');
 
   const { error } = await supabaseAdmin.storage.from(bucket).upload(fileName, buffer, {
@@ -315,6 +380,14 @@ export async function uploadProductImage(
   return { url: imageUrl };
 }
 
+export async function uploadContentMedia(
+  folderId: string,
+  fileData: ImageUploadInput
+): Promise<{ url: string }> {
+  const imageUrl = await uploadBase64Image(IMAGE_BUCKETS.content, folderId, fileData);
+  return { url: imageUrl };
+}
+
 export async function deleteProduct(id: string) {
   const { data: product } = await supabaseAdmin
     .from('products')
@@ -440,24 +513,218 @@ export async function deleteTestimonial(id: string) {
   return { success: true };
 }
 
+export async function getProjects() {
+  const { data, error } = await supabaseAdmin
+    .from('projects')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) throw new Error(error.message);
+  return data || [];
+}
+
+export async function getProjectById(id: string) {
+  const { data, error } = await supabaseAdmin
+    .from('projects')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) throw new Error(error.message);
+  if (!data) throw new Error('Project not found');
+  return data;
+}
+
+export async function createProject(input: ProjectInput) {
+  const { data, error } = await supabaseAdmin
+    .from('projects')
+    .insert(input as any)
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function updateProject(id: string, input: Partial<ProjectInput>) {
+  const { data, error } = await supabaseAdmin
+    .from('projects')
+    .update({
+      ...input,
+      updated_at: new Date().toISOString(),
+    } as any)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function deleteProject(id: string) {
+  const { error } = await supabaseAdmin.from('projects').delete().eq('id', id);
+  if (error) throw new Error(error.message);
+  return { success: true };
+}
+
+export async function getBlogPosts() {
+  const { data, error } = await supabaseAdmin
+    .from('blog_posts')
+    .select('*')
+    .order('published_at', { ascending: false, nullsFirst: false })
+    .order('created_at', { ascending: false });
+
+  if (error) throw new Error(error.message);
+  return data || [];
+}
+
+export async function getBlogPostById(id: string) {
+  const { data, error } = await supabaseAdmin
+    .from('blog_posts')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) throw new Error(error.message);
+  if (!data) throw new Error('Blog post not found');
+  return data;
+}
+
+export async function createBlogPost(input: BlogPostInput) {
+  const { data, error } = await supabaseAdmin
+    .from('blog_posts')
+    .insert(input as any)
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function updateBlogPost(id: string, input: Partial<BlogPostInput>) {
+  const { data, error } = await supabaseAdmin
+    .from('blog_posts')
+    .update({
+      ...input,
+      updated_at: new Date().toISOString(),
+    } as any)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function deleteBlogPost(id: string) {
+  const { error } = await supabaseAdmin.from('blog_posts').delete().eq('id', id);
+  if (error) throw new Error(error.message);
+  return { success: true };
+}
+
 export async function getAdminStats() {
-  const [portfolios, products, activeProducts, testimonials, services] = await Promise.all([
-    supabaseAdmin.from('portfolios').select('id', { count: 'exact', head: true }),
-    supabaseAdmin.from('products').select('id', { count: 'exact', head: true }),
-    supabaseAdmin
-      .from('products')
-      .select('id', { count: 'exact', head: true })
-      .eq('is_active', true),
-    supabaseAdmin.from('testimonials').select('id', { count: 'exact', head: true }),
-    supabaseAdmin.from('services').select('id', { count: 'exact', head: true }),
+  const [
+    portfolios,
+    products,
+    activeProducts,
+    testimonials,
+    services,
+    projects,
+    activeProjects,
+    blogPosts,
+    publishedBlogPosts,
+  ] = await Promise.all([
+    countRows('portfolios'),
+    countRows('products'),
+    countRows('products', (query) => query.eq('is_active', true)),
+    countRows('testimonials'),
+    countRows('services'),
+    countRows('projects'),
+    countRows('projects', (query) => query.eq('is_active', true)),
+    countRows('blog_posts'),
+    countRows('blog_posts', (query) => query.eq('is_published', true)),
   ]);
 
   return {
-    totalPortfolios: portfolios.count || 0,
-    totalProducts: products.count || 0,
-    activeProducts: activeProducts.count || 0,
-    totalTestimonials: testimonials.count || 0,
-    totalServices: services.count || 0,
+    totalPortfolios: portfolios,
+    totalProducts: products,
+    activeProducts,
+    totalTestimonials: testimonials,
+    totalServices: services,
+    totalProjects: projects,
+    activeProjects,
+    totalBlogPosts: blogPosts,
+    publishedBlogPosts,
+  };
+}
+
+async function countRows(
+  table: string,
+  filter?: (query: any) => any
+): Promise<number> {
+  try {
+    const baseQuery = supabaseAdmin.from(table).select('id', { count: 'exact', head: true });
+    const query = filter ? filter(baseQuery) : baseQuery;
+    const { count, error } = await query;
+
+    if (error) return 0;
+    return count || 0;
+  } catch {
+    return 0;
+  }
+}
+
+async function readRows<T>(
+  table: string,
+  fallback: T[],
+  buildQuery: (query: any) => any
+): Promise<T[]> {
+  try {
+    const { data, error } = await buildQuery(supabaseAdmin.from(table).select('*'));
+    if (error) return fallback;
+    return (data || fallback) as T[];
+  } catch {
+    return fallback;
+  }
+}
+
+export async function getAdminOverviewData() {
+  const stats = await getAdminStats();
+
+  const [projects, blogPosts, portfolios, products, services, testimonials] = await Promise.all([
+    readRows<any>('projects', [], (query) =>
+      query.order('updated_at', { ascending: false }).order('created_at', { ascending: false }).limit(4)
+    ),
+    readRows<any>('blog_posts', [], (query) =>
+      query
+        .order('published_at', { ascending: false, nullsFirst: false })
+        .order('created_at', { ascending: false })
+        .limit(4)
+    ),
+    readRows<any>('portfolios', [], (query) =>
+      query.order('created_at', { ascending: false }).limit(4)
+    ),
+    readRows<any>('products', [], (query) =>
+      query.order('created_at', { ascending: false }).limit(4)
+    ),
+    readRows<any>('services', [], (query) =>
+      query.order('sort_order', { ascending: true }).limit(6)
+    ),
+    readRows<any>('testimonials', [], (query) =>
+      query.order('created_at', { ascending: false }).limit(4)
+    ),
+  ]);
+
+  return {
+    stats,
+    recent: {
+      projects,
+      blogPosts,
+      portfolios,
+      products,
+      services,
+      testimonials,
+    },
   };
 }
 

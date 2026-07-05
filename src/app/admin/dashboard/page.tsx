@@ -1,24 +1,25 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { getAdminSession, logoutAdmin, AdminUser } from '@/lib/auth';
-import { getAdminStats } from '@/lib/crud';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { 
-  LayoutDashboard, 
-  Package, 
-  Image, 
-  Settings, 
-  ShoppingCart, 
-  MessageSquare, 
-  LogOut,
-  Users,
-  TrendingUp,
-  Eye
-} from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+  BookOpen,
+  CheckCircle2,
+  FolderKanban,
+  Image,
+  MessageSquare,
+  Package,
+  Plus,
+  Settings,
+  ShoppingCart,
+  Sparkles,
+} from 'lucide-react';
+import { AdminLoading, AdminMetricCard, AdminPageHeader, AdminPanel, AdminShell, AdminStatusPill } from '@/components/admin/admin-shell';
+import { Button } from '@/components/ui/button';
+import { getAdminSession, type AdminUser } from '@/lib/auth';
+import { getAdminOverviewData } from '@/lib/crud';
+import { formatDate } from '@/lib/utils';
 
 interface AdminStats {
   totalPortfolios: number;
@@ -26,213 +27,301 @@ interface AdminStats {
   activeProducts: number;
   totalTestimonials: number;
   totalServices: number;
+  totalProjects: number;
+  activeProjects: number;
+  totalBlogPosts: number;
+  publishedBlogPosts: number;
 }
 
-export default function AdminDashboardPage() {
-  const router = useRouter();
-  const [user, setUser] = useState<AdminUser | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<AdminStats>({
+interface OverviewData {
+  stats: AdminStats;
+  recent: {
+    projects: any[];
+    blogPosts: any[];
+    portfolios: any[];
+    products: any[];
+    services: any[];
+    testimonials: any[];
+  };
+}
+
+const EMPTY_OVERVIEW: OverviewData = {
+  stats: {
     totalPortfolios: 0,
     totalProducts: 0,
     activeProducts: 0,
     totalTestimonials: 0,
     totalServices: 0,
-  });
+    totalProjects: 0,
+    activeProjects: 0,
+    totalBlogPosts: 0,
+    publishedBlogPosts: 0,
+  },
+  recent: {
+    projects: [],
+    blogPosts: [],
+    portfolios: [],
+    products: [],
+    services: [],
+    testimonials: [],
+  },
+};
+
+export default function AdminDashboardPage() {
+  const router = useRouter();
+  const [user, setUser] = useState<AdminUser | null>(null);
+  const [overview, setOverview] = useState<OverviewData>(EMPTY_OVERVIEW);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    checkSession();
-  }, []);
+    let mounted = true;
 
-  const checkSession = async () => {
-    try {
-      const sessionUser = await getAdminSession();
-      if (!sessionUser) {
-        router.push('/admin/login');
-        return;
+    async function boot() {
+      try {
+        const sessionUser = await getAdminSession();
+        if (!sessionUser) {
+          router.push('/admin/login');
+          return;
+        }
+
+        const data = await getAdminOverviewData();
+        if (!mounted) return;
+
+        setUser(sessionUser);
+        setOverview(data as OverviewData);
+      } catch (caught) {
+        console.error('Dashboard error:', caught);
+        if (mounted) {
+          setError('Dashboard belum bisa membaca sebagian tabel. Pastikan schema terbaru sudah dipush ke Supabase.');
+        }
+      } finally {
+        if (mounted) setLoading(false);
       }
-      setUser(sessionUser);
-      const data = await getAdminStats();
-      setStats(data);
-    } catch (error) {
-      console.error('Session error:', error);
-      router.push('/admin/login');
-    } finally {
-      setLoading(false);
     }
-  };
 
-  const handleLogout = async () => {
-    await logoutAdmin();
-    router.push('/admin/login');
-  };
+    boot();
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500"></div>
-      </div>
-    );
-  }
+    return () => {
+      mounted = false;
+    };
+  }, [router]);
 
-  const statCards = [
-    {
-      title: 'Total Portfolio',
-      value: stats.totalPortfolios,
-      icon: Package,
-      color: 'text-cyan-500',
-    },
-    {
-      title: 'Produk Aktif',
-      value: stats.activeProducts,
-      icon: ShoppingCart,
-      color: 'text-violet-500',
-    },
-    {
-      title: 'Testimonial',
-      value: stats.totalTestimonials,
-      icon: MessageSquare,
-      color: 'text-emerald-500',
-    },
-    {
-      title: 'Layanan',
-      value: stats.totalServices,
-      icon: Eye,
-      color: 'text-amber-500',
-    },
-  ];
+  const health = useMemo(() => {
+    const contentSlots = [
+      overview.stats.totalProjects,
+      overview.stats.totalPortfolios,
+      overview.stats.totalProducts,
+      overview.stats.totalServices,
+      overview.stats.totalTestimonials,
+      overview.stats.totalBlogPosts,
+    ];
+    const filled = contentSlots.filter((value) => value > 0).length;
+    return Math.round((filled / contentSlots.length) * 100);
+  }, [overview]);
 
-  const menuItems = [
-    { title: 'Dashboard', icon: LayoutDashboard, href: '/admin/dashboard', active: true },
-    { title: 'Portfolios', icon: Image, href: '/admin/portfolio' },
-    { title: 'Products', icon: ShoppingCart, href: '/admin/products' },
-    { title: 'Testimonials', icon: MessageSquare, href: '/admin/testimonials' },
-    { title: 'Settings', icon: Settings, href: '/admin/settings' },
-  ];
+  if (loading) return <AdminLoading />;
+
+  const stats = overview.stats;
 
   return (
-    <div className="min-h-screen bg-slate-950">
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-slate-900/50 border-r border-slate-800 p-4">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-lg">R</span>
-          </div>
-          <div>
-            <h1 className="text-white font-bold">RefaadStack</h1>
-            <p className="text-slate-500 text-xs">Admin Panel</p>
-          </div>
-        </div>
+    <AdminShell user={user}>
+      <AdminPageHeader
+        eyebrow="Database cockpit"
+        title={`Halo, ${user?.name || 'Admin'}. Semua konten ada di satu ruang kendali.`}
+        description="Dashboard ini membaca data langsung dari Supabase: project, blog, portfolio, produk, layanan, testimonial, dan SEO settings."
+        actions={
+          <>
+            <Link href="/admin/projects/new">
+              <Button className="rounded-full">
+                <Plus className="mr-2 size-4" />
+                Project
+              </Button>
+            </Link>
+            <Link href="/admin/blog/new">
+              <Button variant="outline" className="rounded-full">
+                <Plus className="mr-2 size-4" />
+                Blog
+              </Button>
+            </Link>
+          </>
+        }
+      />
 
-        <nav className="space-y-1">
-          {menuItems.map((item) => (
+      {error && (
+        <div className="mb-6 rounded-3xl border border-primary/30 bg-primary/10 p-4 text-sm text-foreground">
+          {error}
+        </div>
+      )}
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <AdminMetricCard
+          label="Projects"
+          value={`${stats.activeProjects}/${stats.totalProjects}`}
+          description="Project aktif yang mengisi halaman studi kasus public."
+          icon={<FolderKanban className="size-5" />}
+        />
+        <AdminMetricCard
+          label="Blog posts"
+          value={`${stats.publishedBlogPosts}/${stats.totalBlogPosts}`}
+          description="Artikel published yang masuk blog dan sitemap."
+          icon={<BookOpen className="size-5" />}
+        />
+        <AdminMetricCard
+          label="Products"
+          value={`${stats.activeProducts}/${stats.totalProducts}`}
+          description="Produk aktif yang tampil di landing page dan detail product."
+          icon={<ShoppingCart className="size-5" />}
+        />
+        <AdminMetricCard
+          label="Content health"
+          value={`${health}%`}
+          description="Kelengkapan modul konten utama yang sudah punya data."
+          icon={<CheckCircle2 className="size-5" />}
+        />
+      </div>
+
+      <div className="mt-6 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+        <AdminPanel
+          title="Alur cepat"
+          description="Aksi yang paling sering dipakai setelah update homepage."
+        >
+          <div className="grid gap-3 sm:grid-cols-2">
+            {[
+              { title: 'Tambah project', href: '/admin/projects/new', icon: FolderKanban },
+              { title: 'Tulis blog', href: '/admin/blog/new', icon: BookOpen },
+              { title: 'Tambah portfolio', href: '/admin/portfolio/new', icon: Image },
+              { title: 'Tambah produk', href: '/admin/products/new', icon: ShoppingCart },
+              { title: 'Kelola services', href: '/admin/services', icon: Package },
+              { title: 'SEO settings', href: '/admin/settings', icon: Settings },
+            ].map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="group flex items-center justify-between rounded-3xl border border-border bg-surface p-4 transition hover:border-primary/40 hover:bg-primary/10"
+                >
+                  <span className="flex items-center gap-3 font-semibold text-foreground">
+                    <span className="grid size-11 place-items-center rounded-2xl bg-background text-primary transition group-hover:bg-primary group-hover:text-black">
+                      <Icon className="size-5" />
+                    </span>
+                    {item.title}
+                  </span>
+                  <Plus className="size-4 text-muted-foreground transition group-hover:text-foreground" />
+                </Link>
+              );
+            })}
+          </div>
+        </AdminPanel>
+
+        <AdminPanel
+          title="Public sync"
+          description="Modul yang sekarang sudah dibaca dari database."
+        >
+          <div className="space-y-3">
+            {[
+              ['Projects page', stats.activeProjects, '/projects'],
+              ['Blog page', stats.publishedBlogPosts, '/blog'],
+              ['Portfolio page', stats.totalPortfolios, '/portfolio'],
+              ['Products page', stats.activeProducts, '/products'],
+              ['Services section', stats.totalServices, '/#services'],
+              ['Testimonials section', stats.totalTestimonials, '/#testimonials'],
+            ].map(([label, value, href]) => (
+              <Link
+                key={String(label)}
+                href={String(href)}
+                className="flex items-center justify-between rounded-2xl border border-border bg-background px-4 py-3 text-sm transition hover:border-primary/40"
+              >
+                <span className="font-semibold text-foreground">{label}</span>
+                <AdminStatusPill tone={Number(value) > 0 ? 'active' : 'muted'}>
+                  {Number(value) > 0 ? `${value} item` : 'kosong'}
+                </AdminStatusPill>
+              </Link>
+            ))}
+          </div>
+        </AdminPanel>
+      </div>
+
+      <div className="mt-6 grid gap-6 xl:grid-cols-2">
+        <RecentList
+          title="Project terbaru"
+          items={overview.recent.projects}
+          empty="Belum ada project di database."
+          getTitle={(item) => item.title}
+          getMeta={(item) => `${item.category || 'Project'} | ${item.is_active ? 'Aktif' : 'Draft'}`}
+          getHref={(item) => `/admin/projects/${item.id}`}
+        />
+        <RecentList
+          title="Blog terbaru"
+          items={overview.recent.blogPosts}
+          empty="Belum ada blog post di database."
+          getTitle={(item) => item.title}
+          getMeta={(item) =>
+            `${item.category || 'Article'} | ${item.is_published ? 'Published' : 'Draft'}`
+          }
+          getHref={(item) => `/admin/blog/${item.id}`}
+        />
+        <RecentList
+          title="Portfolio terbaru"
+          items={overview.recent.portfolios}
+          empty="Belum ada portfolio di database."
+          getTitle={(item) => item.title}
+          getMeta={(item) => `${item.category || 'Portfolio'} | ${formatDate(item.created_at)}`}
+          getHref={(item) => `/admin/portfolio/${item.id}`}
+        />
+        <RecentList
+          title="Produk terbaru"
+          items={overview.recent.products}
+          empty="Belum ada produk di database."
+          getTitle={(item) => item.name}
+          getMeta={(item) => `${item.is_active ? 'Aktif' : 'Nonaktif'} | ${item.price || 'Hubungi'}`}
+          getHref={(item) => `/admin/products/${item.id}`}
+        />
+      </div>
+    </AdminShell>
+  );
+}
+
+function RecentList({
+  title,
+  items,
+  empty,
+  getTitle,
+  getMeta,
+  getHref,
+}: {
+  title: string;
+  items: any[];
+  empty: string;
+  getTitle: (item: any) => string;
+  getMeta: (item: any) => string;
+  getHref: (item: any) => string;
+}) {
+  return (
+    <AdminPanel title={title}>
+      {items.length === 0 ? (
+        <div className="rounded-3xl border border-dashed border-border bg-surface p-6 text-sm text-muted-foreground">
+          {empty}
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {items.map((item) => (
             <Link
-              key={item.title}
-              href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                item.active 
-                  ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' 
-                  : 'text-slate-400 hover:bg-slate-800 hover:text-white'
-              }`}
+              key={item.id}
+              href={getHref(item)}
+              className="flex items-start justify-between gap-4 rounded-3xl border border-border bg-surface p-4 transition hover:border-primary/40 hover:bg-primary/10"
             >
-              <item.icon className="w-5 h-5" />
-              <span className="text-sm font-medium">{item.title}</span>
+              <span>
+                <span className="block font-semibold text-foreground">{getTitle(item)}</span>
+                <span className="mt-1 block text-sm text-muted-foreground">{getMeta(item)}</span>
+              </span>
+              <Sparkles className="mt-1 size-4 text-primary" />
             </Link>
           ))}
-        </nav>
-
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors w-full mt-auto absolute bottom-4 left-4 right-4"
-        >
-          <LogOut className="w-5 h-5" />
-          <span className="text-sm font-medium">Logout</span>
-        </button>
-      </aside>
-
-      {/* Main Content */}
-      <main className="ml-64 p-8">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-          <p className="text-slate-400">Selamat datang, {user?.name || 'Admin'}.</p>
         </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {statCards.map((stat) => (
-            <Card key={stat.title} className="bg-slate-900/50 border-slate-800">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-slate-400 text-sm">{stat.title}</p>
-                    <p className="text-2xl font-bold text-white mt-1">{stat.value}</p>
-                  </div>
-                  <div className={`w-12 h-12 rounded-lg flex items-center justify-center bg-slate-800 ${stat.color}`}>
-                    <stat.icon className="w-6 h-6" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="bg-slate-900/50 border-slate-800">
-            <CardHeader>
-              <CardTitle className="text-white">Quick Actions</CardTitle>
-              <CardDescription className="text-slate-400">
-                Shortcut untuk pekerjaan yang paling sering dilakukan
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Link href="/admin/portfolio/new">
-                <Button variant="outline" className="w-full justify-start border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white">
-                  <Package className="w-4 h-4 mr-2" />
-                  Tambah Portfolio
-                </Button>
-              </Link>
-              <Link href="/admin/products/new">
-                <Button variant="outline" className="w-full justify-start border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white">
-                  <ShoppingCart className="w-4 h-4 mr-2" />
-                  Tambah Produk
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-slate-900/50 border-slate-800">
-            <CardHeader>
-              <CardTitle className="text-white">Ringkasan Konten</CardTitle>
-              <CardDescription className="text-slate-400">
-                Snapshot data yang tampil di website
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-cyan-500"></div>
-                  <p className="text-slate-300 text-sm">
-                    {stats.totalPortfolios} portfolio siap ditampilkan.
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-violet-500"></div>
-                  <p className="text-slate-300 text-sm">
-                    {stats.totalProducts} produk tersimpan, {stats.activeProducts} aktif.
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                  <p className="text-slate-300 text-sm">
-                    {stats.totalTestimonials} testimonial tersedia.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
-    </div>
+      )}
+    </AdminPanel>
   );
 }

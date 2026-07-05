@@ -1,26 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import {
-  Image,
-  LayoutDashboard,
-  LogOut,
-  MessageSquare,
-  Save,
-  Search,
-  Settings,
-  ShoppingCart,
-} from 'lucide-react';
-import { getAdminSession, logoutAdmin, AdminUser } from '@/lib/auth';
-import { getSiteSettings, updateSiteSettings } from '@/lib/crud';
-import { DEFAULT_SITE_SETTINGS, SiteSettingsInput } from '@/lib/site-settings';
+import { useRouter } from 'next/navigation';
+import { ExternalLink, Search } from 'lucide-react';
+import { AdminField, AdminFormActions, AdminNotice, AdminToggleRow } from '@/components/admin/admin-form';
+import { AdminLoading, AdminPageHeader, AdminPanel, AdminShell, AdminStatusPill } from '@/components/admin/admin-shell';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { getAdminSession, type AdminUser } from '@/lib/auth';
+import { getSiteSettings, updateSiteSettings } from '@/lib/crud';
+import { DEFAULT_SITE_SETTINGS, type SiteSettingsInput } from '@/lib/site-settings';
 
 export default function AdminSettingsPage() {
   const router = useRouter();
@@ -35,44 +26,51 @@ export default function AdminSettingsPage() {
   });
 
   useEffect(() => {
-    checkSession();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    let mounted = true;
 
-  const checkSession = async () => {
-    try {
-      const sessionUser = await getAdminSession();
-      if (!sessionUser) {
-        router.push('/admin/login');
-        return;
+    async function boot() {
+      try {
+        const sessionUser = await getAdminSession();
+        if (!sessionUser) {
+          router.push('/admin/login');
+          return;
+        }
+
+        const settings = await getSiteSettings();
+        if (!mounted) return;
+
+        setUser(sessionUser);
+        setFormData({
+          ...settings,
+          site_keywords: settings.site_keywords.join(', '),
+        });
+      } catch (caught) {
+        console.error('Settings load error:', caught);
+        if (mounted) setError('Gagal memuat settings.');
+      } finally {
+        if (mounted) setLoading(false);
       }
-
-      setUser(sessionUser);
-      const settings = await getSiteSettings();
-      setFormData({
-        ...settings,
-        site_keywords: settings.site_keywords.join(', '),
-      });
-    } catch (err) {
-      console.error('Settings load error:', err);
-      setError('Gagal memuat settings.');
-    } finally {
-      setLoading(false);
     }
-  };
+
+    boot();
+
+    return () => {
+      mounted = false;
+    };
+  }, [router]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { name, value, type } = e.target;
+    const { name, value, type } = event.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+      [name]: type === 'checkbox' ? (event.target as HTMLInputElement).checked : value,
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     setError('');
     setSuccess('');
     setSaving(true);
@@ -96,280 +94,181 @@ export default function AdminSettingsPage() {
 
       await updateSiteSettings(payload);
       setSuccess('Settings SEO berhasil disimpan.');
-    } catch (err) {
-      console.error('Settings save error:', err);
-      setError(err instanceof Error ? err.message : 'Gagal menyimpan settings.');
+    } catch (caught) {
+      console.error('Settings save error:', caught);
+      setError(caught instanceof Error ? caught.message : 'Gagal menyimpan settings.');
     } finally {
       setSaving(false);
     }
   };
 
-  const handleLogout = async () => {
-    await logoutAdmin();
-    router.push('/admin/login');
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500" />
-      </div>
-    );
-  }
-
-  const menuItems = [
-    { title: 'Dashboard', icon: LayoutDashboard, href: '/admin/dashboard' },
-    { title: 'Portfolios', icon: Image, href: '/admin/portfolio' },
-    { title: 'Products', icon: ShoppingCart, href: '/admin/products' },
-    { title: 'Testimonials', icon: MessageSquare, href: '/admin/testimonials' },
-    { title: 'Settings', icon: Settings, href: '/admin/settings', active: true },
-  ];
+  if (loading) return <AdminLoading />;
 
   return (
-    <div className="min-h-screen bg-slate-950">
-      <aside className="fixed left-0 top-0 h-full w-64 bg-slate-900/50 border-r border-slate-800 p-4">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-lg">R</span>
-          </div>
-          <div>
-            <h1 className="text-white font-bold">RefaadStack</h1>
-            <p className="text-slate-500 text-xs">Admin Panel</p>
-          </div>
+    <AdminShell user={user}>
+      <AdminPageHeader
+        eyebrow="SEO settings"
+        title="Satu sumber SEO untuk halaman publik."
+        description="Settings ini tetap aman untuk indexing: metadata dasar static di layout, sementara field ini jadi kontrol copy utama dan social preview."
+        actions={
+          <>
+            <AdminStatusPill tone={formData.robots_index ? 'active' : 'muted'}>
+              {formData.robots_index ? 'Index aktif' : 'Noindex'}
+            </AdminStatusPill>
+            <Button asChild variant="outline" className="rounded-full">
+              <Link href="/sitemap.xml" target="_blank">
+                <ExternalLink className="mr-2 size-4" />
+                Sitemap
+              </Link>
+            </Button>
+          </>
+        }
+      />
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
+          <AdminPanel
+            title="Metadata utama"
+            description="Dipakai untuk title browser, hasil pencarian, dan preview social media."
+          >
+            <div className="space-y-5">
+              <AdminField label="Site title" htmlFor="site_title">
+                <Input
+                  id="site_title"
+                  name="site_title"
+                  value={formData.site_title}
+                  onChange={handleChange}
+                  className="mt-2 rounded-2xl bg-surface"
+                  required
+                />
+              </AdminField>
+
+              <AdminField label="Description" htmlFor="site_description">
+                <Textarea
+                  id="site_description"
+                  name="site_description"
+                  value={formData.site_description}
+                  onChange={handleChange}
+                  className="mt-2 rounded-2xl bg-surface"
+                  rows={4}
+                  required
+                />
+              </AdminField>
+
+              <AdminField
+                label="Keywords"
+                htmlFor="site_keywords"
+                hint="Pisahkan keyword dengan koma."
+              >
+                <Input
+                  id="site_keywords"
+                  name="site_keywords"
+                  value={formData.site_keywords}
+                  onChange={handleChange}
+                  placeholder="software house, website, POS"
+                  className="mt-2 rounded-2xl bg-surface"
+                />
+              </AdminField>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <AdminField label="Author" htmlFor="author_name">
+                  <Input
+                    id="author_name"
+                    name="author_name"
+                    value={formData.author_name}
+                    onChange={handleChange}
+                    placeholder="RefaadStack"
+                    className="mt-2 rounded-2xl bg-surface"
+                  />
+                </AdminField>
+
+                <AdminField label="Publish date" htmlFor="published_time">
+                  <Input
+                    id="published_time"
+                    name="published_time"
+                    type="datetime-local"
+                    value={formData.published_time.slice(0, 16)}
+                    onChange={(event) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        published_time: event.target.value
+                          ? new Date(event.target.value).toISOString()
+                          : '',
+                      }))
+                    }
+                    className="mt-2 rounded-2xl bg-surface"
+                  />
+                </AdminField>
+              </div>
+            </div>
+          </AdminPanel>
+
+          <AdminPanel
+            title="Indexing"
+            description="Kontrol crawl untuk halaman utama."
+            action={<Search className="size-5 text-primary" />}
+          >
+            <div className="space-y-3">
+              <AdminToggleRow
+                name="robots_index"
+                checked={formData.robots_index}
+                onChange={handleChange}
+                title="Index page"
+                description="Izinkan halaman muncul di Google."
+              />
+              <AdminToggleRow
+                name="robots_follow"
+                checked={formData.robots_follow}
+                onChange={handleChange}
+                title="Follow links"
+                description="Izinkan crawler mengikuti link internal."
+              />
+            </div>
+          </AdminPanel>
         </div>
 
-        <nav className="space-y-1">
-          {menuItems.map((item) => (
-            <Link
-              key={item.title}
-              href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                item.active
-                  ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20'
-                  : 'text-slate-400 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              <item.icon className="w-5 h-5" />
-              <span className="text-sm font-medium">{item.title}</span>
-            </Link>
-          ))}
-        </nav>
-
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors w-full mt-auto absolute bottom-4 left-4 right-4"
+        <AdminPanel
+          title="Social preview"
+          description="Dipakai saat link website dibagikan ke WhatsApp, LinkedIn, X, dan platform lain."
         >
-          <LogOut className="w-5 h-5" />
-          <span className="text-sm font-medium">Logout</span>
-        </button>
-      </aside>
+          <div className="grid gap-4 lg:grid-cols-2">
+            <AdminField label="OG image URL" htmlFor="og_image_url">
+              <Input
+                id="og_image_url"
+                name="og_image_url"
+                value={formData.og_image_url}
+                onChange={handleChange}
+                placeholder="/og-image.png"
+                className="mt-2 rounded-2xl bg-surface"
+              />
+            </AdminField>
 
-      <main className="ml-64 p-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Settings</h1>
-            <p className="text-slate-400">
-              Atur SEO utama yang dipakai halaman publik RefaadStack.
-            </p>
+            <AdminField label="Canonical URL" htmlFor="canonical_url">
+              <Input
+                id="canonical_url"
+                name="canonical_url"
+                value={formData.canonical_url}
+                onChange={handleChange}
+                placeholder="https://www.refaadstack.com"
+                className="mt-2 rounded-2xl bg-surface"
+              />
+            </AdminField>
           </div>
-          <div className="flex items-center gap-2 text-sm text-slate-500">
-            <Search className="w-4 h-4" />
-            SEO Settings
-          </div>
-        </div>
+        </AdminPanel>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card className="lg:col-span-2 bg-slate-900/50 border-slate-800">
-              <CardHeader>
-                <CardTitle className="text-white">Metadata Utama</CardTitle>
-                <CardDescription className="text-slate-400">
-                  Dipakai untuk title browser, hasil pencarian, dan preview social media.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="site_title" className="text-slate-300">
-                    Site Title
-                  </Label>
-                  <Input
-                    id="site_title"
-                    name="site_title"
-                    value={formData.site_title}
-                    onChange={handleChange}
-                    className="bg-slate-800 border-slate-700 text-white mt-1"
-                    required
-                  />
-                </div>
+        {error && (
+          <AdminNotice tone="error">{error}</AdminNotice>
+        )}
+        {success && (
+          <AdminNotice tone="success">{success}</AdminNotice>
+        )}
 
-                <div>
-                  <Label htmlFor="site_description" className="text-slate-300">
-                    Description
-                  </Label>
-                  <Textarea
-                    id="site_description"
-                    name="site_description"
-                    value={formData.site_description}
-                    onChange={handleChange}
-                    className="bg-slate-800 border-slate-700 text-white mt-1"
-                    rows={4}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="site_keywords" className="text-slate-300">
-                    Keywords
-                  </Label>
-                  <Input
-                    id="site_keywords"
-                    name="site_keywords"
-                    value={formData.site_keywords}
-                    onChange={handleChange}
-                    placeholder="software house, website, POS"
-                    className="bg-slate-800 border-slate-700 text-white mt-1"
-                  />
-                  <p className="text-slate-500 text-xs mt-1">Pisahkan keyword dengan koma.</p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="author_name" className="text-slate-300">
-                      Author
-                    </Label>
-                    <Input
-                      id="author_name"
-                      name="author_name"
-                      value={formData.author_name}
-                      onChange={handleChange}
-                      placeholder="RefaadStack"
-                      className="bg-slate-800 border-slate-700 text-white mt-1"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="published_time" className="text-slate-300">
-                      Publish Date
-                    </Label>
-                    <Input
-                      id="published_time"
-                      name="published_time"
-                      type="datetime-local"
-                      value={formData.published_time.slice(0, 16)}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          published_time: e.target.value
-                            ? new Date(e.target.value).toISOString()
-                            : '',
-                        }))
-                      }
-                      className="bg-slate-800 border-slate-700 text-white mt-1"
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-slate-900/50 border-slate-800">
-              <CardHeader>
-                <CardTitle className="text-white">Indexing</CardTitle>
-                <CardDescription className="text-slate-400">
-                  Kontrol apakah search engine boleh mengindeks website.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <label className="flex items-center justify-between gap-4 rounded-lg border border-slate-800 bg-slate-900 p-4">
-                  <span>
-                    <span className="block text-sm font-medium text-white">Index Page</span>
-                    <span className="text-xs text-slate-500">Izinkan muncul di Google.</span>
-                  </span>
-                  <input
-                    type="checkbox"
-                    name="robots_index"
-                    checked={formData.robots_index}
-                    onChange={handleChange}
-                    className="h-4 w-4 rounded border-slate-700 bg-slate-800 text-cyan-500"
-                  />
-                </label>
-
-                <label className="flex items-center justify-between gap-4 rounded-lg border border-slate-800 bg-slate-900 p-4">
-                  <span>
-                    <span className="block text-sm font-medium text-white">Follow Links</span>
-                    <span className="text-xs text-slate-500">Izinkan crawler mengikuti link.</span>
-                  </span>
-                  <input
-                    type="checkbox"
-                    name="robots_follow"
-                    checked={formData.robots_follow}
-                    onChange={handleChange}
-                    className="h-4 w-4 rounded border-slate-700 bg-slate-800 text-cyan-500"
-                  />
-                </label>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card className="bg-slate-900/50 border-slate-800">
-            <CardHeader>
-              <CardTitle className="text-white">Social Preview</CardTitle>
-              <CardDescription className="text-slate-400">
-                Dipakai saat link website dibagikan ke WhatsApp, LinkedIn, X, dan platform lain.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="og_image_url" className="text-slate-300">
-                  OG Image URL
-                </Label>
-                <Input
-                  id="og_image_url"
-                  name="og_image_url"
-                  value={formData.og_image_url}
-                  onChange={handleChange}
-                  placeholder="/og-image.png"
-                  className="bg-slate-800 border-slate-700 text-white mt-1"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="canonical_url" className="text-slate-300">
-                  Canonical URL
-                </Label>
-                <Input
-                  id="canonical_url"
-                  name="canonical_url"
-                  value={formData.canonical_url}
-                  onChange={handleChange}
-                  placeholder="https://www.refaadstack.com"
-                  className="bg-slate-800 border-slate-700 text-white mt-1"
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {error && (
-            <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400">
-              {error}
-            </div>
-          )}
-          {success && (
-            <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400">
-              {success}
-            </div>
-          )}
-
-          <div className="flex gap-3">
-            <Button type="submit" disabled={saving} className="bg-cyan-500 hover:bg-cyan-600 text-white">
-              <Save className="w-4 h-4 mr-2" />
-              {saving ? 'Saving...' : 'Save Settings'}
-            </Button>
-            <Button type="button" variant="outline" onClick={() => router.push('/admin/dashboard')}>
-              Cancel
-            </Button>
-          </div>
-        </form>
-      </main>
-    </div>
+        <AdminFormActions
+          saving={saving}
+          submitLabel="Simpan settings"
+          cancelHref="/admin/dashboard"
+        />
+      </form>
+    </AdminShell>
   );
 }

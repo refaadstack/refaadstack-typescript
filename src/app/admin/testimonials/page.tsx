@@ -1,27 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { getAdminSession, logoutAdmin, AdminUser } from '@/lib/auth';
-import { getTestimonials, deleteTestimonial, TestimonialInput } from '@/lib/crud';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { 
-  LayoutDashboard, 
-  Package, 
-  Image, 
-  Settings, 
-  ShoppingCart, 
-  MessageSquare, 
-  LogOut,
-  Plus,
-  Pencil,
-  Trash2,
-  CheckCircle,
-  XCircle,
-  Star
-} from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { CheckCircle, MessageSquare, Pencil, Plus, Star, Trash2, XCircle } from 'lucide-react';
+import { AdminNotice } from '@/components/admin/admin-form';
+import { AdminEmptyState, AdminLoading, AdminPageHeader, AdminPanel, AdminShell, AdminStatusPill } from '@/components/admin/admin-shell';
+import { Button } from '@/components/ui/button';
+import { getAdminSession, type AdminUser } from '@/lib/auth';
+import { deleteTestimonial, getTestimonials } from '@/lib/crud';
 
 interface Testimonial {
   id: string;
@@ -31,7 +18,6 @@ interface Testimonial {
   avatar_url: string | null;
   rating: number;
   is_active: boolean;
-  created_at: string;
 }
 
 export default function TestimonialListPage() {
@@ -40,190 +26,171 @@ export default function TestimonialListPage() {
   const [loading, setLoading] = useState(true);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    checkSession();
-  }, []);
+    let mounted = true;
 
-  const checkSession = async () => {
-    try {
-      const sessionUser = await getAdminSession();
-      if (!sessionUser) {
-        router.push('/admin/login');
-        return;
+    async function boot() {
+      try {
+        const sessionUser = await getAdminSession();
+        if (!sessionUser) {
+          router.push('/admin/login');
+          return;
+        }
+
+        const data = await getTestimonials();
+        if (!mounted) return;
+
+        setUser(sessionUser);
+        setTestimonials((data || []) as Testimonial[]);
+      } catch (caught) {
+        console.error('Testimonials load error:', caught);
+        if (mounted) setError('Gagal memuat testimonials dari database.');
+      } finally {
+        if (mounted) setLoading(false);
       }
-      setUser(sessionUser);
-      await fetchTestimonials();
-    } catch (error) {
-      console.error('Session error:', error);
-      router.push('/admin/login');
-    } finally {
-      setLoading(false);
     }
+
+    boot();
+
+    return () => {
+      mounted = false;
+    };
+  }, [router]);
+
+  const refreshTestimonials = async () => {
+    const data = await getTestimonials();
+    setTestimonials((data || []) as Testimonial[]);
   };
 
-  const fetchTestimonials = async () => {
-    try {
-      const data = await getTestimonials();
-      setTestimonials(data || []);
-    } catch (error) {
-      console.error('Error fetching testimonials:', error);
-    }
-  };
+  const handleDelete = async (id: string) => {
+    if (!confirm('Hapus testimonial ini?')) return;
 
-const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this testimonial?')) return;
-    
     setDeleting(id);
+    setError('');
     try {
       await deleteTestimonial(id);
-      await fetchTestimonials();
-    } catch (error) {
-      console.error('Error deleting testimonial:', error);
-      alert('Failed to delete testimonial');
+      await refreshTestimonials();
+    } catch (caught) {
+      console.error('Testimonial delete error:', caught);
+      setError(caught instanceof Error ? caught.message : 'Gagal menghapus testimonial.');
     } finally {
       setDeleting(null);
     }
   };
 
-  const handleLogout = async () => {
-    await logoutAdmin();
-    router.push('/admin/login');
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500"></div>
-      </div>
-    );
-  }
-
-  const menuItems = [
-    { title: 'Dashboard', icon: LayoutDashboard, href: '/admin/dashboard' },
-    { title: 'Portfolios', icon: Image, href: '/admin/portfolio' },
-    { title: 'Products', icon: ShoppingCart, href: '/admin/products' },
-    { title: 'Testimonials', icon: MessageSquare, href: '/admin/testimonials', active: true },
-    { title: 'Settings', icon: Settings, href: '/admin/settings' },
-  ];
+  if (loading) return <AdminLoading />;
 
   return (
-    <div className="min-h-screen bg-slate-950">
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-slate-900/50 border-r border-slate-800 p-4">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-lg">R</span>
-          </div>
-          <div>
-            <h1 className="text-white font-bold">RefaadStack</h1>
-            <p className="text-slate-500 text-xs">Admin Panel</p>
-          </div>
-        </div>
-
-        <nav className="space-y-1">
-          {menuItems.map((item) => (
-            <Link
-              key={item.title}
-              href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                item.active 
-                  ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' 
-                  : 'text-slate-400 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              <item.icon className="w-5 h-5" />
-              <span className="text-sm font-medium">{item.title}</span>
+    <AdminShell user={user}>
+      <AdminPageHeader
+        eyebrow="Testimonials"
+        title="Social proof yang tampil di homepage."
+        description="Testimonial aktif dibaca dari database untuk section public. Kalau kosong, section akan tampil sebagai empty state."
+        actions={
+          <Button asChild className="rounded-full">
+            <Link href="/admin/testimonials/new">
+              <Plus className="mr-2 size-4" />
+              Tambah testimonial
             </Link>
-          ))}
-        </nav>
+          </Button>
+        }
+      />
 
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors w-full mt-auto absolute bottom-4 left-4 right-4"
-        >
-          <LogOut className="w-5 h-5" />
-          <span className="text-sm font-medium">Logout</span>
-        </button>
-      </aside>
+      {error && <AdminNotice tone="error" className="mb-6">{error}</AdminNotice>}
 
-      {/* Main Content */}
-      <main className="ml-64 p-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Testimonials</h1>
-            <p className="text-slate-400">Manage client testimonials</p>
-          </div>
-          <Link href="/admin/testimonials/new">
-            <Button className="bg-cyan-500 hover:bg-cyan-600 text-white">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Testimonial
-            </Button>
-          </Link>
-        </div>
-
-        {/* Testimonial List */}
-        <div className="grid gap-4">
-          {testimonials.length === 0 ? (
-            <Card className="bg-slate-900/50 border-slate-800">
-              <CardContent className="p-8 text-center">
-                <MessageSquare className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-                <p className="text-slate-400">No testimonials yet. Create your first testimonial!</p>
-              </CardContent>
-            </Card>
-          ) : (
-            testimonials.map((testimonial) => (
-              <Card key={testimonial.id} className="bg-slate-900/50 border-slate-800">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <CardTitle className="text-white text-lg">{testimonial.client_name}</CardTitle>
-                      {testimonial.is_active ? (
-                        <CheckCircle className="w-4 h-4 text-emerald-500" />
-                      ) : (
-                        <XCircle className="w-4 h-4 text-red-500" />
-                      )}
+      <AdminPanel
+        title="Testimonial database"
+        description={`${testimonials.length} testimonial tersimpan di Supabase.`}
+      >
+        {testimonials.length === 0 ? (
+          <AdminEmptyState label="Belum ada testimonial. Tambah testimonial pertama untuk mengisi social proof." />
+        ) : (
+          <div className="grid gap-3 lg:grid-cols-2">
+            {testimonials.map((testimonial) => (
+              <article
+                key={testimonial.id}
+                className="rounded-3xl border border-border bg-surface p-4 transition hover:border-primary/40"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <div className="grid size-11 place-items-center rounded-2xl bg-background text-sm font-bold text-primary">
+                        {testimonial.avatar_url ? (
+                          <img
+                            src={testimonial.avatar_url}
+                            alt={testimonial.client_name}
+                            className="size-11 rounded-2xl object-cover"
+                          />
+                        ) : (
+                          testimonial.client_name.charAt(0).toUpperCase()
+                        )}
+                      </div>
+                      <div>
+                        <h2 className="font-heading text-xl font-bold tracking-[-0.035em] text-foreground">
+                          {testimonial.client_name}
+                        </h2>
+                        {testimonial.company_name && (
+                          <p className="mt-1 text-xs font-semibold text-muted-foreground">
+                            {testimonial.company_name}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Link href={`/admin/testimonials/${testimonial.id}`}>
-                        <Button variant="outline" size="sm" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white">
-                          <Pencil className="w-4 h-4 mr-1" />
-                          Edit
-                        </Button>
-                      </Link>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="border-slate-700 text-slate-300 hover:bg-red-500/10 hover:text-red-400"
-                        onClick={() => handleDelete(testimonial.id)}
-                        disabled={deleting === testimonial.id}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center gap-4 text-sm mb-2">
-                    {testimonial.company_name && (
-                      <span className="text-slate-400">{testimonial.company_name}</span>
-                    )}
-                    <div className="flex items-center gap-1">
-                      {[...Array(5)].map((_, i) => (
-                        <Star 
-                          key={i} 
-                          className={`w-3 h-3 ${i < testimonial.rating ? 'text-amber-500 fill-amber-500' : 'text-slate-700'}`} 
+
+                    <div className="mt-4 flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`size-4 ${
+                            star <= testimonial.rating
+                              ? 'fill-primary text-primary'
+                              : 'text-muted-foreground/35'
+                          }`}
                         />
                       ))}
                     </div>
+                    <p className="mt-3 line-clamp-4 text-sm leading-6 text-muted-foreground">
+                      “{testimonial.testimonial}”
+                    </p>
+                    <div className="mt-4 flex items-center gap-2">
+                      <AdminStatusPill tone={testimonial.is_active ? 'active' : 'muted'}>
+                        {testimonial.is_active ? 'aktif' : 'nonaktif'}
+                      </AdminStatusPill>
+                      {testimonial.is_active ? (
+                        <CheckCircle className="size-4 text-primary" />
+                      ) : (
+                        <XCircle className="size-4 text-muted-foreground" />
+                      )}
+                    </div>
                   </div>
-                  <p className="text-slate-300 text-sm italic">"{testimonial.testimonial}"</p>
-                </CardContent>
-              </Card>
-            ))
-          )}
-        </div>
-      </main>
-    </div>
+
+                  <div className="flex shrink-0 gap-2">
+                    <Button asChild variant="outline" size="sm" className="rounded-full">
+                      <Link href={`/admin/testimonials/${testimonial.id}`}>
+                        <Pencil className="mr-2 size-4" />
+                        Edit
+                      </Link>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="rounded-full"
+                      onClick={() => handleDelete(testimonial.id)}
+                      disabled={deleting === testimonial.id}
+                      aria-label={`Hapus ${testimonial.client_name}`}
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </AdminPanel>
+    </AdminShell>
   );
 }

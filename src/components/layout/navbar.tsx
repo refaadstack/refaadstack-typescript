@@ -1,144 +1,143 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, MessageCircle } from 'lucide-react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { ChatCircle, List, X } from '@phosphor-icons/react';
+import { Container } from '@/components/public/container';
+import { ThemeToggle } from '@/components/public/theme-toggle';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import { COMPANY, NAV_LINKS } from '@/lib/constants';
+import { cn } from '@/lib/utils';
 
 export function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const reduceMotion = useReducedMotion();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Close mobile menu on route change
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
   return (
-    <header
-      className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-        isScrolled
-          ? 'glass border-b border-border/50 bg-background/80'
-          : 'bg-transparent'
-      )}
-    >
-      <div className="container mx-auto px-4 md:px-6">
-        <nav className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background/88 backdrop-blur-xl">
+      <Container>
+        <nav className="flex h-[4.5rem] items-center justify-between gap-5" aria-label="Navigasi utama">
+          <Link href="/" className="shrink-0" aria-label="RefaadStack, halaman utama">
             <Image
-              src="/logo.png"
-              alt={COMPANY.name}
-              width={800}
-              height={150}
-              className="h-12 w-auto object-contain"
+              src="/images/brand/logo-light.png"
+              alt="RefaadStack"
+              width={497}
+              height={62}
+              className="h-6 w-auto object-contain dark:hidden sm:h-7"
+              priority
+            />
+            <Image
+              src="/images/brand/logo-dark.png"
+              alt="RefaadStack"
+              width={497}
+              height={62}
+              className="hidden h-6 w-auto object-contain dark:block sm:h-7"
               priority
             />
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  'text-sm font-medium transition-colors hover:text-primary',
-                  pathname === link.href
-                    ? 'text-primary'
-                    : 'text-muted-foreground'
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
+          <div className="hidden items-center gap-6 lg:flex">
+            {NAV_LINKS.map((link) => {
+              const isActive =
+                !link.href.includes('#') && pathname.startsWith(link.href);
+
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    'whitespace-nowrap text-sm font-semibold text-muted-foreground transition hover:text-foreground',
+                    isActive && 'text-primary'
+                  )}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden items-center gap-3 md:flex">
+            <ThemeToggle />
             <Button asChild size="sm">
               <a
                 href={`https://wa.me/${COMPANY.whatsapp}?text=Halo RefaadStack, saya ingin konsultasi`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <MessageCircle className="mr-2 h-4 w-4" />
-                Konsultasi Gratis
+                <ChatCircle className="mr-2 size-4" weight="bold" />
+                Konsultasi
               </a>
             </Button>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2 text-foreground"
-            onClick={() => setIsMobileMenuOpen(true)}
-            aria-label="Open menu"
-          >
-            <Menu className="h-6 w-6" />
-          </button>
+          <div className="flex items-center gap-2 md:hidden">
+            <ThemeToggle />
+            <button
+              type="button"
+              className="inline-flex size-10 items-center justify-center rounded-lg border border-border bg-surface text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              onClick={() => setIsMobileMenuOpen((open) => !open)}
+              aria-label={isMobileMenuOpen ? 'Tutup menu' : 'Buka menu'}
+              aria-expanded={isMobileMenuOpen}
+            >
+              {isMobileMenuOpen ? (
+                <X className="size-5" weight="bold" />
+              ) : (
+                <List className="size-5" weight="bold" />
+              )}
+            </button>
+          </div>
         </nav>
-      </div>
+      </Container>
 
-      {/* Mobile Menu Overlay */}
       <AnimatePresence>
-        {isMobileMenuOpen && (
+        {isMobileMenuOpen ? (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 top-16 z-40 bg-background/95 backdrop-blur-md md:hidden"
+            initial={reduceMotion ? false : { opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -10 }}
+            transition={{ duration: 0.22 }}
+            className="border-t border-border bg-background md:hidden"
           >
-            <div className="flex flex-col p-6">
-              <button
-                className="absolute top-4 right-4 p-2 text-foreground"
-                onClick={() => setIsMobileMenuOpen(false)}
-                aria-label="Close menu"
-              >
-                <X className="h-6 w-6" />
-              </button>
-
-              <nav className="flex flex-col gap-6 mt-8">
+            <Container className="flex min-h-[calc(100dvh-4.5rem)] flex-col py-8">
+              <div className="flex flex-col">
                 {NAV_LINKS.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="text-lg font-medium text-foreground hover:text-primary transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="border-b border-border py-4 font-heading text-2xl font-bold tracking-[-0.03em] text-foreground transition hover:text-primary"
                   >
                     {link.label}
                   </Link>
                 ))}
-
-                <Button asChild className="mt-4">
-                  <a
-                    href={`https://wa.me/${COMPANY.whatsapp}?text=Halo RefaadStack, saya ingin konsultasi`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <MessageCircle className="mr-2 h-4 w-4" />
-                    Konsultasi Gratis
-                  </a>
-                </Button>
-              </nav>
-            </div>
+              </div>
+              <Button asChild size="lg" className="mt-auto w-full">
+                <a
+                  href={`https://wa.me/${COMPANY.whatsapp}?text=Halo RefaadStack, saya ingin konsultasi`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <ChatCircle className="mr-2 size-5" weight="bold" />
+                  Mulai konsultasi
+                </a>
+              </Button>
+            </Container>
           </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
     </header>
   );
