@@ -16,7 +16,7 @@ export function Hero() {
             <p className="mb-5 font-mono text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-primary">
               Software house untuk UMKM Jambi
             </p>
-            <h1 className="text-balance font-heading text-4xl font-bold leading-[1.05] tracking-[-0.03em] text-foreground sm:text-5xl lg:text-6xl">
+            <h1 className="text-balance font-heading text-4xl font-bold leading-[1.05] tracking-[-0.03em] text-foreground break-words sm:text-5xl lg:text-6xl">
               Bikin website & aplikasi untuk bisnis kamu
               <span className="block text-primary">— tanpa pusing teknis</span>
             </h1>
@@ -25,8 +25,8 @@ export function Hero() {
             </p>
           </Reveal>
 
-          <Reveal delay={0.12} className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg">
+          <Reveal delay={0.12} className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+            <Button asChild size="lg" className="w-full sm:w-auto">
               <a
                 href={`https://wa.me/${COMPANY.whatsapp}?text=Halo RefaadStack, saya ingin konsultasi`}
                 target="_blank"
@@ -46,7 +46,7 @@ export function Hero() {
         </div>
 
         <Reveal delay={0.08} className="relative lg:-mr-12">
-          <div className="editorial-shadow relative aspect-[4/3] min-h-[16rem] overflow-hidden rounded-2xl border border-border bg-black lg:min-h-[24rem]">
+          <div className="editorial-shadow relative aspect-[4/3] min-h-[12rem] overflow-hidden rounded-2xl border border-border bg-black lg:min-h-[24rem]">
             <Image
               src="/images/refaadstack-system-still.png"
               alt="Komposisi abstrak berwarna hitam, putih, dan pink yang menggambarkan sistem digital modular"
