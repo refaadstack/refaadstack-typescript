@@ -16,8 +16,9 @@ export function Hero() {
             <p className="mb-5 font-mono text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-primary">
               Software house untuk UMKM Jambi
             </p>
-            <h1 className="text-balance font-heading text-5xl font-bold leading-[0.96] tracking-[-0.055em] text-foreground sm:text-6xl lg:text-7xl">
-              Bikin website & aplikasi untuk bisnis kamu — tanpa pusing teknis
+            <h1 className="text-balance font-heading text-4xl font-bold leading-[1.05] tracking-[-0.03em] text-foreground sm:text-5xl lg:text-7xl">
+              Bikin website & aplikasi untuk bisnis kamu
+              <span className="block text-primary">— tanpa pusing teknis</span>
             </h1>
             <p className="mt-6 max-w-[54ch] text-pretty text-lg leading-8 text-muted-foreground">
               Kami urus desain, coding, dan maintenance. Kamu tinggal fokus jualan dan melayani pelanggan. Pertama kali? Konsultasi gratis via WhatsApp.
