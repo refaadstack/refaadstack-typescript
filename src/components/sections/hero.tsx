@@ -10,17 +10,17 @@ export function Hero() {
   return (
     <section id="hero" className="relative overflow-hidden border-b border-border pt-[4.5rem]">
       <div className="surface-grid absolute inset-0 opacity-40 [mask-image:linear-gradient(to_bottom,black,transparent_78%)]" />
-      <Container className="relative grid min-h-[calc(100dvh-4.5rem)] items-center gap-10 py-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(32rem,1.1fr)] lg:py-14">
+      <Container className="relative grid min-h-[calc(100dvh-4.5rem)] items-center gap-8 py-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(32rem,1.1fr)] lg:gap-10 lg:py-14">
         <div className="relative z-10 max-w-2xl">
           <Reveal>
             <p className="mb-5 font-mono text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-primary">
               Software house untuk UMKM Jambi
             </p>
-            <h1 className="text-balance font-heading text-4xl font-bold leading-[1.05] tracking-[-0.03em] text-foreground sm:text-5xl lg:text-7xl">
+            <h1 className="text-balance font-heading text-4xl font-bold leading-[1.05] tracking-[-0.03em] text-foreground sm:text-5xl lg:text-6xl">
               Bikin website & aplikasi untuk bisnis kamu
               <span className="block text-primary">— tanpa pusing teknis</span>
             </h1>
-            <p className="mt-6 max-w-[54ch] text-pretty text-lg leading-8 text-muted-foreground">
+            <p className="mt-5 max-w-[54ch] text-pretty text-base leading-7 text-muted-foreground sm:mt-6 sm:text-lg sm:leading-8">
               Kami urus desain, coding, dan maintenance. Kamu tinggal fokus jualan dan melayani pelanggan. Pertama kali? Konsultasi gratis via WhatsApp.
             </p>
           </Reveal>
@@ -46,7 +46,7 @@ export function Hero() {
         </div>
 
         <Reveal delay={0.08} className="relative lg:-mr-12">
-          <div className="editorial-shadow relative aspect-[4/3] min-h-[24rem] overflow-hidden rounded-2xl border border-border bg-black">
+          <div className="editorial-shadow relative aspect-[4/3] min-h-[16rem] overflow-hidden rounded-2xl border border-border bg-black lg:min-h-[24rem]">
             <Image
               src="/images/refaadstack-system-still.png"
               alt="Komposisi abstrak berwarna hitam, putih, dan pink yang menggambarkan sistem digital modular"
