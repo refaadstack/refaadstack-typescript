@@ -36,7 +36,7 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
   return passwordHash === hash;
 }
 
-export async function loginAdmin(email: string, password: string): Promise<{ success: boolean; user?: AdminUser; error?: string }> {
+export async function loginAdmin(email: string, password: string): Promise<{ success: boolean; user?: AdminUser; error?: string; detail?: string }> {
   try {
     const normalizedEmail = email.trim().toLowerCase();
     const { data: admin, error } = await supabaseAdmin
@@ -45,14 +45,18 @@ export async function loginAdmin(email: string, password: string): Promise<{ suc
       .eq('email', normalizedEmail)
       .single();
 
-    if (error || !admin) {
-      return { success: false, error: 'Email atau password tidak cocok' };
+    if (error) {
+      return { success: false, error: 'Gagal query database', detail: `Supabase: ${error.message}` };
+    }
+
+    if (!admin) {
+      return { success: false, error: 'Admin tidak ditemukan', detail: `Email ${normalizedEmail} tidak terdaftar di tabel admins.` };
     }
 
     const validPassword = await verifyPassword(password, admin.password_hash);
 
     if (!validPassword) {
-      return { success: false, error: 'Email atau password tidak cocok' };
+      return { success: false, error: 'Password salah', detail: 'Hash yang tersimpan tidak cocok dengan password yang dimasukkan.' };
     }
 
     const user: AdminUser = {
@@ -74,7 +78,7 @@ export async function loginAdmin(email: string, password: string): Promise<{ suc
     return { success: true, user };
   } catch (error) {
     console.error('Login error:', error);
-    return { success: false, error: 'Login gagal. Pastikan tabel admins sudah tersedia.' };
+    return { success: false, error: 'Server error', detail: String(error) };
   }
 }
 

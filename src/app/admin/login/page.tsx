@@ -28,9 +28,13 @@ export default function AdminLoginPage() {
         return;
       }
 
-      setError(result.error || 'Login gagal');
-    } catch {
-      setError('Login gagal. Cek koneksi Supabase dan tabel admins.');
+      if (result.detail) {
+        setError(`${result.error}: ${result.detail}`);
+      } else {
+        setError(result.error || 'Login gagal');
+      }
+    } catch (err) {
+      setError('Server error: ' + (err instanceof Error ? err.message : String(err)));
     } finally {
       setLoading(false);
     }
