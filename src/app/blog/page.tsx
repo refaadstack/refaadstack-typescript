@@ -3,6 +3,7 @@ import { CollectionHero } from '@/components/public/collection-hero';
 import { Container } from '@/components/public/container';
 import { ContentCard } from '@/components/public/content-card';
 import { PublicShell } from '@/components/public/public-shell';
+import { resolveImageSrc } from '@/lib/assets';
 import { getPublicBlogPosts } from '@/lib/public-data';
 import { formatDate } from '@/lib/utils';
 
@@ -29,20 +30,20 @@ export default async function BlogPage() {
       />
       <Container className="grid gap-x-7 gap-y-14 py-16 sm:grid-cols-2 sm:py-24 lg:grid-cols-3">
         {posts.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-border bg-surface p-8 text-muted-foreground sm:col-span-2 lg:col-span-3">
-            Belum ada artikel published di database.
-          </div>
+          <p className="col-span-full text-sm text-muted-foreground">
+            Belum ada artikel — pantau terus untuk tulisan terbaru.
+          </p>
         ) : (
           posts.map((post) => (
             <ContentCard
               key={post.slug}
               href={`/blog/${post.slug}`}
-              image={post.image}
+              image={resolveImageSrc(post.image)}
               imageAlt={`Ilustrasi artikel ${post.title}`}
               label={post.category}
               title={post.title}
               description={post.excerpt}
-              meta={`${formatDate(post.publishedAt)} | ${post.readingTime}`}
+              meta={`${formatDate(post.publishedAt)}`}
             />
           ))
         )}

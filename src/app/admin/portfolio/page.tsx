@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Image as ImageIcon, Pencil, Plus, Star, Trash2 } from 'lucide-react';
+import { ImageSquare, Pencil, Plus, Star, Trash } from '@phosphor-icons/react';
 import { AdminNotice } from '@/components/admin/admin-form';
 import { AdminEmptyState, AdminLoading, AdminPageHeader, AdminPanel, AdminShell, AdminStatusPill } from '@/components/admin/admin-shell';
 import { Button } from '@/components/ui/button';
@@ -93,7 +93,7 @@ export default function PortfolioListPage() {
         actions={
           <Button asChild className="rounded-full">
             <Link href="/admin/portfolio/new">
-              <Plus className="mr-2 size-4" />
+              <Plus className="mr-2 size-4" weight="bold" />
               Tambah portfolio
             </Link>
           </Button>
@@ -116,17 +116,17 @@ export default function PortfolioListPage() {
               return (
                 <article
                   key={portfolio.id}
-                  className="grid gap-4 rounded-3xl border border-border bg-surface p-4 transition hover:border-primary/40 md:grid-cols-[7rem_1fr_auto]"
+                  className="grid gap-4 rounded-md border border-border bg-surface p-4 transition hover:border-primary/40 md:grid-cols-[7rem_1fr_auto]"
                 >
                   {cover ? (
                     <img
                       src={cover}
                       alt={portfolio.title}
-                      className="aspect-video w-28 rounded-2xl border border-border object-cover"
+                      className="aspect-video w-28 rounded-md border border-border object-cover"
                     />
                   ) : (
-                    <div className="grid aspect-video w-28 place-items-center rounded-2xl border border-dashed border-border bg-background text-primary">
-                      <ImageIcon className="size-5" />
+                    <div className="grid aspect-video w-28 place-items-center rounded-md border border-dashed border-border bg-background text-primary">
+                      <ImageSquare className="size-5" />
                     </div>
                   )}
 
@@ -137,7 +137,7 @@ export default function PortfolioListPage() {
                       </h2>
                       {portfolio.featured && (
                         <AdminStatusPill tone="active">
-                          <Star className="mr-1 size-3 fill-current" />
+                          <Star className="mr-1 size-3 text-primary" weight="fill" />
                           featured
                         </AdminStatusPill>
                       )}
@@ -159,7 +159,7 @@ export default function PortfolioListPage() {
                   <div className="flex items-start gap-2 md:justify-end">
                     <Button asChild variant="outline" size="sm" className="rounded-full">
                       <Link href={`/admin/portfolio/${portfolio.id}`}>
-                        <Pencil className="mr-2 size-4" />
+                        <Pencil className="mr-2 size-4" weight="bold" />
                         Edit
                       </Link>
                     </Button>
@@ -172,7 +172,7 @@ export default function PortfolioListPage() {
                       disabled={deleting === portfolio.id}
                       aria-label={`Hapus ${portfolio.title}`}
                     >
-                      <Trash2 className="size-4" />
+                      <Trash className="size-4" />
                     </Button>
                   </div>
                 </article>

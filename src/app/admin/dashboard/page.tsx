@@ -5,16 +5,16 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   BookOpen,
-  CheckCircle2,
-  FolderKanban,
-  Image,
-  MessageSquare,
+  ChatCircle,
+  CheckCircle,
+  Folder,
+  Gear,
+  ImageSquare,
   Package,
   Plus,
-  Settings,
   ShoppingCart,
-  Sparkles,
-} from 'lucide-react';
+  Sparkle,
+} from '@phosphor-icons/react';
 import { AdminLoading, AdminMetricCard, AdminPageHeader, AdminPanel, AdminShell, AdminStatusPill } from '@/components/admin/admin-shell';
 import { Button } from '@/components/ui/button';
 import { getAdminSession, type AdminUser } from '@/lib/auth';
@@ -134,13 +134,13 @@ export default function AdminDashboardPage() {
           <>
             <Link href="/admin/projects/new">
               <Button className="rounded-full">
-                <Plus className="mr-2 size-4" />
+                <Plus className="mr-2 size-4" weight="bold" />
                 Project
               </Button>
             </Link>
             <Link href="/admin/blog/new">
               <Button variant="outline" className="rounded-full">
-                <Plus className="mr-2 size-4" />
+                <Plus className="mr-2 size-4" weight="bold" />
                 Blog
               </Button>
             </Link>
@@ -149,7 +149,7 @@ export default function AdminDashboardPage() {
       />
 
       {error && (
-        <div className="mb-6 rounded-3xl border border-primary/30 bg-primary/10 p-4 text-sm text-foreground">
+        <div className="mb-6 rounded-md border border-primary/30 bg-primary/10 p-4 text-sm text-foreground">
           {error}
         </div>
       )}
@@ -159,25 +159,25 @@ export default function AdminDashboardPage() {
           label="Projects"
           value={`${stats.activeProjects}/${stats.totalProjects}`}
           description="Project aktif yang mengisi halaman studi kasus public."
-          icon={<FolderKanban className="size-5" />}
+          icon={<Folder className="size-5" weight="bold" />}
         />
         <AdminMetricCard
           label="Blog posts"
           value={`${stats.publishedBlogPosts}/${stats.totalBlogPosts}`}
           description="Artikel published yang masuk blog dan sitemap."
-          icon={<BookOpen className="size-5" />}
+          icon={<BookOpen className="size-5" weight="bold" />}
         />
         <AdminMetricCard
           label="Products"
           value={`${stats.activeProducts}/${stats.totalProducts}`}
           description="Produk aktif yang tampil di landing page dan detail product."
-          icon={<ShoppingCart className="size-5" />}
+          icon={<ShoppingCart className="size-5" weight="bold" />}
         />
         <AdminMetricCard
           label="Content health"
           value={`${health}%`}
           description="Kelengkapan modul konten utama yang sudah punya data."
-          icon={<CheckCircle2 className="size-5" />}
+          icon={<CheckCircle className="size-5" weight="fill" />}
         />
       </div>
 
@@ -188,12 +188,12 @@ export default function AdminDashboardPage() {
         >
           <div className="grid gap-3 sm:grid-cols-2">
             {[
-              { title: 'Tambah project', href: '/admin/projects/new', icon: FolderKanban },
+              { title: 'Tambah project', href: '/admin/projects/new', icon: Folder },
               { title: 'Tulis blog', href: '/admin/blog/new', icon: BookOpen },
-              { title: 'Tambah portfolio', href: '/admin/portfolio/new', icon: Image },
+              { title: 'Tambah portfolio', href: '/admin/portfolio/new', icon: ImageSquare },
               { title: 'Tambah produk', href: '/admin/products/new', icon: ShoppingCart },
               { title: 'Kelola services', href: '/admin/services', icon: Package },
-              { title: 'SEO settings', href: '/admin/settings', icon: Settings },
+              { title: 'SEO settings', href: '/admin/settings', icon: Gear },
             ].map((item) => {
               const Icon = item.icon;
 
@@ -201,15 +201,15 @@ export default function AdminDashboardPage() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="group flex items-center justify-between rounded-3xl border border-border bg-surface p-4 transition hover:border-primary/40 hover:bg-primary/10"
+                  className="group flex items-center justify-between rounded-md border border-border bg-surface p-4 transition hover:border-primary/40 hover:bg-primary/10"
                 >
                   <span className="flex items-center gap-3 font-semibold text-foreground">
-                    <span className="grid size-11 place-items-center rounded-2xl bg-background text-primary transition group-hover:bg-primary group-hover:text-black">
-                      <Icon className="size-5" />
+                    <span className="grid size-11 place-items-center rounded-md bg-background text-primary transition group-hover:bg-primary group-hover:text-black">
+                      <Icon className="size-5" weight="bold" />
                     </span>
                     {item.title}
                   </span>
-                  <Plus className="size-4 text-muted-foreground transition group-hover:text-foreground" />
+                  <Plus className="size-4 text-muted-foreground transition group-hover:text-foreground" weight="bold" />
                 </Link>
               );
             })}
@@ -232,9 +232,9 @@ export default function AdminDashboardPage() {
               <Link
                 key={String(label)}
                 href={String(href)}
-                className="flex items-center justify-between rounded-2xl border border-border bg-background px-4 py-3 text-sm transition hover:border-primary/40"
+                className="flex items-center justify-between rounded-md border border-border bg-background px-4 py-3 text-sm transition hover:border-primary/40"
               >
-                <span className="font-semibold text-foreground">{label}</span>
+                <span className="font-semibold text-foreground">{String(label)}</span>
                 <AdminStatusPill tone={Number(value) > 0 ? 'active' : 'muted'}>
                   {Number(value) > 0 ? `${value} item` : 'kosong'}
                 </AdminStatusPill>
@@ -302,7 +302,7 @@ function RecentList({
   return (
     <AdminPanel title={title}>
       {items.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-border bg-surface p-6 text-sm text-muted-foreground">
+        <div className="rounded-md border border-dashed border-border bg-surface p-6 text-sm text-muted-foreground">
           {empty}
         </div>
       ) : (
@@ -311,13 +311,13 @@ function RecentList({
             <Link
               key={item.id}
               href={getHref(item)}
-              className="flex items-start justify-between gap-4 rounded-3xl border border-border bg-surface p-4 transition hover:border-primary/40 hover:bg-primary/10"
+              className="flex items-start justify-between gap-4 rounded-md border border-border bg-surface p-4 transition hover:border-primary/40 hover:bg-primary/10"
             >
               <span>
                 <span className="block font-semibold text-foreground">{getTitle(item)}</span>
                 <span className="mt-1 block text-sm text-muted-foreground">{getMeta(item)}</span>
               </span>
-              <Sparkles className="mt-1 size-4 text-primary" />
+              <Sparkle className="mt-1 size-4 text-primary" weight="fill" />
             </Link>
           ))}
         </div>

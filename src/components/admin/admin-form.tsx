@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import type { ChangeEvent, ReactNode } from 'react';
-import { Save } from 'lucide-react';
+import { FloppyDisk } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
@@ -45,7 +45,7 @@ export function AdminToggleRow({
   description: string;
 }) {
   return (
-    <label className="flex items-center justify-between gap-4 rounded-3xl border border-border bg-surface p-4 transition hover:border-primary/40">
+    <label className="flex items-center justify-between gap-4 rounded-md border border-border bg-surface p-4 transition hover:border-primary/40">
       <span>
         <span className="block text-sm font-semibold text-foreground">{title}</span>
         <span className="mt-1 block text-xs text-muted-foreground">{description}</span>
@@ -73,7 +73,7 @@ export function AdminNotice({
   return (
     <div
       className={cn(
-        'rounded-3xl border p-4 text-sm font-medium',
+        'rounded-md border p-4 text-sm font-medium',
         tone === 'error' && 'border-destructive/30 bg-destructive/10 text-destructive',
         tone === 'success' && 'border-primary/30 bg-primary/10 text-foreground',
         className
@@ -98,7 +98,7 @@ export function AdminFormActions({
   return (
     <div className="flex flex-wrap gap-3">
       <Button type="submit" disabled={saving} className="rounded-full">
-        <Save className="mr-2 size-4" />
+        <FloppyDisk className="mr-2 size-4" weight="bold" />
         {saving ? savingLabel : submitLabel}
       </Button>
       <Button asChild variant="outline" className="rounded-full">
@@ -116,8 +116,8 @@ export function AdminImagePlaceholder({
   children: ReactNode;
 }) {
   return (
-    <div className="rounded-3xl border border-dashed border-border bg-surface p-8 text-center">
-      <div className="mx-auto mb-3 grid size-12 place-items-center rounded-2xl bg-background text-primary">
+    <div className="rounded-md border border-dashed border-border bg-surface p-8 text-center">
+      <div className="mx-auto mb-3 grid size-12 place-items-center rounded-md bg-background text-primary">
         {icon}
       </div>
       <p className="mx-auto max-w-md text-sm leading-6 text-muted-foreground">{children}</p>

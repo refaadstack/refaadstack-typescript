@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { CheckCircle, Pencil, Plus, ShoppingCart, Trash2, XCircle } from 'lucide-react';
+import { CheckCircle, Pencil, Plus, ShoppingCart, Trash, XCircle } from '@phosphor-icons/react';
 import { AdminNotice } from '@/components/admin/admin-form';
 import { AdminEmptyState, AdminLoading, AdminPageHeader, AdminPanel, AdminShell, AdminStatusPill } from '@/components/admin/admin-shell';
 import { Button } from '@/components/ui/button';
@@ -121,16 +121,16 @@ export default function ProductListPage() {
             {products.map((product) => (
               <article
                 key={product.id}
-                className="grid gap-4 rounded-3xl border border-border bg-surface p-4 transition hover:border-primary/40 md:grid-cols-[5rem_1fr_auto]"
+                className="grid gap-4 rounded-md border border-border bg-surface p-4 transition hover:border-primary/40 md:grid-cols-[5rem_1fr_auto]"
               >
                 {product.image_url ? (
                   <img
                     src={product.image_url}
                     alt={product.name}
-                    className="aspect-[4/3] w-20 rounded-2xl border border-border object-cover"
+                    className="aspect-[4/3] w-20 rounded-md border border-border object-cover"
                   />
                 ) : (
-                  <div className="grid aspect-[4/3] w-20 place-items-center rounded-2xl border border-dashed border-border bg-background text-primary">
+                  <div className="grid aspect-[4/3] w-20 place-items-center rounded-md border border-dashed border-border bg-background text-primary">
                     <ShoppingCart className="size-5" />
                   </div>
                 )}
@@ -190,7 +190,7 @@ export default function ProductListPage() {
                     disabled={deleting === product.id}
                     aria-label={`Hapus ${product.name}`}
                   >
-                    <Trash2 className="size-4" />
+                    <Trash className="size-4" />
                   </Button>
                 </div>
               </article>

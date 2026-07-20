@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { CheckCircle, MessageSquare, Pencil, Plus, Star, Trash2, XCircle } from 'lucide-react';
+import { ChatCircle, CheckCircle, Pencil, Plus, Star, Trash, XCircle } from '@phosphor-icons/react';
 import { AdminNotice } from '@/components/admin/admin-form';
 import { AdminEmptyState, AdminLoading, AdminPageHeader, AdminPanel, AdminShell, AdminStatusPill } from '@/components/admin/admin-shell';
 import { Button } from '@/components/ui/button';
@@ -111,17 +111,17 @@ export default function TestimonialListPage() {
             {testimonials.map((testimonial) => (
               <article
                 key={testimonial.id}
-                className="rounded-3xl border border-border bg-surface p-4 transition hover:border-primary/40"
+                className="rounded-md border border-border bg-surface p-4 transition hover:border-primary/40"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <div className="grid size-11 place-items-center rounded-2xl bg-background text-sm font-bold text-primary">
+                      <div className="grid size-11 place-items-center rounded-md bg-background text-sm font-bold text-primary">
                         {testimonial.avatar_url ? (
                           <img
                             src={testimonial.avatar_url}
                             alt={testimonial.client_name}
-                            className="size-11 rounded-2xl object-cover"
+                            className="size-11 rounded-md object-cover"
                           />
                         ) : (
                           testimonial.client_name.charAt(0).toUpperCase()
@@ -182,7 +182,7 @@ export default function TestimonialListPage() {
                       disabled={deleting === testimonial.id}
                       aria-label={`Hapus ${testimonial.client_name}`}
                     >
-                      <Trash2 className="size-4" />
+                      <Trash className="size-4" />
                     </Button>
                   </div>
                 </div>

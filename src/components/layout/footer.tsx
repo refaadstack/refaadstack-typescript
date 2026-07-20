@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import {
   ChatCircle,
@@ -33,11 +34,21 @@ export function Footer() {
       <Container className="py-14 sm:py-18">
         <div className="grid gap-12 lg:grid-cols-[1.4fr_0.8fr_0.8fr]">
           <div className="max-w-md">
-            <Link
-              href="/"
-              className="font-heading text-lg font-extrabold tracking-[0.14em] text-foreground"
-            >
-              REFAA<span className="text-primary">D</span>STACK
+            <Link href="/" aria-label="RefaadStack, halaman utama">
+              <Image
+                src="/images/brand/logo-light.png"
+                alt="RefaadStack"
+                width={497}
+                height={62}
+                className="h-7 w-auto object-contain dark:hidden"
+              />
+              <Image
+                src="/images/brand/logo-dark.png"
+                alt="RefaadStack"
+                width={497}
+                height={62}
+                className="hidden h-7 w-auto object-contain dark:block"
+              />
             </Link>
             <p className="mt-5 text-pretty leading-7 text-muted-foreground">
               {COMPANY.description}

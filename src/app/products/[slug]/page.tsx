@@ -5,6 +5,7 @@ import { DetailHero } from '@/components/public/detail-hero';
 import { DetailSections } from '@/components/public/detail-sections';
 import { JsonLd } from '@/components/public/json-ld';
 import { PublicShell } from '@/components/public/public-shell';
+import { resolveImageSrc } from '@/lib/assets';
 import { getPublicProductBySlug, getPublicProducts } from '@/lib/public-data';
 
 export const revalidate = 3600;
@@ -32,7 +33,7 @@ export async function generateMetadata({
     openGraph: {
       title: product.name,
       description: product.tagline,
-      images: [product.imageUrl || '/og-image.png'],
+      images: [resolveImageSrc(product.imageUrl) || '/og-image.png'],
     },
   };
 }
@@ -53,7 +54,7 @@ export default async function ProductDetailPage({
           '@type': 'Product',
           name: product.name,
           description: product.description,
-          image: product.imageUrl,
+          image: resolveImageSrc(product.imageUrl) || '/og-image.png',
           brand: {
             '@type': 'Brand',
             name: 'RefaadStack',
@@ -66,7 +67,7 @@ export default async function ProductDetailPage({
         label="Produk RefaadStack"
         title={product.name}
         summary={product.tagline}
-        image={product.imageUrl || '/images/refaadstack-system-still.png'}
+        image={resolveImageSrc(product.imageUrl)}
         meta={[
           { label: 'Harga', value: product.price },
           { label: 'Model', value: 'Siap pakai' },
@@ -75,10 +76,6 @@ export default async function ProductDetailPage({
       <DetailSections
         sections={[
           { title: 'Tentang produk', body: product.description },
-          {
-            title: 'Dibuat untuk operasional nyata',
-            body: `Setiap bagian ${product.name} dirancang agar pekerjaan utama tetap cepat dipahami, baik oleh pemilik bisnis maupun tim operasional.`,
-          },
         ]}
         lists={[{ title: 'Fitur utama', items: product.features }]}
       />

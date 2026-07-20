@@ -31,7 +31,7 @@ export function Navbar() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background/88 backdrop-blur-xl">
       <Container>
-        <nav className="flex h-[4.5rem] items-center justify-between gap-5" aria-label="Navigasi utama">
+        <nav className="flex h-16 items-center justify-between gap-5" aria-label="Navigasi utama">
           <Link href="/" className="shrink-0" aria-label="RefaadStack, halaman utama">
             <Image
               src="/images/brand/logo-light.png"
@@ -113,7 +113,7 @@ export function Navbar() {
             transition={{ duration: 0.22 }}
             className="border-t border-border bg-background md:hidden"
           >
-            <Container className="flex min-h-[calc(100dvh-4.5rem)] flex-col py-8">
+            <Container className="flex min-h-[calc(100dvh-4rem)] flex-col py-8">
               <div className="flex flex-col">
                 {NAV_LINKS.map((link) => (
                   <Link
@@ -132,7 +132,7 @@ export function Navbar() {
                   rel="noopener noreferrer"
                 >
                   <ChatCircle className="mr-2 size-5" weight="bold" />
-                  Mulai konsultasi
+                  Konsultasi
                 </a>
               </Button>
             </Container>

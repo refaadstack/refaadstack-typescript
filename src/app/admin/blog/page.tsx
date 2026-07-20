@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { BookOpen, Pencil, Plus, Trash2 } from 'lucide-react';
+import { BookOpen, Pencil, Plus, Trash } from '@phosphor-icons/react';
 import { AdminEmptyState, AdminLoading, AdminPageHeader, AdminPanel, AdminShell, AdminStatusPill } from '@/components/admin/admin-shell';
 import { Button } from '@/components/ui/button';
 import { getAdminSession, type AdminUser } from '@/lib/auth';
@@ -78,7 +78,7 @@ export default function AdminBlogPage() {
         actions={
           <Link href="/admin/blog/new">
             <Button className="rounded-full">
-              <Plus className="mr-2 size-4" />
+              <Plus className="mr-2 size-4" weight="bold" />
               Tulis artikel
             </Button>
           </Link>
@@ -86,7 +86,7 @@ export default function AdminBlogPage() {
       />
 
       {error && (
-        <div className="mb-6 rounded-3xl border border-primary/30 bg-primary/10 p-4 text-sm text-foreground">
+        <div className="mb-6 rounded-md border border-primary/30 bg-primary/10 p-4 text-sm text-foreground">
           {error}
         </div>
       )}
@@ -99,11 +99,11 @@ export default function AdminBlogPage() {
             {posts.map((post) => (
               <div
                 key={post.id}
-                className="grid gap-4 rounded-3xl border border-border bg-surface p-4 lg:grid-cols-[1fr_auto]"
+                className="grid gap-4 rounded-md border border-border bg-surface p-4 lg:grid-cols-[1fr_auto]"
               >
                 <div className="flex gap-4">
-                  <div className="hidden size-14 place-items-center rounded-2xl bg-background text-primary sm:grid">
-                    <BookOpen className="size-6" />
+                  <div className="hidden size-14 place-items-center rounded-md bg-background text-primary sm:grid">
+                    <BookOpen className="size-6" weight="bold" />
                   </div>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
@@ -130,7 +130,7 @@ export default function AdminBlogPage() {
                 <div className="flex items-center gap-2">
                   <Link href={`/admin/blog/${post.id}`}>
                     <Button variant="outline" size="sm" className="rounded-full">
-                      <Pencil className="mr-2 size-4" />
+                      <Pencil className="mr-2 size-4" weight="bold" />
                       Edit
                     </Button>
                   </Link>
@@ -141,7 +141,7 @@ export default function AdminBlogPage() {
                     disabled={deleting === post.id}
                     onClick={() => handleDelete(post.id)}
                   >
-                    <Trash2 className="size-4" />
+                    <Trash className="size-4" weight="bold" />
                   </Button>
                 </div>
               </div>

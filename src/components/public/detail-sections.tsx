@@ -34,7 +34,10 @@ export function DetailSections({
                 <h2 className="text-sm font-bold text-foreground">{list.title}</h2>
                 <ul className="mt-4 space-y-3">
                   {list.items.map((item) => (
-                    <li key={item} className="flex items-start gap-2.5 text-sm leading-6 text-muted-foreground">
+                    <li
+                      key={item}
+                      className="flex items-start gap-2.5 text-sm leading-6 text-muted-foreground"
+                    >
                       <Check className="mt-1 size-3.5 shrink-0 text-primary" weight="bold" />
                       {item}
                     </li>

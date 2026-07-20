@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { CheckCircle, Package, Pencil, Plus, Trash2, XCircle } from 'lucide-react';
+import { CheckCircle, Package, Pencil, Plus, Trash, XCircle } from '@phosphor-icons/react';
 import { AdminNotice } from '@/components/admin/admin-form';
 import { AdminEmptyState, AdminLoading, AdminPageHeader, AdminPanel, AdminShell, AdminStatusPill } from '@/components/admin/admin-shell';
 import { Button } from '@/components/ui/button';
@@ -110,12 +110,12 @@ export default function ServiceListPage() {
             {services.map((service) => (
               <article
                 key={service.id}
-                className="rounded-3xl border border-border bg-surface p-4 transition hover:border-primary/40"
+                className="rounded-md border border-border bg-surface p-4 transition hover:border-primary/40"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="grid size-11 place-items-center rounded-2xl bg-background text-lg">
+                      <span className="grid size-11 place-items-center rounded-md bg-background text-lg">
                         {service.icon || <Package className="size-5 text-primary" />}
                       </span>
                       <div>
@@ -160,7 +160,7 @@ export default function ServiceListPage() {
                       disabled={deleting === service.id}
                       aria-label={`Hapus ${service.name}`}
                     >
-                      <Trash2 className="size-4" />
+                      <Trash className="size-4" />
                     </Button>
                   </div>
                 </div>

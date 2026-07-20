@@ -5,6 +5,7 @@ import { DetailHero } from '@/components/public/detail-hero';
 import { DetailSections } from '@/components/public/detail-sections';
 import { JsonLd } from '@/components/public/json-ld';
 import { PublicShell } from '@/components/public/public-shell';
+import { resolveImageSrc } from '@/lib/assets';
 import { getPublicProjectBySlug, getPublicProjects } from '@/lib/public-data';
 
 export const revalidate = 3600;
@@ -33,7 +34,7 @@ export async function generateMetadata({
       title: project.title,
       description: project.summary,
       type: 'article',
-      images: [project.image],
+      images: [resolveImageSrc(project.image) || '/og-image.png'],
     },
   };
 }
@@ -68,7 +69,7 @@ export default async function ProjectDetailPage({
         label={project.category}
         title={project.title}
         summary={project.summary}
-        image={project.image}
+        image={resolveImageSrc(project.image)}
         meta={[
           { label: 'Tahun', value: project.year },
           { label: 'Fokus', value: project.services[0] },

@@ -1,25 +1,53 @@
 import { Container } from '@/components/public/container';
-import { STATS } from '@/lib/constants';
+import { Reveal } from '@/components/public/reveal';
 
-export function Stats() {
+export function Stats({
+  workCount,
+  productCount,
+}: {
+  workCount: number;
+  productCount: number;
+}) {
+  const stats = [
+    {
+      value: String(workCount),
+      label: 'Project & sistem yang kami bangun',
+    },
+    {
+      value: String(productCount),
+      label: 'Produk siap pakai untuk bisnis',
+    },
+    {
+      value: '< 24 jam',
+      label: 'Respon konsultasi via WhatsApp',
+    },
+    {
+      value: 'Jambi',
+      label: 'Base kami, kerja remote ke seluruh Indonesia',
+    },
+  ];
+
   return (
-    <section aria-label="Kapabilitas utama" className="border-b border-border">
+    <section aria-label="Bukti dan kapabilitas" className="border-b border-border">
       <Container>
         <dl className="grid grid-cols-2 lg:grid-cols-4">
-          {STATS.map((stat, index) => (
-            <div
+          {stats.map((stat, index) => (
+            <Reveal
               key={stat.label}
-              className={`py-7 sm:py-9 ${
+              delay={index * 0.05}
+              className={`py-8 sm:py-10 ${
                 index % 2 === 0 ? 'pr-5' : 'border-l border-border pl-5'
               } ${index >= 2 ? 'border-t border-border lg:border-t-0' : ''} ${
                 index > 0 ? 'lg:border-l lg:border-border lg:pl-8' : ''
               }`}
             >
-              <dt className="text-sm leading-6 text-muted-foreground">{stat.label}</dt>
-              <dd className="mt-1 font-heading text-xl font-bold tracking-[-0.03em] text-foreground sm:text-2xl">
+              <dd className="font-heading text-3xl font-extrabold tracking-[-0.03em] text-foreground sm:text-4xl lg:text-[2.75rem] lg:leading-none">
                 {stat.value}
               </dd>
-            </div>
+              <dt className="mt-3 max-w-[22ch] text-sm leading-5 text-muted-foreground">
+                {stat.label}
+              </dt>
+            </Reveal>
           ))}
         </dl>
       </Container>

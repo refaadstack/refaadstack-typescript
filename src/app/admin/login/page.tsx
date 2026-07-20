@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, LockKeyhole, Mail, Sparkles } from 'lucide-react';
+import { ArrowLeft, Envelope, Lock, Sparkle } from '@phosphor-icons/react';
 import { loginAdmin } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -42,12 +42,12 @@ export default function AdminLoginPage() {
       <div className="absolute -left-24 top-20 size-72 rounded-full bg-primary/20 blur-3xl" />
       <div className="absolute -right-24 bottom-10 size-80 rounded-full bg-primary/15 blur-3xl" />
 
-      <section className="relative z-10 w-full max-w-md rounded-[2rem] border border-border bg-card/90 p-6 shadow-[0_30px_120px_rgba(0,0,0,0.14)] backdrop-blur-xl">
+      <section className="relative z-10 w-full max-w-md border border-border bg-card p-6">
         <div className="mb-8">
-          <div className="mb-5 inline-grid size-14 place-items-center rounded-3xl bg-primary text-black shadow-[0_20px_70px_rgba(255,102,196,0.3)]">
-            <Sparkles className="size-6" />
+          <div className="mb-5 inline-grid size-14 place-items-center rounded-md bg-primary text-black">
+            <Sparkle className="size-6" weight="fill" />
           </div>
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
+          <p className="font-mono text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-primary-strong">
             RefaadStack admin
           </p>
           <h1 className="mt-3 font-heading text-4xl font-bold leading-[0.95] tracking-[-0.06em]">
@@ -62,7 +62,7 @@ export default function AdminLoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="rounded-2xl border border-primary/30 bg-primary/10 p-3 text-sm text-foreground">
+            <div className="rounded-md border border-primary/30 bg-primary/10 p-3 text-sm text-foreground">
               {error}
             </div>
           )}
@@ -70,12 +70,12 @@ export default function AdminLoginPage() {
           <label className="block">
             <span className="mb-2 block text-sm font-semibold">Email</span>
             <span className="relative block">
-              <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Envelope className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" weight="bold" />
               <Input
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                className="h-12 rounded-2xl pl-10"
+                className="h-12 pl-10"
                 placeholder="admin@refaadstack.dev"
                 required
               />
@@ -85,12 +85,12 @@ export default function AdminLoginPage() {
           <label className="block">
             <span className="mb-2 block text-sm font-semibold">Password</span>
             <span className="relative block">
-              <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Lock className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" weight="bold" />
               <Input
                 type="password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                className="h-12 rounded-2xl pl-10"
+                className="h-12 pl-10"
                 placeholder="Masukkan password admin"
                 required
               />
@@ -104,9 +104,9 @@ export default function AdminLoginPage() {
 
         <Link
           href="/"
-          className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition hover:text-primary"
+          className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition hover:text-primary-strong"
         >
-          <ArrowLeft className="size-4" />
+          <ArrowLeft className="size-4" weight="bold" />
           Kembali ke homepage
         </Link>
       </section>

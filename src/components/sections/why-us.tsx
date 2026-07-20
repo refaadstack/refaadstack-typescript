@@ -23,12 +23,12 @@ const REASONS = [
   {
     icon: Stack,
     title: 'Arsitektur yang dapat tumbuh',
-    description: 'Fondasi dibuat modular agar perubahan berikutnya tidak selalu dimulai dari nol.',
+    description: 'Fondasi dibuat modular agar perubahan berikutnya tidak dimulai dari nol.',
   },
   {
     icon: Code,
     title: 'Kode yang dapat dirawat',
-    description: 'Struktur dan dokumentasi membantu produk tetap sehat setelah diluncurkan.',
+    description: 'Struktur dan dokumentasi menjaga produk tetap sehat setelah diluncurkan.',
   },
   {
     icon: DeviceMobile,
@@ -38,34 +38,31 @@ const REASONS = [
   {
     icon: MagnifyingGlass,
     title: 'SEO tetap menjadi fondasi',
-    description: 'Metadata, struktur semantik, performa, dan tautan internal dibangun sejak awal.',
+    description: 'Metadata, struktur semantik, dan performa dibangun sejak awal.',
   },
 ];
 
 export function WhyUs() {
   return (
-    <section id="why" className="border-y border-border bg-surface py-20 sm:py-28 lg:py-36">
-      <Container className="grid gap-14 lg:grid-cols-[0.82fr_1.18fr] lg:gap-20">
+    <section id="why" className="border-y border-border bg-surface py-20 sm:py-28 lg:py-32">
+      <Container>
         <Reveal>
-          <div className="lg:sticky lg:top-28">
-            <h2 className="text-balance font-heading text-4xl font-bold leading-[1.02] tracking-[-0.045em] text-foreground sm:text-5xl">
-              Teknologi yang terasa masuk akal bagi orang yang memakainya.
-            </h2>
-            <p className="mt-6 max-w-[48ch] text-pretty text-lg leading-8 text-muted-foreground">
-              Kami menjaga keputusan desain dan teknis tetap dekat dengan pekerjaan nyata di dalam bisnis.
-            </p>
-          </div>
+          <h2 className="max-w-5xl text-balance font-heading text-3xl font-bold leading-[1.1] tracking-[-0.035em] text-foreground sm:text-4xl lg:text-[3.25rem] lg:leading-[1.06]">
+            Kami bukan sekadar vendor. Kami{' '}
+            <span className="text-primary-strong">mitra teknologi</span> yang ikut
+            memikirkan pertumbuhan bisnis kamu jangka panjang.
+          </h2>
         </Reveal>
 
-        <div className="grid gap-x-8 sm:grid-cols-2">
+        <div className="mt-14 grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3">
           {REASONS.map((reason, index) => (
-            <Reveal key={reason.title} delay={(index % 2) * 0.06}>
-              <article className="border-t border-border py-7">
-                <reason.icon className="size-6 text-primary" weight="bold" />
-                <h3 className="mt-5 font-heading text-lg font-bold tracking-[-0.02em] text-foreground">
+            <Reveal key={reason.title} delay={(index % 3) * 0.05}>
+              <article className="border-t border-border pt-6">
+                <reason.icon className="size-5 text-primary" weight="bold" />
+                <h3 className="mt-4 font-heading text-lg font-bold tracking-[-0.02em] text-foreground">
                   {reason.title}
                 </h3>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                <p className="mt-2 max-w-[40ch] text-sm leading-6 text-muted-foreground">
                   {reason.description}
                 </p>
               </article>

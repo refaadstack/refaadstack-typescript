@@ -1,16 +1,16 @@
 import { PublicShell } from '@/components/public/public-shell';
 import { JsonLd } from '@/components/public/json-ld';
+import { Marquee } from '@/components/public/marquee';
 import { BlogPreview } from '@/components/sections/blog-preview';
 import { CTA } from '@/components/sections/cta';
 import { Hero } from '@/components/sections/hero';
-import { Portfolio } from '@/components/sections/portfolio';
 import { Process } from '@/components/sections/process';
 import { Products } from '@/components/sections/products';
-import { Projects } from '@/components/sections/projects';
 import { Services } from '@/components/sections/services';
 import { Stats } from '@/components/sections/stats';
 import { Testimonials } from '@/components/sections/testimonials';
 import { WhyUs } from '@/components/sections/why-us';
+import { Work } from '@/components/sections/work';
 import { getPublicHomeData } from '@/lib/public-data';
 
 export const revalidate = 3600;
@@ -52,13 +52,16 @@ export default async function HomePage() {
       <JsonLd data={ORGANIZATION_SCHEMA} />
       <JsonLd data={WEBSITE_SCHEMA} />
       <Hero />
-      <Stats />
+      <Marquee />
+      <Stats
+        workCount={projects.length + portfolios.length}
+        productCount={products.length}
+      />
       <Services services={services} />
       <WhyUs />
-      <Projects projects={projects} />
+      <Work projects={projects} portfolios={portfolios} />
       <Products products={products} />
       <Process />
-      <Portfolio portfolios={portfolios} />
       <Testimonials testimonials={testimonials} />
       <BlogPreview posts={blogPosts} />
       <CTA />

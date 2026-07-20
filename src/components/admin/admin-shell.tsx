@@ -5,34 +5,33 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   BookOpen,
   Briefcase,
-  FolderKanban,
-  Home,
-  Image,
-  LayoutDashboard,
-  LogOut,
-  Menu,
-  MessageSquare,
+  ChatCircle,
+  Folder,
+  Gear,
+  Gauge,
+  House,
+  ImageSquare,
+  List,
   Package,
-  PanelLeftClose,
-  Settings,
   ShoppingCart,
-  Sparkles,
+  SignOut,
+  Sparkle,
   X,
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 import { useState, type ReactNode } from 'react';
 import { logoutAdmin, type AdminUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
 const ADMIN_NAV = [
-  { title: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-  { title: 'Projects', href: '/admin/projects', icon: FolderKanban },
+  { title: 'Dashboard', href: '/admin/dashboard', icon: Gauge },
+  { title: 'Projects', href: '/admin/projects', icon: Folder },
   { title: 'Blog', href: '/admin/blog', icon: BookOpen },
-  { title: 'Portfolio', href: '/admin/portfolio', icon: Image },
+  { title: 'Portfolio', href: '/admin/portfolio', icon: ImageSquare },
   { title: 'Products', href: '/admin/products', icon: ShoppingCart },
   { title: 'Services', href: '/admin/services', icon: Package },
-  { title: 'Testimonials', href: '/admin/testimonials', icon: MessageSquare },
-  { title: 'Settings', href: '/admin/settings', icon: Settings },
+  { title: 'Testimonials', href: '/admin/testimonials', icon: ChatCircle },
+  { title: 'Settings', href: '/admin/settings', icon: Gear },
 ];
 
 interface AdminShellProps {
@@ -51,11 +50,11 @@ export function AdminShell({ user, children }: AdminShellProps) {
   };
 
   const sidebar = (
-    <aside className="flex h-full flex-col border-r border-border bg-background/92 px-4 py-5 backdrop-blur-xl">
+    <aside className="flex h-full flex-col border-r border-border bg-background px-4 py-5">
       <div className="flex items-center justify-between gap-3">
         <Link href="/admin/dashboard" className="group flex items-center gap-3">
-          <span className="grid size-11 place-items-center rounded-2xl border border-primary/35 bg-primary text-black shadow-[0_18px_50px_rgba(255,102,196,0.24)]">
-            <Sparkles className="size-5" />
+          <span className="grid size-11 place-items-center rounded-md border border-primary/35 bg-primary text-black">
+            <Sparkle className="size-5" weight="fill" />
           </span>
           <span>
             <span className="block font-heading text-lg font-bold tracking-[-0.04em] text-foreground">
@@ -70,7 +69,7 @@ export function AdminShell({ user, children }: AdminShellProps) {
           className="rounded-full border border-border p-2 text-muted-foreground md:hidden"
           aria-label="Tutup menu admin"
         >
-          <X className="size-4" />
+          <X className="size-4" weight="bold" />
         </button>
       </div>
 
@@ -87,14 +86,14 @@ export function AdminShell({ user, children }: AdminShellProps) {
               href={item.href}
               onClick={() => setMobileOpen(false)}
               className={cn(
-                'group flex items-center justify-between rounded-2xl px-3 py-3 text-sm font-semibold transition',
+                'group flex items-center justify-between rounded-md px-3 py-3 text-sm font-semibold transition',
                 isActive
-                  ? 'bg-primary text-black shadow-[0_18px_48px_rgba(255,102,196,0.22)]'
-                  : 'text-muted-foreground hover:bg-surface-strong hover:text-foreground'
+                  ? 'bg-primary text-black'
+                  : 'text-muted-foreground hover:bg-surface hover:text-foreground'
               )}
             >
               <span className="flex items-center gap-3">
-                <Icon className="size-4" />
+                <Icon className="size-4" weight="bold" />
                 {item.title}
               </span>
               {isActive && <span className="size-1.5 rounded-full bg-black" />}
@@ -103,9 +102,9 @@ export function AdminShell({ user, children }: AdminShellProps) {
         })}
       </nav>
 
-      <div className="mt-auto space-y-3 rounded-3xl border border-border bg-surface p-4">
+      <div className="mt-auto space-y-3 border-t border-border bg-background p-4">
         <div className="flex items-center gap-3">
-          <span className="grid size-10 place-items-center rounded-2xl bg-foreground text-background">
+          <span className="grid size-10 place-items-center rounded-full bg-foreground text-sm font-bold text-background">
             {(user?.name || 'A').charAt(0).toUpperCase()}
           </span>
           <div className="min-w-0">
@@ -116,17 +115,17 @@ export function AdminShell({ user, children }: AdminShellProps) {
         <div className="grid grid-cols-2 gap-2">
           <Link
             href="/"
-            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border px-3 py-2 text-xs font-semibold text-muted-foreground transition hover:bg-background hover:text-foreground"
+            className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-3 py-2 text-xs font-semibold text-muted-foreground transition hover:bg-surface hover:text-foreground"
           >
-            <Home className="size-3.5" />
+            <House className="size-3.5" weight="bold" />
             Site
           </Link>
           <button
             type="button"
             onClick={handleLogout}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border px-3 py-2 text-xs font-semibold text-muted-foreground transition hover:border-primary/40 hover:bg-primary/10 hover:text-foreground"
+            className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-3 py-2 text-xs font-semibold text-muted-foreground transition hover:border-primary/40 hover:bg-primary/10 hover:text-foreground"
           >
-            <LogOut className="size-3.5" />
+            <SignOut className="size-3.5" weight="bold" />
             Logout
           </button>
         </div>
@@ -162,16 +161,16 @@ export function AdminShell({ user, children }: AdminShellProps) {
             className="rounded-full border border-border p-2 text-muted-foreground md:hidden"
             aria-label="Buka menu admin"
           >
-            <Menu className="size-5" />
+            <List className="size-5" weight="bold" />
           </button>
           <div className="hidden items-center gap-2 text-xs font-semibold text-muted-foreground md:flex">
-            <PanelLeftClose className="size-4" />
+            <House className="size-4" weight="bold" />
             Dashboard data langsung dari Supabase
           </div>
           <div className="ml-auto flex items-center gap-2">
             <Link href="/portfolio">
               <Button variant="outline" size="sm" className="rounded-full">
-                <Briefcase className="mr-2 size-4" />
+                <Briefcase className="mr-2 size-4" weight="bold" />
                 Lihat public
               </Button>
             </Link>
@@ -211,11 +210,11 @@ export function AdminPageHeader({ eyebrow, title, description, actions }: AdminP
     <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
       <div className="max-w-3xl">
         {eyebrow && (
-          <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-primary">
+          <p className="mb-3 font-mono text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-primary-strong">
             {eyebrow}
           </p>
         )}
-        <h1 className="font-heading text-4xl font-bold leading-[0.95] tracking-[-0.06em] text-foreground sm:text-5xl">
+        <h1 className="font-heading text-4xl font-bold leading-[0.98] tracking-[-0.06em] text-foreground sm:text-5xl">
           {title}
         </h1>
         <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">{description}</p>
@@ -234,7 +233,7 @@ interface AdminMetricCardProps {
 
 export function AdminMetricCard({ label, value, description, icon }: AdminMetricCardProps) {
   return (
-    <div className="rounded-[1.75rem] border border-border bg-card p-5 shadow-[0_24px_80px_rgba(0,0,0,0.06)] dark:shadow-[0_24px_80px_rgba(255,255,255,0.03)]">
+    <div className="rounded-md border border-border bg-card p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-semibold text-muted-foreground">{label}</p>
@@ -242,7 +241,7 @@ export function AdminMetricCard({ label, value, description, icon }: AdminMetric
             {value}
           </p>
         </div>
-        <span className="grid size-12 place-items-center rounded-2xl bg-primary text-black">
+        <span className="grid size-12 shrink-0 place-items-center rounded-md bg-primary text-black">
           {icon}
         </span>
       </div>
@@ -261,7 +260,7 @@ interface AdminPanelProps {
 
 export function AdminPanel({ title, description, children, action, className }: AdminPanelProps) {
   return (
-    <section className={cn('rounded-[1.75rem] border border-border bg-card p-5', className)}>
+    <section className={cn('rounded-md border border-border bg-card p-5', className)}>
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
           <h2 className="font-heading text-2xl font-bold tracking-[-0.045em] text-foreground">
@@ -299,7 +298,7 @@ export function AdminStatusPill({
 
 export function AdminEmptyState({ label }: { label: string }) {
   return (
-    <div className="rounded-3xl border border-dashed border-border bg-surface p-8 text-center text-sm text-muted-foreground">
+    <div className="rounded-md border border-dashed border-border bg-surface p-8 text-center text-sm text-muted-foreground">
       {label}
     </div>
   );

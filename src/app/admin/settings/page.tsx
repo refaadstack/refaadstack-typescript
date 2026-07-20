@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ExternalLink, Search } from 'lucide-react';
+import { MagnifyingGlass, ShareNetwork } from '@phosphor-icons/react';
 import { AdminField, AdminFormActions, AdminNotice, AdminToggleRow } from '@/components/admin/admin-form';
 import { AdminLoading, AdminPageHeader, AdminPanel, AdminShell, AdminStatusPill } from '@/components/admin/admin-shell';
 import { Button } from '@/components/ui/button';
@@ -117,7 +117,7 @@ export default function AdminSettingsPage() {
             </AdminStatusPill>
             <Button asChild variant="outline" className="rounded-full">
               <Link href="/sitemap.xml" target="_blank">
-                <ExternalLink className="mr-2 size-4" />
+                <ShareNetwork className="mr-2 size-4" />
                 Sitemap
               </Link>
             </Button>
@@ -138,7 +138,7 @@ export default function AdminSettingsPage() {
                   name="site_title"
                   value={formData.site_title}
                   onChange={handleChange}
-                  className="mt-2 rounded-2xl bg-surface"
+                  className="mt-2 rounded-md bg-surface"
                   required
                 />
               </AdminField>
@@ -149,7 +149,7 @@ export default function AdminSettingsPage() {
                   name="site_description"
                   value={formData.site_description}
                   onChange={handleChange}
-                  className="mt-2 rounded-2xl bg-surface"
+                  className="mt-2 rounded-md bg-surface"
                   rows={4}
                   required
                 />
@@ -166,7 +166,7 @@ export default function AdminSettingsPage() {
                   value={formData.site_keywords}
                   onChange={handleChange}
                   placeholder="software house, website, POS"
-                  className="mt-2 rounded-2xl bg-surface"
+                  className="mt-2 rounded-md bg-surface"
                 />
               </AdminField>
 
@@ -178,7 +178,7 @@ export default function AdminSettingsPage() {
                     value={formData.author_name}
                     onChange={handleChange}
                     placeholder="RefaadStack"
-                    className="mt-2 rounded-2xl bg-surface"
+                    className="mt-2 rounded-md bg-surface"
                   />
                 </AdminField>
 
@@ -196,7 +196,7 @@ export default function AdminSettingsPage() {
                           : '',
                       }))
                     }
-                    className="mt-2 rounded-2xl bg-surface"
+                    className="mt-2 rounded-md bg-surface"
                   />
                 </AdminField>
               </div>
@@ -206,7 +206,7 @@ export default function AdminSettingsPage() {
           <AdminPanel
             title="Indexing"
             description="Kontrol crawl untuk halaman utama."
-            action={<Search className="size-5 text-primary" />}
+            action={<MagnifyingGlass className="size-5 text-primary" />}
           >
             <div className="space-y-3">
               <AdminToggleRow
@@ -239,7 +239,7 @@ export default function AdminSettingsPage() {
                 value={formData.og_image_url}
                 onChange={handleChange}
                 placeholder="/og-image.png"
-                className="mt-2 rounded-2xl bg-surface"
+                className="mt-2 rounded-md bg-surface"
               />
             </AdminField>
 
@@ -250,7 +250,7 @@ export default function AdminSettingsPage() {
                 value={formData.canonical_url}
                 onChange={handleChange}
                 placeholder="https://www.refaadstack.com"
-                className="mt-2 rounded-2xl bg-surface"
+                className="mt-2 rounded-md bg-surface"
               />
             </AdminField>
           </div>
