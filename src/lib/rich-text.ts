@@ -8,14 +8,16 @@ export function isRichHtml(value: unknown) {
 
 const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
   allowedTags: sanitizeHtml.defaults.allowedTags.concat([
-    'img', 'h1', 'h2', 'h3', 'h4', 'figure', 'figcaption',
+    'img', 'h1', 'h2', 'h3', 'h4', 'figure', 'figcaption', 'iframe',
   ]),
   allowedAttributes: {
     ...sanitizeHtml.defaults.allowedAttributes,
     img: ['src', 'alt', 'width', 'height', 'loading'],
     a: ['href', 'target', 'rel'],
+    iframe: ['src', 'width', 'height', 'frameborder', 'allowfullscreen', 'allow', 'style', 'title'],
   },
   allowedSchemes: ['http', 'https', 'mailto'],
+  allowedIframeHostnames: ['www.youtube.com', 'youtube.com', 'www.youtube-nocookie.com', 'player.vimeo.com'],
   disallowedTagsMode: 'discard',
 };
 
