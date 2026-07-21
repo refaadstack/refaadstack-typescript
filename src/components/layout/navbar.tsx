@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { ChatCircle, List, X } from '@phosphor-icons/react';
+import { ChatCircle, List, MagnifyingGlass, X } from '@phosphor-icons/react';
 import { Container } from '@/components/public/container';
 import { ThemeToggle } from '@/components/public/theme-toggle';
 import { Button } from '@/components/ui/button';
@@ -72,6 +72,9 @@ export function Navbar() {
           </div>
 
           <div className="hidden items-center gap-3 md:flex">
+            <Link href="/search" className="inline-flex size-10 items-center justify-center rounded-lg text-muted-foreground transition hover:text-foreground" aria-label="Pencarian">
+              <MagnifyingGlass className="size-5" weight="bold" />
+            </Link>
             <ThemeToggle />
             <Button asChild size="sm">
               <a
