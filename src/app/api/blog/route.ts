@@ -20,14 +20,6 @@ function checkRateLimit(request: NextRequest): boolean {
   return true;
 }
 
-// Cleanup stale entries every 5 minutes
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, val] of rateStore) {
-    if (now > val.resetAt) rateStore.delete(key);
-  }
-}, 300_000);
-
 function slugify(text: string): string {
   return text
     .toLowerCase()
