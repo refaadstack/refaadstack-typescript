@@ -1,6 +1,10 @@
-import { hashPassword } from '@/lib/auth';
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest } from 'next/server';
+import crypto from 'crypto';
+
+function hashPassword(password: string): string {
+  return crypto.createHash('sha256').update(password + 'refaadstack_salt').digest('hex');
+}
 
 export async function GET(request: NextRequest) {
   const key = request.nextUrl.searchParams.get('key');
@@ -19,7 +23,7 @@ export async function GET(request: NextRequest) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
-    const hash = await hashPassword(password);
+    const hash = hashPassword(password);
 
     const { error: deleteError } = await supabase
       .from('admins')

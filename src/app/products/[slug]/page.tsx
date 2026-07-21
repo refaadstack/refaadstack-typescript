@@ -6,15 +6,11 @@ import { DetailSections } from '@/components/public/detail-sections';
 import { JsonLd } from '@/components/public/json-ld';
 import { PublicShell } from '@/components/public/public-shell';
 import { resolveImageSrc } from '@/lib/assets';
-import { getPublicProductBySlug, getPublicProducts } from '@/lib/public-data';
+import { getPublicProductBySlug } from '@/lib/public-data';
 
 export const revalidate = 3600;
 export const dynamicParams = true;
-
-export async function generateStaticParams() {
-  const products = await getPublicProducts();
-  return products.map((product) => ({ slug: product.slug }));
-}
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({
   params,

@@ -9,16 +9,12 @@ import { PublicShell } from '@/components/public/public-shell';
 import { RichTextContent } from '@/components/public/rich-text-content';
 import { ScreenshotFrame } from '@/components/public/screenshot-frame';
 import { resolveImageSrc } from '@/lib/assets';
-import { getPublicBlogPostBySlug, getPublicBlogPosts } from '@/lib/public-data';
+import { getPublicBlogPostBySlug } from '@/lib/public-data';
 import { formatDate } from '@/lib/utils';
 
 export const revalidate = 3600;
 export const dynamicParams = true;
-
-export async function generateStaticParams() {
-  const posts = await getPublicBlogPosts();
-  return posts.map((post) => ({ slug: post.slug }));
-}
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({
   params,

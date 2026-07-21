@@ -6,15 +6,11 @@ import { DetailSections } from '@/components/public/detail-sections';
 import { JsonLd } from '@/components/public/json-ld';
 import { PublicShell } from '@/components/public/public-shell';
 import { resolveImageSrc } from '@/lib/assets';
-import { getPublicProjectBySlug, getPublicProjects } from '@/lib/public-data';
+import { getPublicProjectBySlug } from '@/lib/public-data';
 
 export const revalidate = 3600;
 export const dynamicParams = true;
-
-export async function generateStaticParams() {
-  const projects = await getPublicProjects();
-  return projects.map((project) => ({ slug: project.slug }));
-}
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({
   params,
