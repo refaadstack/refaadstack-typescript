@@ -85,6 +85,7 @@ export interface BlogPostInput {
   excerpt: string | null;
   content: string | null;
   category: string | null;
+  tags: string[] | null;
   reading_time: string | null;
   image_url: string | null;
   author_name: string | null;

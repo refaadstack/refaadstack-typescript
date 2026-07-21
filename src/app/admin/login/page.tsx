@@ -28,11 +28,7 @@ export default function AdminLoginPage() {
         return;
       }
 
-      if (result.detail) {
-        setError(`${result.error}: ${result.detail}`);
-      } else {
-        setError(result.error || 'Login gagal');
-      }
+      setError(result.error || 'Login gagal');
     } catch (err) {
       setError('Server error: ' + (err instanceof Error ? err.message : String(err)));
     } finally {

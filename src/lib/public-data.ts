@@ -77,6 +77,7 @@ export interface PublicBlogPost {
   publishedAt: string;
   readingTime: string;
   category: string;
+  tags: string[];
   image: string;
   authorName: string;
   featured: boolean;
@@ -282,8 +283,9 @@ export async function getPublicBlogPosts(): Promise<PublicBlogPost[]> {
           excerpt: cleanCopy(post.excerpt),
           publishedAt: cleanCopy(post.published_at, new Date().toISOString()),
           readingTime: cleanCopy(post.reading_time, '5 menit'),
-          category: cleanCopy(post.category, 'Article'),
-          image: cleanCopy(post.image_url, '/images/refaadstack-system-still.png'),
+        category: cleanCopy(post.category, 'Article'),
+        tags: cleanList(post.tags),
+        image: cleanCopy(post.image_url, '/images/refaadstack-system-still.png'),
           authorName: cleanCopy(post.author_name, 'RefaadStack'),
           featured: Boolean(post.featured),
           contentHtml: richContent,

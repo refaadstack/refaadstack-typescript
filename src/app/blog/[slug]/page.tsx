@@ -134,6 +134,20 @@ export default async function BlogDetailPage({
           />
 
           <div className="mx-auto max-w-3xl py-16 sm:py-24">
+            {post.tags?.length > 0 && (
+              <div className="mb-10 flex flex-wrap items-center gap-2">
+                <span className="text-xs font-semibold text-muted-foreground">Tags:</span>
+                {post.tags.map((tag) => (
+                  <Link
+                    key={tag}
+                    href={`/blog?tag=${encodeURIComponent(tag)}`}
+                    className="rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
+                  >
+                    {tag}
+                  </Link>
+                ))}
+              </div>
+            )}
             {post.contentHtml ? (
               <RichTextContent html={post.contentHtml} />
             ) : (

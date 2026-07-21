@@ -147,6 +147,7 @@ export async function POST(request: NextRequest) {
       excerpt: body.excerpt?.trim() || autoExcerpt(content),
       content,
       category: body.category?.trim() || 'Article',
+      tags: Array.isArray(body.tags) ? body.tags.map((t: string) => String(t).trim()).filter(Boolean) : [],
       reading_time: body.reading_time?.trim() || estimateReadingTime(content),
       image_url: body.image_url?.trim() || '/og-image.png',
       author_name: body.author_name?.trim() || 'RefaadStack',
@@ -221,6 +222,7 @@ export async function PUT(request: NextRequest) {
     }
     if (body.excerpt?.trim()) updates.excerpt = body.excerpt.trim();
     if (body.category?.trim()) updates.category = body.category.trim();
+    if (Array.isArray(body.tags)) updates.tags = body.tags.map((t: string) => String(t).trim()).filter(Boolean);
     if (body.image_url?.trim()) updates.image_url = body.image_url.trim();
     if (body.author_name?.trim()) updates.author_name = body.author_name.trim();
     if (body.reading_time?.trim()) updates.reading_time = body.reading_time.trim();
