@@ -34,7 +34,12 @@ export async function GET(request: NextRequest) {
   }
 
   return Response.json({
-    endpoint: 'POST https://www.refaadstack.com/api/blog',
+    methods: {
+      GET: 'Docs — returns this spec',
+      POST: 'Create new article',
+      PUT: 'Update article by slug',
+      DELETE: 'Delete article by slug',
+    },
     auth: { header: 'x-api-key', value: '<your-key>' },
     fields: {
       title: { type: 'string', required: true, description: 'Judul artikel (max 70 char)' },
@@ -145,5 +150,126 @@ export async function POST(request: NextRequest) {
       { success: false, error: e.message || String(e) },
       { status: 500 }
     );
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  const apiKey = request.headers.get('x-api-key');
+  const expectedKey = process.env.BLOG_API_KEY;
+  if (!expectedKey || apiKey !== expectedKey) {
+    return Response.json({ success: false, error: 'Invalid API key' }, { status: 403 });
+  }
+
+  try {
+    const body = await request.json();
+    const slug = body.slug?.trim();
+    if (!slug) {
+      return Response.json({ success: false, error: 'Slug is required' }, { status: 400 });
+    }
+
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
+    const { data: existing } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('slug', slug)
+      .single();
+
+    if (!existing) {
+      return Response.json({ success: false, error: 'Article not found' }, { status: 404 });
+    }
+
+    const updates: Record<string, any> = { updated_at: new Date().toISOString() };
+    if (body.title?.trim()) updates.title = body.title.trim();
+    if (body.content?.trim()) {
+      updates.content = body.content.trim();
+      if (!body.excerpt) updates.excerpt = autoExcerpt(body.content.trim());
+      if (!body.reading_time) updates.reading_time = estimateReadingTime(body.content.trim());
+    }
+    if (body.excerpt?.trim()) updates.excerpt = body.excerpt.trim();
+    if (body.category?.trim()) updates.category = body.category.trim();
+    if (body.image_url?.trim()) updates.image_url = body.image_url.trim();
+    if (body.author_name?.trim()) updates.author_name = body.author_name.trim();
+    if (body.reading_time?.trim()) updates.reading_time = body.reading_time.trim();
+    if (body.slug && body.slug.trim() !== slug) {
+      const { data: conflict } = await supabase
+        .from('blog_posts')
+        .select('slug')
+        .eq('slug', body.slug.trim())
+        .maybeSingle();
+      if (!conflict) updates.slug = body.slug.trim();
+    }
+    if (typeof body.is_published === 'boolean') updates.is_published = body.is_published;
+    if (typeof body.featured === 'boolean') updates.featured = body.featured;
+
+    const { data: updated, error } = await supabase
+      .from('blog_posts')
+      .update(updates)
+      .eq('slug', slug)
+      .select('id, title, slug, created_at')
+      .single();
+
+    if (error) {
+      return Response.json({ success: false, error: error.message }, { status: 500 });
+    }
+
+    return Response.json({
+      success: true,
+      post: {
+        id: updated.id,
+        title: updated.title,
+        slug: updated.slug,
+        url: `https://www.refaadstack.com/blog/${updated.slug}`,
+        created_at: updated.created_at,
+      },
+    });
+  } catch (e: any) {
+    return Response.json({ success: false, error: e.message || String(e) }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  const apiKey = request.headers.get('x-api-key');
+  const expectedKey = process.env.BLOG_API_KEY;
+  if (!expectedKey || apiKey !== expectedKey) {
+    return Response.json({ success: false, error: 'Invalid API key' }, { status: 403 });
+  }
+
+  try {
+    const slug = request.nextUrl.searchParams.get('slug');
+    if (!slug) {
+      return Response.json({ success: false, error: 'Slug query parameter is required' }, { status: 400 });
+    }
+
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
+    const { data: existing } = await supabase
+      .from('blog_posts')
+      .select('id')
+      .eq('slug', slug)
+      .single();
+
+    if (!existing) {
+      return Response.json({ success: false, error: 'Article not found' }, { status: 404 });
+    }
+
+    const { error } = await supabase
+      .from('blog_posts')
+      .delete()
+      .eq('slug', slug);
+
+    if (error) {
+      return Response.json({ success: false, error: error.message }, { status: 500 });
+    }
+
+    return Response.json({ success: true, slug });
+  } catch (e: any) {
+    return Response.json({ success: false, error: e.message || String(e) }, { status: 500 });
   }
 }
