@@ -26,6 +26,48 @@ function autoExcerpt(content: string, maxLen = 140): string {
   return text.substring(0, maxLen).replace(/\s+\S*$/, '') + '…';
 }
 
+export async function GET(request: NextRequest) {
+  const apiKey = request.headers.get('x-api-key');
+  const expectedKey = process.env.BLOG_API_KEY;
+  if (!expectedKey || apiKey !== expectedKey) {
+    return Response.json({ success: false, error: 'Invalid API key' }, { status: 403 });
+  }
+
+  return Response.json({
+    endpoint: 'POST https://www.refaadstack.com/api/blog',
+    auth: { header: 'x-api-key', value: '<your-key>' },
+    fields: {
+      title: { type: 'string', required: true, description: 'Judul artikel (max 70 char)' },
+      content: { type: 'string (HTML)', required: true, description: 'Isi artikel dalam HTML' },
+      excerpt: { type: 'string', required: false, default: '140 chars pertama dari content' },
+      category: { type: 'string', required: false, default: 'Article', examples: ['SEO', 'Web Development', 'Bisnis Digital', 'UMKM'] },
+      slug: { type: 'string', required: false, default: 'auto dari title', description: 'Duplikat otomatis diberi suffix' },
+      image_url: { type: 'string', required: false, default: '/og-image.png' },
+      author_name: { type: 'string', required: false, default: 'RefaadStack' },
+      reading_time: { type: 'string', required: false, default: 'auto (1 menit per 180 kata)' },
+      is_published: { type: 'boolean', required: false, default: true },
+      featured: { type: 'boolean', required: false, default: false },
+    },
+    target_keywords: [
+      { keyword: 'jasa pembuatan website jambi', slug: 'jasa-pembuatan-website-jambi', title: 'Jasa Pembuatan Website Profesional di Jambi untuk UMKM' },
+      { keyword: 'software house jambi', slug: 'cara-memilih-software-house-jambi', title: 'Cara Memilih Software House di Jambi yang Tepat' },
+      { keyword: 'pembuatan aplikasi web jambi', slug: 'biaya-pembuatan-aplikasi-web-jambi', title: 'Berapa Biaya Pembuatan Aplikasi Web di Jambi?' },
+      { keyword: 'aplikasi web untuk umkm', slug: 'aplikasi-web-untuk-umkm-jambi', title: 'Mengapa UMKM Jambi Butuh Aplikasi Web?' },
+      { keyword: 'aplikasi pos jambi', slug: 'aplikasi-pos-jambi', title: 'Aplikasi POS: Solusi Kasir Digital untuk Toko di Jambi' },
+      { keyword: 'proses pembuatan aplikasi', slug: 'proses-pembuatan-aplikasi', title: 'Proses Pembuatan Aplikasi dari Konsultasi hingga Launching' },
+    ],
+    rules: [
+      'Minimal 500 kata per artikel',
+      'Judul maksimal 70 karakter',
+      'Pakai <h2>, <h3> dengan target keyword',
+      'Paragraf pembuka harus mengandung target keyword',
+      'Tautkan internal ke /services, /portfolio, /products',
+      'Akhiri dengan CTA — ajak konsultasi via WhatsApp',
+      'Content wajib dalam HTML (bukan plain text)',
+    ],
+  });
+}
+
 export async function POST(request: NextRequest) {
   const apiKey = request.headers.get('x-api-key');
   const expectedKey = process.env.BLOG_API_KEY;
