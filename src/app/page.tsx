@@ -12,6 +12,7 @@ import { Testimonials } from '@/components/sections/testimonials';
 import { WhyUs } from '@/components/sections/why-us';
 import { Work } from '@/components/sections/work';
 import { getPublicHomeData } from '@/lib/public-data';
+import { getSiteSettings } from '@/lib/crud';
 
 export const revalidate = 3600;
 
@@ -47,11 +48,19 @@ export default async function HomePage() {
   const { services, projects, products, portfolios, testimonials, blogPosts } =
     await getPublicHomeData();
 
+  let heroImageUrl = '';
+  try {
+    const settings = await getSiteSettings();
+    heroImageUrl = settings.hero_image_url || '';
+  } catch {
+    // settings tidak tersedia — fallback ke local file
+  }
+
   return (
     <PublicShell>
       <JsonLd data={ORGANIZATION_SCHEMA} />
       <JsonLd data={WEBSITE_SCHEMA} />
-      <Hero />
+      <Hero heroImageUrl={heroImageUrl} />
       <Marquee />
       <Stats
         workCount={projects.length + portfolios.length}

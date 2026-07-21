@@ -7,10 +7,12 @@ import { Button } from '@/components/ui/button';
 import { publicImageExists } from '@/lib/assets';
 import { COMPANY } from '@/lib/constants';
 
-export function Hero() {
-  const heroImage = publicImageExists('/images/hero/main.png')
-    ? '/images/hero/main.png'
-    : null;
+export function Hero({ heroImageUrl = '' }: { heroImageUrl?: string }) {
+  const heroImage = heroImageUrl
+    ? heroImageUrl
+    : publicImageExists('/images/hero/main.png')
+      ? '/images/hero/main.png'
+      : null;
 
   return (
     <section id="hero" className="relative overflow-hidden border-b border-border pt-16">

@@ -750,6 +750,7 @@ export async function getSiteSettings(): Promise<SiteSettingsInput> {
       published_time: data.published_time || DEFAULT_SITE_SETTINGS.published_time,
       robots_index: data.robots_index ?? DEFAULT_SITE_SETTINGS.robots_index,
       robots_follow: data.robots_follow ?? DEFAULT_SITE_SETTINGS.robots_follow,
+      hero_image_url: data.hero_image_url || DEFAULT_SITE_SETTINGS.hero_image_url,
     };
   } catch {
     return DEFAULT_SITE_SETTINGS;

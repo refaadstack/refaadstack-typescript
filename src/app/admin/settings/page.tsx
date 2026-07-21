@@ -83,6 +83,7 @@ export default function AdminSettingsPage() {
           .split(',')
           .map((keyword) => keyword.trim())
           .filter(Boolean),
+        hero_image_url: formData.hero_image_url.trim(),
         og_image_url: formData.og_image_url.trim() || '/og-image.png',
         canonical_url: formData.canonical_url.trim() || 'https://www.refaadstack.com',
         author_name: formData.author_name.trim() || 'RefaadStack',
@@ -228,10 +229,20 @@ export default function AdminSettingsPage() {
         </div>
 
         <AdminPanel
-          title="Social preview"
-          description="Dipakai saat link website dibagikan ke WhatsApp, LinkedIn, X, dan platform lain."
+          title="Hero & social preview"
+          description="Hero image untuk homepage. Kalau kosong, pakai screenshot dari /public/images/hero/main.png. OG image dipakai saat link dibagikan."
         >
           <div className="grid gap-4 lg:grid-cols-2">
+            <AdminField label="Hero image URL" htmlFor="hero_image_url" hint="URL gambar untuk hero section homepage. Upload ke Supabase Storage atau pakai link eksternal.">
+              <Input
+                id="hero_image_url"
+                name="hero_image_url"
+                value={formData.hero_image_url}
+                onChange={(e) => setFormData((prev) => ({ ...prev, hero_image_url: e.target.value }))}
+                placeholder="/images/hero/main.png"
+                className="mt-2 rounded-md bg-surface"
+              />
+            </AdminField>
             <AdminField label="OG image URL" htmlFor="og_image_url">
               <Input
                 id="og_image_url"

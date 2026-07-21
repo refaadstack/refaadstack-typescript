@@ -8,6 +8,7 @@ export interface SiteSettingsInput {
   published_time: string;
   robots_index: boolean;
   robots_follow: boolean;
+  hero_image_url: string;
 }
 
 export const DEFAULT_SITE_SETTINGS: SiteSettingsInput = {
@@ -30,4 +31,5 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsInput = {
   published_time: '2026-05-01T00:00:00.000Z',
   robots_index: true,
   robots_follow: true,
+  hero_image_url: '',
 };
