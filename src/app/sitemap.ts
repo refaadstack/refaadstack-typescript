@@ -9,9 +9,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/products`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
     { url: `${BASE_URL}/portfolio`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
     { url: `${BASE_URL}/blog`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${BASE_URL}/jasa-pembuatan-website-jambi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/pembuatan-aplikasi-web-jambi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/software-house-jambi`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
   ];
 }
 
