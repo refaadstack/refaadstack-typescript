@@ -1,35 +1,32 @@
+import sanitizeHtml from 'sanitize-html';
+
 const HTML_TAG_PATTERN = /<\/?[a-z][\s\S]*>/i;
 
 export function isRichHtml(value: unknown) {
   return typeof value === 'string' && HTML_TAG_PATTERN.test(value);
 }
 
+const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
+  allowedTags: sanitizeHtml.defaults.allowedTags.concat([
+    'img', 'h1', 'h2', 'h3', 'h4', 'figure', 'figcaption',
+  ]),
+  allowedAttributes: {
+    ...sanitizeHtml.defaults.allowedAttributes,
+    img: ['src', 'alt', 'width', 'height', 'loading'],
+    a: ['href', 'target', 'rel'],
+  },
+  allowedSchemes: ['http', 'https', 'mailto'],
+  disallowedTagsMode: 'discard',
+};
+
 export function sanitizeRichHtml(value: unknown) {
   if (typeof value !== 'string') return '';
-
-  return value
-    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '')
-    .replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, '')
-    .replace(/<iframe[\s\S]*?>[\s\S]*?<\/iframe>/gi, '')
-    .replace(/\son[a-z]+\s*=\s*(['"]).*?\1/gi, '')
-    .replace(/\son[a-z]+\s*=\s*[^\s>]+/gi, '')
-    .replace(/\s(href|src)\s*=\s*(['"])\s*javascript:[\s\S]*?\2/gi, '')
-    .replace(/\s(href|src)\s*=\s*javascript:[^\s>]+/gi, '')
-    .replace(/<p>\s*<\/p>/gi, '')
-    .trim();
+  return sanitizeHtml(value, SANITIZE_OPTIONS).trim();
 }
 
 export function plainTextFromRichHtml(value: unknown) {
   if (typeof value !== 'string') return '';
-
-  return value
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
+  return sanitizeHtml(value, { allowedTags: [], allowedAttributes: {} })
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -64,20 +61,16 @@ export function markdownLiteToRichHtml(value: unknown) {
       if (block.startsWith('### ')) {
         return `<h3>${escapeHtml(block.replace(/^###\s+/, ''))}</h3>`;
       }
-
       if (block.startsWith('## ')) {
         return `<h2>${escapeHtml(block.replace(/^##\s+/, ''))}</h2>`;
       }
-
       const lines = block.split('\n').map((line) => line.trim()).filter(Boolean);
       const isList = lines.every((line) => /^[-*]\s+/.test(line));
-
       if (isList) {
         return `<ul>${lines
           .map((line) => `<li>${escapeHtml(line.replace(/^[-*]\s+/, ''))}</li>`)
           .join('')}</ul>`;
       }
-
       return `<p>${escapeHtml(lines.join(' '))}</p>`;
     })
     .join('');

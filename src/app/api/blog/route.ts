@@ -1,6 +1,33 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest } from 'next/server';
 
+const RATE_LIMIT = 20;
+const RATE_WINDOW = 60_000;
+const rateStore = new Map<string, { count: number; resetAt: number }>();
+
+function checkRateLimit(request: NextRequest): boolean {
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const now = Date.now();
+  const entry = rateStore.get(ip);
+
+  if (!entry || now > entry.resetAt) {
+    rateStore.set(ip, { count: 1, resetAt: now + RATE_WINDOW });
+    return true;
+  }
+
+  if (entry.count >= RATE_LIMIT) return false;
+  entry.count++;
+  return true;
+}
+
+// Cleanup stale entries every 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, val] of rateStore) {
+    if (now > val.resetAt) rateStore.delete(key);
+  }
+}, 300_000);
+
 function slugify(text: string): string {
   return text
     .toLowerCase()
@@ -26,12 +53,21 @@ function autoExcerpt(content: string, maxLen = 140): string {
   return text.substring(0, maxLen).replace(/\s+\S*$/, '') + '…';
 }
 
-export async function GET(request: NextRequest) {
+function guard(request: NextRequest): Response | null {
   const apiKey = request.headers.get('x-api-key');
   const expectedKey = process.env.BLOG_API_KEY;
   if (!expectedKey || apiKey !== expectedKey) {
     return Response.json({ success: false, error: 'Invalid API key' }, { status: 403 });
   }
+  if (!checkRateLimit(request)) {
+    return Response.json({ success: false, error: 'Rate limit exceeded. Max 20 req/min.' }, { status: 429 });
+  }
+  return null;
+}
+
+export async function GET(request: NextRequest) {
+  const auth = guard(request);
+  if (auth) return auth;
 
   return Response.json({
     methods: {
@@ -74,11 +110,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const apiKey = request.headers.get('x-api-key');
-  const expectedKey = process.env.BLOG_API_KEY;
-  if (!expectedKey || apiKey !== expectedKey) {
-    return Response.json({ success: false, error: 'Invalid API key' }, { status: 403 });
-  }
+  const auth = guard(request);
+  if (auth) return auth;
 
   try {
     const body = await request.json();
@@ -154,11 +187,8 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  const apiKey = request.headers.get('x-api-key');
-  const expectedKey = process.env.BLOG_API_KEY;
-  if (!expectedKey || apiKey !== expectedKey) {
-    return Response.json({ success: false, error: 'Invalid API key' }, { status: 403 });
-  }
+  const auth = guard(request);
+  if (auth) return auth;
 
   try {
     const body = await request.json();
@@ -232,11 +262,8 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const apiKey = request.headers.get('x-api-key');
-  const expectedKey = process.env.BLOG_API_KEY;
-  if (!expectedKey || apiKey !== expectedKey) {
-    return Response.json({ success: false, error: 'Invalid API key' }, { status: 403 });
-  }
+  const auth = guard(request);
+  if (auth) return auth;
 
   try {
     const slug = request.nextUrl.searchParams.get('slug');
