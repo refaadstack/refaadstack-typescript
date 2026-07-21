@@ -13,7 +13,7 @@ export function CTA() {
               Punya bisnis yang perlu dibantu digitalisasi?
             </h2>
             <p className="mt-6 max-w-[55ch] text-pretty text-lg leading-8 text-black/70">
-              Butuh pembuatan aplikasi, website, atau sistem digital untuk bisnismu? Ceritakan kebutuhanmu — konsultasi gratis, tanpa kewajiban.
+              Butuh pembuatan aplikasi, website, atau sistem digital untuk bisnismu? Ceritakan kebutuhanmu — kami bantu kasih arahan yang tepat.
             </p>
             <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
               <a

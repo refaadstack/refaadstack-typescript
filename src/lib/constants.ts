@@ -30,7 +30,7 @@ export const PROCESS_STEPS = [
     number: '01',
     title: 'Konsultasi',
     description:
-      'Kita diskusi kebutuhan, tujuan, dan scope project. Gratis dan tanpa komitmen.',
+      'Kita diskusi kebutuhan, tujuan, dan scope project. Ngobrol santai dulu aja.',
   },
   {
     number: '02',
