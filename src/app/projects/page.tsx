@@ -6,7 +6,7 @@ import { PublicShell } from '@/components/public/public-shell';
 import { resolveImageSrc } from '@/lib/assets';
 import { getPublicProjects } from '@/lib/public-data';
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: 'Project Pembuatan Aplikasi & Website',

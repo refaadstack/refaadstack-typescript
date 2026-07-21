@@ -12,7 +12,7 @@ import { resolveImageSrc } from '@/lib/assets';
 import { getPublicBlogPostBySlug } from '@/lib/public-data';
 import { formatDate } from '@/lib/utils';
 
-export const revalidate = 3600;
+export const revalidate = 60;
 export const dynamicParams = true;
 export const dynamic = 'force-dynamic';
 

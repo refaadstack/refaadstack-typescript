@@ -7,7 +7,7 @@ import { resolveImageSrc } from '@/lib/assets';
 import { getPublicBlogPosts } from '@/lib/public-data';
 import { formatDate } from '@/lib/utils';
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: 'Blog Pembuatan Aplikasi & Web Development',

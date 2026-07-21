@@ -14,7 +14,7 @@ import { Work } from '@/components/sections/work';
 import { getPublicHomeData } from '@/lib/public-data';
 import { getSiteSettings } from '@/lib/crud';
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 const ORGANIZATION_SCHEMA = {
   '@context': 'https://schema.org',
