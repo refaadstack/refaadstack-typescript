@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from '@phosphor-icons/react/dist/ssr';
+import { Container } from '@/components/public/container';
 import { PublicShell } from '@/components/public/public-shell';
 import { Button } from '@/components/ui/button';
 
