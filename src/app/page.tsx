@@ -44,6 +44,39 @@ const WEBSITE_SCHEMA = {
   inLanguage: 'id-ID',
 };
 
+const LOCAL_BUSINESS_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  name: 'RefaadStack',
+  image: 'https://www.refaadstack.com/logo.png',
+  url: 'https://www.refaadstack.com',
+  email: 'refaad16@gmail.com',
+  telephone: '+62 823 7433 8273',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Jambi',
+    addressCountry: 'ID',
+  },
+  areaServed: ['Jambi', 'Indonesia'],
+  sameAs: [
+    'https://www.instagram.com/refaadstack/',
+    'https://github.com/refaadstack',
+    'https://www.linkedin.com/in/redho-fadillah-adha/',
+  ],
+  knowsAbout: [
+    'Software Development',
+    'Web Development',
+    'Mobile App Development',
+    'POS System',
+  ],
+  openingHoursSpecification: {
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+    opens: '09:00',
+    closes: '17:00',
+  },
+};
+
 export default async function HomePage() {
   const { services, projects, products, portfolios, testimonials, blogPosts } =
     await getPublicHomeData();
@@ -60,6 +93,7 @@ export default async function HomePage() {
     <PublicShell>
       <JsonLd data={ORGANIZATION_SCHEMA} />
       <JsonLd data={WEBSITE_SCHEMA} />
+      <JsonLd data={LOCAL_BUSINESS_SCHEMA} />
       <Hero heroImageUrl={heroImageUrl} />
       <Marquee />
       <Stats

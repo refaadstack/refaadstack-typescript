@@ -10,11 +10,20 @@ import { formatDate } from '@/lib/utils';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Blog',
+  title: 'Blog Pembuatan Aplikasi & Web Development',
   description:
     'Artikel RefaadStack tentang pengembangan website, produk digital, sistem bisnis, dan technical SEO.',
   alternates: {
     canonical: '/blog',
+  },
+  openGraph: {
+    title: 'Blog Pembuatan Aplikasi & Web Development | RefaadStack',
+    description:
+      'Artikel tentang pembuatan aplikasi web, optimasi bisnis digital, dan tips teknologi dari software house Jambi.',
+    url: '/blog',
+    siteName: 'RefaadStack',
+    locale: 'id_ID',
+    type: 'website',
   },
 };
 

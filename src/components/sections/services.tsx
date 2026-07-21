@@ -11,7 +11,7 @@ export function Services({ services }: { services: PublicService[] }) {
         <SectionHeading
           eyebrow="Layanan"
           title="Dari kebutuhan bisnis menuju sistem yang dapat dipakai."
-          description="Kami menggabungkan strategi, desain, dan engineering untuk membangun pengalaman digital yang utuh."
+          description="Kami menggabungkan strategi, desain, dan engineering untuk pembuatan aplikasi web, sistem POS, dan platform digital untuk bisnis Anda."
         />
 
         <div className="mt-14 border-b border-border">

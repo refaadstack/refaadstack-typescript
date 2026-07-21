@@ -9,11 +9,20 @@ import { getPublicProducts } from '@/lib/public-data';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Produk',
+  title: 'Produk Digital & Aplikasi Siap Pakai',
   description:
     'Produk digital RefaadStack untuk kasir retail, undangan digital, dan kebutuhan operasional bisnis.',
   alternates: {
     canonical: '/products',
+  },
+  openGraph: {
+    title: 'Produk Digital & Aplikasi Siap Pakai | RefaadStack',
+    description:
+      'RefaadPOS, undangan digital, dan aplikasi siap pakai untuk bisnis Anda. Dikembangkan oleh software house Jambi.',
+    url: '/products',
+    siteName: 'RefaadStack',
+    locale: 'id_ID',
+    type: 'website',
   },
 };
 

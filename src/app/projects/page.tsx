@@ -9,11 +9,20 @@ import { getPublicProjects } from '@/lib/public-data';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Project',
+  title: 'Project Pembuatan Aplikasi & Website',
   description:
     'Studi kasus project RefaadStack untuk website, aplikasi web, POS, dan platform SaaS.',
   alternates: {
     canonical: '/projects',
+  },
+  openGraph: {
+    title: 'Project Pembuatan Aplikasi & Website | RefaadStack',
+    description:
+      'Studi kasus project pembuatan aplikasi dan website oleh RefaadStack — software house dari Jambi.',
+    url: '/projects',
+    siteName: 'RefaadStack',
+    locale: 'id_ID',
+    type: 'website',
   },
 };
 

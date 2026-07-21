@@ -23,7 +23,7 @@ export function Stats({
     },
     {
       value: 'Jambi',
-      label: 'Base kami, kerja remote ke seluruh Indonesia',
+      label: 'Software house di Jambi — kerja remote ke seluruh Indonesia',
     },
   ];
 

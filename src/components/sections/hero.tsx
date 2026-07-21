@@ -21,7 +21,7 @@ export function Hero({ heroImageUrl = '' }: { heroImageUrl?: string }) {
         <div className="relative z-10">
           <Reveal>
             <p className="mb-5 font-mono text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-primary-strong">
-              Software house untuk UMKM Jambi
+              Software house Jambi · Pembuatan Aplikasi &amp; Website
             </p>
             <h1 className="text-balance font-heading text-[2.65rem] font-bold leading-[1.02] tracking-[-0.035em] text-foreground sm:text-6xl lg:text-[4.35rem]">
               {'Bikin website & aplikasi untuk bisnis kamu '}

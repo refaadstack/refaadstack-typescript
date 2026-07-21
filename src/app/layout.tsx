@@ -16,9 +16,9 @@ const syne = Syne({
 });
 
 const SITE_URL = 'https://www.refaadstack.com';
-const SEO_TITLE = 'RefaadStack | Software House & Web Development Jambi';
+const SEO_TITLE = 'Software House Jambi | Pembuatan Aplikasi & Website | RefaadStack';
 const SEO_DESCRIPTION =
-  'RefaadStack software house Jambi. Jasa pembuatan website, POS system, SaaS, dan aplikasi web untuk bisnis Anda. Konsultasi gratis.';
+  'RefaadStack software house di Jambi. Jasa pembuatan aplikasi web, website, POS system, dan SaaS untuk bisnis Anda. Konsultasi gratis.';
 const SEO_KEYWORDS = [
   'RefaadStack',
   'Refaadstack Jambi',

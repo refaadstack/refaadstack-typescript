@@ -52,6 +52,9 @@ export function WhyUs() {
             <span className="text-primary-strong">mitra teknologi</span> yang ikut
             memikirkan pertumbuhan bisnis kamu jangka panjang.
           </h2>
+          <p className="mt-5 max-w-4xl text-pretty text-lg leading-8 text-muted-foreground">
+            Sebagai software house di Jambi, kami menjaga keputusan desain dan teknis tetap dekat dengan pekerjaan nyata di dalam bisnis.
+          </p>
         </Reveal>
 
         <div className="mt-14 grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3">

@@ -9,11 +9,20 @@ import { getPublicPortfolios } from '@/lib/public-data';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Portfolio',
+  title: 'Portfolio Pembuatan Website & Aplikasi',
   description:
     'Portfolio website, aplikasi, POS, SaaS, dan sistem digital yang dikerjakan oleh RefaadStack.',
   alternates: {
     canonical: '/portfolio',
+  },
+  openGraph: {
+    title: 'Portfolio Pembuatan Website & Aplikasi | RefaadStack',
+    description:
+      'Lihat portfolio website, aplikasi, dan sistem digital yang dibangun RefaadStack untuk klien di Jambi dan Indonesia.',
+    url: '/portfolio',
+    siteName: 'RefaadStack',
+    locale: 'id_ID',
+    type: 'website',
   },
 };
 
