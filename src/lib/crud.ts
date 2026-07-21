@@ -1,7 +1,6 @@
 'use server';
 
 import { createClient } from '@supabase/supabase-js';
-import { requireAdmin } from '@/lib/auth';
 import { DEFAULT_SITE_SETTINGS, SiteSettingsInput } from '@/lib/site-settings';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -203,7 +202,6 @@ export async function getPortfolioById(id: string) {
 }
 
 export async function createPortfolio(input: PortfolioInput) {
-     await requireAdmin();
   const { data, error } = await supabaseAdmin
     .from('portfolios')
     .insert(input as any)
@@ -215,7 +213,6 @@ export async function createPortfolio(input: PortfolioInput) {
 }
 
 export async function updatePortfolio(id: string, input: Partial<PortfolioInput>) {
-     await requireAdmin();
   const { data, error } = await supabaseAdmin
     .from('portfolios')
     .update({
@@ -231,7 +228,6 @@ export async function updatePortfolio(id: string, input: Partial<PortfolioInput>
 }
 
 export async function deletePortfolio(id: string) {
-     await requireAdmin();
   const images = await getPortfolioImages(id);
 
   const { error } = await supabaseAdmin.from('portfolios').delete().eq('id', id);
@@ -275,7 +271,6 @@ export async function addPortfolioImage(
 }
 
 export async function uploadPortfolioImage(
-     await requireAdmin();
   portfolioId: string,
   fileData: ImageUploadInput
 ): Promise<{ url: string; id: string }> {
@@ -286,12 +281,10 @@ export async function uploadPortfolioImage(
 }
 
 export async function deletePortfolioImageFile(imageUrl: string) {
-     await requireAdmin();
   await deleteImageFile(IMAGE_BUCKETS.portfolio, imageUrl);
 }
 
 export async function deletePortfolioImage(id: string) {
-     await requireAdmin();
   const { data: image } = await supabaseAdmin
     .from('portfolio_images')
     .select('image_url')
@@ -309,7 +302,6 @@ export async function deletePortfolioImage(id: string) {
 }
 
 export async function updatePortfolioImageOrder(id: string, sortOrder: number) {
-     await requireAdmin();
   const { data, error } = await supabaseAdmin
     .from('portfolio_images')
     .update({ sort_order: sortOrder })
@@ -344,7 +336,6 @@ export async function getProductById(id: string) {
 }
 
 export async function createProduct(input: ProductInput) {
-     await requireAdmin();
   const { data, error } = await supabaseAdmin
     .from('products')
     .insert(input as any)
@@ -356,7 +347,6 @@ export async function createProduct(input: ProductInput) {
 }
 
 export async function updateProduct(id: string, input: Partial<ProductInput>) {
-     await requireAdmin();
   const { data, error } = await supabaseAdmin
     .from('products')
     .update({
@@ -372,7 +362,6 @@ export async function updateProduct(id: string, input: Partial<ProductInput>) {
 }
 
 export async function uploadProductImage(
-     await requireAdmin();
   productId: string,
   fileData: ImageUploadInput
 ): Promise<{ url: string }> {
@@ -393,7 +382,6 @@ export async function uploadProductImage(
 }
 
 export async function uploadContentMedia(
-     await requireAdmin();
   folderId: string,
   fileData: ImageUploadInput
 ): Promise<{ url: string }> {
@@ -402,7 +390,6 @@ export async function uploadContentMedia(
 }
 
 export async function deleteProduct(id: string) {
-     await requireAdmin();
   const { data: product } = await supabaseAdmin
     .from('products')
     .select('image_url')
@@ -442,7 +429,6 @@ export async function getServiceById(id: string) {
 }
 
 export async function createService(input: ServiceInput) {
-     await requireAdmin();
   const { data, error } = await supabaseAdmin
     .from('services')
     .insert(input as any)
@@ -454,7 +440,6 @@ export async function createService(input: ServiceInput) {
 }
 
 export async function updateService(id: string, input: Partial<ServiceInput>) {
-     await requireAdmin();
   const { data, error } = await supabaseAdmin
     .from('services')
     .update({
@@ -470,7 +455,6 @@ export async function updateService(id: string, input: Partial<ServiceInput>) {
 }
 
 export async function deleteService(id: string) {
-     await requireAdmin();
   const { error } = await supabaseAdmin.from('services').delete().eq('id', id);
   if (error) throw new Error(error.message);
   return { success: true };
@@ -499,7 +483,6 @@ export async function getTestimonialById(id: string) {
 }
 
 export async function createTestimonial(input: TestimonialInput) {
-     await requireAdmin();
   const { data, error } = await supabaseAdmin
     .from('testimonials')
     .insert(input as any)
@@ -511,7 +494,6 @@ export async function createTestimonial(input: TestimonialInput) {
 }
 
 export async function updateTestimonial(id: string, input: Partial<TestimonialInput>) {
-     await requireAdmin();
   const { data, error } = await supabaseAdmin
     .from('testimonials')
     .update({
@@ -527,7 +509,6 @@ export async function updateTestimonial(id: string, input: Partial<TestimonialIn
 }
 
 export async function deleteTestimonial(id: string) {
-     await requireAdmin();
   const { error } = await supabaseAdmin.from('testimonials').delete().eq('id', id);
   if (error) throw new Error(error.message);
   return { success: true };
@@ -556,7 +537,6 @@ export async function getProjectById(id: string) {
 }
 
 export async function createProject(input: ProjectInput) {
-     await requireAdmin();
   const { data, error } = await supabaseAdmin
     .from('projects')
     .insert(input as any)
@@ -568,7 +548,6 @@ export async function createProject(input: ProjectInput) {
 }
 
 export async function updateProject(id: string, input: Partial<ProjectInput>) {
-     await requireAdmin();
   const { data, error } = await supabaseAdmin
     .from('projects')
     .update({
@@ -584,7 +563,6 @@ export async function updateProject(id: string, input: Partial<ProjectInput>) {
 }
 
 export async function deleteProject(id: string) {
-     await requireAdmin();
   const { error } = await supabaseAdmin.from('projects').delete().eq('id', id);
   if (error) throw new Error(error.message);
   return { success: true };
@@ -614,7 +592,6 @@ export async function getBlogPostById(id: string) {
 }
 
 export async function createBlogPost(input: BlogPostInput) {
-     await requireAdmin();
   const { data, error } = await supabaseAdmin
     .from('blog_posts')
     .insert(input as any)
@@ -626,7 +603,6 @@ export async function createBlogPost(input: BlogPostInput) {
 }
 
 export async function updateBlogPost(id: string, input: Partial<BlogPostInput>) {
-     await requireAdmin();
   const { data, error } = await supabaseAdmin
     .from('blog_posts')
     .update({
@@ -642,7 +618,6 @@ export async function updateBlogPost(id: string, input: Partial<BlogPostInput>) 
 }
 
 export async function deleteBlogPost(id: string) {
-     await requireAdmin();
   const { error } = await supabaseAdmin.from('blog_posts').delete().eq('id', id);
   if (error) throw new Error(error.message);
   return { success: true };
@@ -784,7 +759,6 @@ export async function getSiteSettings(): Promise<SiteSettingsInput> {
 }
 
 export async function updateSiteSettings(input: SiteSettingsInput) {
-     await requireAdmin();
   const { data, error } = await supabaseAdmin
     .from('site_settings')
     .upsert(
