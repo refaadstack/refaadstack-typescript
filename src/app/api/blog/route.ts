@@ -57,6 +57,13 @@ function guard(request: NextRequest): Response | null {
   return null;
 }
 
+function serverError(e: unknown): Response {
+  const msg = process.env.NODE_ENV === 'production'
+    ? 'Server error. Please try again later.'
+    : (e instanceof Error ? e.message : String(e));
+  return Response.json({ success: false, error: msg }, { status: 500 });
+}
+
 export async function GET(request: NextRequest) {
   const auth = guard(request);
   if (auth) return auth;
@@ -155,7 +162,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      return Response.json({ success: false, error: error.message }, { status: 500 });
+      return serverError(error);
     }
 
     return Response.json(
@@ -172,10 +179,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (e: any) {
-    return Response.json(
-      { success: false, error: e.message || String(e) },
-      { status: 500 }
-    );
+    return serverError(e);
   }
 }
 
@@ -237,7 +241,7 @@ export async function PUT(request: NextRequest) {
       .single();
 
     if (error) {
-      return Response.json({ success: false, error: error.message }, { status: 500 });
+      return serverError(error);
     }
 
     return Response.json({
@@ -251,7 +255,7 @@ export async function PUT(request: NextRequest) {
       },
     });
   } catch (e: any) {
-    return Response.json({ success: false, error: e.message || String(e) }, { status: 500 });
+    return serverError(e);
   }
 }
 
@@ -286,11 +290,11 @@ export async function DELETE(request: NextRequest) {
       .eq('slug', slug);
 
     if (error) {
-      return Response.json({ success: false, error: error.message }, { status: 500 });
+      return serverError(error);
     }
 
     return Response.json({ success: true, slug });
   } catch (e: any) {
-    return Response.json({ success: false, error: e.message || String(e) }, { status: 500 });
+    return serverError(e);
   }
 }
