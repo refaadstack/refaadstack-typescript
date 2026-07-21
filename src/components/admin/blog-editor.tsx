@@ -359,13 +359,16 @@ export function BlogEditor({ postId }: BlogEditorProps) {
                     className="mt-2 rounded-2xl bg-surface file:text-foreground"
                   />
                 </AdminField>
-                <Input
-                  name="image_url"
-                  value={form.image_url}
-                  onChange={updateField}
-                  className="rounded-2xl bg-surface"
-                  aria-label="Image URL"
-                />
+                <AdminField label="Atau paste URL gambar (Supabase Storage / external)" htmlFor="image_url">
+                  <Input
+                    id="image_url"
+                    name="image_url"
+                    value={form.image_url}
+                    onChange={updateField}
+                    placeholder="https://..."
+                    className="mt-2 rounded-2xl bg-surface"
+                  />
+                </AdminField>
                 {form.image_url ? (
                   <img
                     src={form.image_url}

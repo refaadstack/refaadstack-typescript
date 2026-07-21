@@ -268,13 +268,16 @@ export function ProjectEditor({ projectId }: ProjectEditorProps) {
                   className="rounded-2xl bg-background file:text-foreground"
                   aria-label="Upload gambar hero project"
                 />
-                <Input
-                  name="image_url"
-                  value={form.image_url}
-                  onChange={updateField}
-                  className="rounded-2xl bg-background"
-                  aria-label="URL gambar hero project"
-                />
+                <AdminField label="Atau paste URL gambar" htmlFor="image_url">
+                  <Input
+                    id="image_url"
+                    name="image_url"
+                    value={form.image_url}
+                    onChange={updateField}
+                    placeholder="https://..."
+                    className="mt-2 rounded-2xl bg-background"
+                  />
+                </AdminField>
                 {form.image_url ? (
                   <img
                     src={form.image_url}

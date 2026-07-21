@@ -44,6 +44,7 @@ export function ProductEditor({ id }: ProductEditorProps) {
   const router = useRouter();
   const isEditing = Boolean(id);
   const pendingImageRef = useRef<PendingImage | null>(null);
+  const [directImageUrl, setDirectImageUrl] = useState(product?.image_url || '');
   const [user, setUser] = useState<AdminUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -152,6 +153,7 @@ export function ProductEditor({ id }: ProductEditorProps) {
         description: formData.description.trim() || null,
         features: features.length > 0 ? features : null,
         price: formData.price || null,
+        image_url: directImageUrl.trim() || null,
         is_active: formData.is_active,
       };
 
@@ -302,6 +304,16 @@ export function ProductEditor({ id }: ProductEditorProps) {
                 accept="image/*"
                 onChange={handleImageSelect}
                 className="mt-2 rounded-2xl bg-surface file:text-foreground"
+              />
+            </AdminField>
+
+            <AdminField label="Atau paste URL gambar (Supabase Storage)" htmlFor="product-image-url">
+              <Input
+                id="product-image-url"
+                value={directImageUrl}
+                onChange={(e) => setDirectImageUrl(e.target.value)}
+                placeholder="https://..."
+                className="mt-2 rounded-2xl bg-surface"
               />
             </AdminField>
 
