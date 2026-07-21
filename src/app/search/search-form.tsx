@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { MagnifyingGlass, ArrowRight, CircleNotch } from '@phosphor-icons/react';
+import { MagnifyingGlass, ArrowRight, CircleNotch, ArrowLeft } from '@phosphor-icons/react';
 
 interface SearchResult {
   _type: 'blog' | 'project' | 'portfolio' | 'product';
@@ -90,6 +90,11 @@ export function SearchForm() {
 
   return (
     <div className="mx-auto max-w-3xl px-5 py-16 sm:py-24">
+      <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition hover:text-primary-strong mb-8">
+        <ArrowLeft className="size-4" weight="bold" />
+        Kembali ke beranda
+      </Link>
+
       <form onSubmit={handleSubmit} className="relative">
         <MagnifyingGlass className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" weight="bold" />
         <input
