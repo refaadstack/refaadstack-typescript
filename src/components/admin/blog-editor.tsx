@@ -23,7 +23,7 @@ import { fileToUploadData, validateImageFile } from '@/lib/image-upload';
 import { markdownLiteToRichHtml, richHtmlToExcerpt, sanitizeRichHtml } from '@/lib/rich-text';
 import { slugify } from '@/lib/utils';
 
-const DEFAULT_IMAGE = '/images/refaadstack-system-still.png';
+const DEFAULT_IMAGE = '';
 const DEFAULT_CONTENT = '<h2>Bagian pertama</h2><p>Tulis paragraf artikel di sini.</p><h2>Bagian berikutnya</h2><p>Tulis lanjutan artikel di sini.</p>';
 
 interface BlogEditorProps {
