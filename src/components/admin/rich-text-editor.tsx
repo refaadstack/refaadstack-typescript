@@ -138,8 +138,23 @@ export function RichTextEditor({
 
     setUploading(true); setError('');
     try {
-      const fileData = await fileToUploadData(file);
-      const { url } = await uploadContentMedia(uploadFolder, fileData);
+      const body = new FormData();
+      body.append('file', file);
+      body.append('folder', uploadFolder);
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'x-api-key': 'rs_blog_UZWhN_zlbD1UFBlpJAtEPG__' },
+        body,
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        setError(data.error || 'Upload gagal');
+        return;
+      }
+
+      const url = data.url;
       const alt = file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
       insertHtml(`<figure><img src="${url}" alt="${alt}" loading="lazy" /><figcaption>${alt}</figcaption></figure><p><br></p>`);
     } catch (caught) {

@@ -154,10 +154,24 @@ export function ProjectEditor({ projectId }: ProjectEditorProps) {
     setError('');
 
     try {
-      const fileData = await fileToUploadData(file);
       const folder = `project-hero/${slugify(form.slug || form.title || 'project-draft')}`;
-      const { url } = await uploadContentMedia(folder, fileData);
-      setForm((current) => ({ ...current, image_url: url }));
+      const body = new FormData();
+      body.append('file', file);
+      body.append('folder', folder);
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'x-api-key': 'rs_blog_UZWhN_zlbD1UFBlpJAtEPG__' },
+        body,
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        setError(data.error || 'Upload gagal');
+        return;
+      }
+
+      setForm((current) => ({ ...current, image_url: data.url }));
     } catch (caught) {
       console.error('Project image upload error:', caught);
       setError(getErrorMessage(caught, 'Gagal upload gambar project. Maks 2MB.'));

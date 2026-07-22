@@ -154,10 +154,24 @@ export function BlogEditor({ postId }: BlogEditorProps) {
     setError('');
 
     try {
-      const fileData = await fileToUploadData(file);
       const slug = slugify(form.slug || form.title || 'blog-draft');
-      const { url } = await uploadContentMedia(`blog-thumbnails/${slug}`, fileData);
-      setForm((current) => ({ ...current, image_url: url }));
+      const body = new FormData();
+      body.append('file', file);
+      body.append('folder', `blog-thumbnails/${slug}`);
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'x-api-key': 'rs_blog_UZWhN_zlbD1UFBlpJAtEPG__' },
+        body,
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        setError(data.error || 'Upload gagal');
+        return;
+      }
+
+      setForm((current) => ({ ...current, image_url: data.url }));
     } catch (caught) {
       console.error('Blog hero upload error:', caught);
       const msg = getErrorMessage(caught, 'Gagal upload. Coba gambar lebih kecil (max 2MB) atau paste URL.');
