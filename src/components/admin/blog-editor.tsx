@@ -159,7 +159,8 @@ export function BlogEditor({ postId }: BlogEditorProps) {
       setForm((current) => ({ ...current, image_url: url }));
     } catch (caught) {
       console.error('Blog hero upload error:', caught);
-      setError(caught instanceof Error ? caught.message : 'Gagal upload gambar hero.');
+      const msg = caught instanceof Error ? caught.message : String(caught || '');
+      setError(msg || 'Gagal upload. Coba pakai URL gambar langsung atau gambar lebih kecil (max 2MB).');
     } finally {
       setUploadingHero(false);
     }

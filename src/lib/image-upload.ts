@@ -10,14 +10,14 @@ export interface UploadFileData {
   data: string;
 }
 
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
 
 export function validateImageFile(file: File) {
   if (!file.type.startsWith('image/')) {
     return 'File harus berupa gambar.';
   }
   if (file.size > MAX_IMAGE_SIZE) {
-    return 'Ukuran gambar maksimal 5MB.';
+    return 'Ukuran gambar maksimal 2MB. Gunakan gambar yang lebih kecil.';
   }
   return null;
 }
