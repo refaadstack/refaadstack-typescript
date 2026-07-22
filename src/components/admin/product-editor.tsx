@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { getAdminSession, type AdminUser } from '@/lib/auth';
 import {
+import { getErrorMessage } from '@/lib/error-utils';
   createProduct,
   getProductById,
   type ProductInput,
@@ -175,7 +176,7 @@ export function ProductEditor({ id }: ProductEditorProps) {
       router.refresh();
     } catch (caught) {
       console.error('Product save error:', caught);
-      setError(caught instanceof Error ? caught.message : 'Gagal menyimpan product.');
+      setError(getErrorMessage(caught, 'Gagal menyimpan product.'));
     } finally {
       setSaving(false);
     }

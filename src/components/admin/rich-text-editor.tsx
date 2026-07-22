@@ -14,6 +14,7 @@ import {
   TextB,
   TextH,
   TextHThree,
+import { getErrorMessage } from '@/lib/error-utils';
   TextItalic,
   TextUnderline,
   VideoCamera,
@@ -143,7 +144,7 @@ export function RichTextEditor({
       insertHtml(`<figure><img src="${url}" alt="${alt}" loading="lazy" /><figcaption>${alt}</figcaption></figure><p><br></p>`);
     } catch (caught) {
       console.error('Rich text image upload error:', caught);
-      setError(caught instanceof Error ? caught.message : 'Gagal upload gambar.');
+      setError(getErrorMessage(caught, 'Gagal upload gambar. Maks 2MB.'));
     } finally {
       setUploading(false);
     }

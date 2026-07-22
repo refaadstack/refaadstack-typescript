@@ -14,6 +14,7 @@ import { createProject, getProjectById, updateProject, uploadContentMedia, type 
 import { fileToUploadData, validateImageFile } from '@/lib/image-upload';
 import { slugify } from '@/lib/utils';
 
+import { getErrorMessage } from '@/lib/error-utils';
 const DEFAULT_IMAGE = '/images/refaadstack-system-still.png';
 
 interface ProjectEditorProps {
@@ -159,7 +160,7 @@ export function ProjectEditor({ projectId }: ProjectEditorProps) {
       setForm((current) => ({ ...current, image_url: url }));
     } catch (caught) {
       console.error('Project image upload error:', caught);
-      setError(caught instanceof Error ? caught.message : 'Gagal upload gambar project.');
+      setError(getErrorMessage(caught, 'Gagal upload gambar project. Maks 2MB.'));
     } finally {
       setUploadingImage(false);
     }
@@ -198,7 +199,7 @@ export function ProjectEditor({ projectId }: ProjectEditorProps) {
       router.refresh();
     } catch (caught) {
       console.error('Save project error:', caught);
-      setError(caught instanceof Error ? caught.message : 'Project gagal disimpan');
+      setError(getErrorMessage(caught, 'Project gagal disimpan.'));
     } finally {
       setSaving(false);
     }

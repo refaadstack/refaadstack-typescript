@@ -14,6 +14,7 @@ import { getAdminSession, type AdminUser } from '@/lib/auth';
 import {
   createBlogPost,
   getBlogPostById,
+import { getErrorMessage } from '@/lib/error-utils';
   updateBlogPost,
   uploadContentMedia,
   type BlogPostInput,
@@ -102,7 +103,7 @@ export function BlogEditor({ postId }: BlogEditorProps) {
         }
       } catch (caught) {
         console.error('Blog editor error:', caught);
-        if (mounted) setError('Artikel tidak bisa dibuka. Pastikan tabel blog_posts sudah ada.');
+        if (mounted) setError(getErrorMessage(caught, 'Artikel tidak bisa dibuka. Pastikan tabel blog_posts sudah ada.'));
       } finally {
         if (mounted) setLoading(false);
       }
@@ -159,7 +160,7 @@ export function BlogEditor({ postId }: BlogEditorProps) {
       setForm((current) => ({ ...current, image_url: url }));
     } catch (caught) {
       console.error('Blog hero upload error:', caught);
-      const msg = caught instanceof Error ? caught.message : String(caught || '');
+      const msg = getErrorMessage(caught, 'Gagal upload. Coba gambar lebih kecil (max 2MB) atau paste URL.');
       setError(msg || 'Gagal upload. Coba pakai URL gambar langsung atau gambar lebih kecil (max 2MB).');
     } finally {
       setUploadingHero(false);
@@ -198,7 +199,7 @@ export function BlogEditor({ postId }: BlogEditorProps) {
       router.refresh();
     } catch (caught) {
       console.error('Save blog error:', caught);
-      setError(caught instanceof Error ? caught.message : 'Artikel gagal disimpan');
+      setError(getErrorMessage(caught, 'Artikel gagal disimpan.'));
     } finally {
       setSaving(false);
     }

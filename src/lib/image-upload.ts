@@ -10,7 +10,7 @@ export interface UploadFileData {
   data: string;
 }
 
-const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
 export function validateImageFile(file: File) {
   if (!file.type.startsWith('image/')) {
