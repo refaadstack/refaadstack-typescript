@@ -22,7 +22,6 @@ import {
 } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { fileToUploadData, validateImageFile } from '@/lib/image-upload';
-import { sanitizeRichHtml } from '@/lib/rich-text';
 import { uploadContentMedia } from '@/lib/crud';
 import { cn } from '@/lib/utils';
 
@@ -46,14 +45,12 @@ export function RichTextEditor({
   const selectionRef = useRef<Range | null>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
-
   useEffect(() => {
     const editor = editorRef.current;
     if (!editor) return;
     if (document.activeElement === editor) return;
-    const sanitized = sanitizeRichHtml(value);
-    if (editor.innerHTML !== sanitized) {
-      editor.innerHTML = sanitized;
+    if (editor.innerHTML !== value) {
+      editor.innerHTML = value;
     }
   }, [value]);
 
@@ -72,8 +69,7 @@ export function RichTextEditor({
   };
 
   const syncValue = () => {
-    const html = editorRef.current?.innerHTML || '';
-    onChange(sanitizeRichHtml(html));
+    onChange(editorRef.current?.innerHTML || '');
     saveSelection();
   };
 
