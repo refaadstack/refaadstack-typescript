@@ -52,7 +52,7 @@ export default async function PortfolioDetailPage({
 
   const galleryImages = portfolio.images.map((img) => ({
     id: img.id,
-    imageUrl: img.imageUrl,
+    imageUrl: resolveImageSrc(img.imageUrl) || '/og-image.png',
     sortOrder: img.sortOrder,
   }));
 

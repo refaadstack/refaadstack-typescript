@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { ScreenshotFrame } from '@/components/public/screenshot-frame';
-import { resolveImageSrc } from '@/lib/assets';
 import { cn } from '@/lib/utils';
 
 interface GalleryImage {
@@ -26,7 +25,7 @@ export function PortfolioGallery({
   return (
     <div className="space-y-4">
       <ScreenshotFrame
-        src={resolveImageSrc(images[activeIndex]?.imageUrl)}
+        src={images[activeIndex]?.imageUrl || null}
         alt={`${title} — screenshot ${activeIndex + 1}`}
         chrome={false}
         aspect="aspect-[16/10]"
@@ -47,7 +46,7 @@ export function PortfolioGallery({
             )}
           >
             <Image
-              src={resolveImageSrc(img.imageUrl) || '/og-image.png'}
+              src={img.imageUrl || '/og-image.png'}
               alt={`Thumbnail ${i + 1}`}
               width={120}
               height={75}
