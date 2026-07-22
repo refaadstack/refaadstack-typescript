@@ -31,6 +31,7 @@ export function PortfolioGallery({
         aspect="aspect-[16/10]"
         sizes="(max-width: 1400px) 100vw, 1400px"
         priority={activeIndex === 0}
+        imageClassName="object-contain"
       />
 
       <div className="flex gap-3 overflow-x-auto pb-2">
