@@ -5,8 +5,8 @@ import { Container } from '@/components/public/container';
 import { DetailHero } from '@/components/public/detail-hero';
 import { DetailSections } from '@/components/public/detail-sections';
 import { JsonLd } from '@/components/public/json-ld';
+import { PortfolioGallery } from '@/components/public/portfolio-gallery';
 import { PublicShell } from '@/components/public/public-shell';
-import { ScreenshotFrame } from '@/components/public/screenshot-frame';
 import { resolveImageSrc } from '@/lib/assets';
 import { getPublicPortfolioBySlug } from '@/lib/public-data';
 
@@ -48,8 +48,13 @@ export default async function PortfolioDetailPage({
   if (!portfolio) notFound();
 
   const summary = portfolio.shortDescription || portfolio.fullDescription;
-  const image = resolveImageSrc(portfolio.images[0]?.imageUrl);
   const tech = portfolio.techStack.slice(0, 2).join(', ') || 'Custom stack';
+
+  const galleryImages = portfolio.images.map((img) => ({
+    id: img.id,
+    imageUrl: img.imageUrl,
+    sortOrder: img.sortOrder,
+  }));
 
   return (
     <PublicShell>
@@ -59,7 +64,7 @@ export default async function PortfolioDetailPage({
           '@type': 'CreativeWork',
           name: portfolio.title,
           description: summary,
-          image: image || '/og-image.png',
+          image: resolveImageSrc(portfolio.images[0]?.imageUrl) || '/og-image.png',
           creator: {
             '@type': 'Organization',
             name: 'RefaadStack',
@@ -72,34 +77,16 @@ export default async function PortfolioDetailPage({
         label={portfolio.category}
         title={portfolio.title}
         summary={summary}
-        image={image}
+        image={null}
         meta={[
           { label: 'Kategori', value: portfolio.category },
           { label: 'Teknologi', value: tech },
         ]}
       />
 
-      {portfolio.images.length > 1 && (
-        <section className="py-16 sm:py-20">
-          <Container>
-            <h2 className="font-heading text-2xl font-bold tracking-[-0.035em] text-foreground sm:text-3xl mb-8">
-              Galeri Screenshot
-            </h2>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {portfolio.images.slice(1).map((img, i) => (
-                <ScreenshotFrame
-                  key={img.id || i}
-                  src={resolveImageSrc(img.imageUrl)}
-                  alt={`Screenshot ${portfolio.title} ${i + 1}`}
-                  chrome={false}
-                  aspect="aspect-[16/10]"
-                  sizes="(max-width: 1024px) 100vw, 33vw"
-                />
-              ))}
-            </div>
-          </Container>
-        </section>
-      )}
+      <Container className="pb-16 pt-8 sm:pb-20 sm:pt-12">
+        <PortfolioGallery images={galleryImages} title={portfolio.title} />
+      </Container>
 
       <DetailSections
         sections={[

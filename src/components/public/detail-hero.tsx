@@ -57,14 +57,16 @@ export function DetailHero({
             ) : null}
           </div>
         </div>
-        <ScreenshotFrame
-          src={image}
-          alt={`Visual ${title}`}
-          label={backHref === '/portfolio' ? label : undefined}
-          aspect="aspect-[16/8]"
-          sizes="(max-width: 1400px) 100vw, 1400px"
-          priority
-        />
+        {image && (
+          <ScreenshotFrame
+            src={image}
+            alt={`Visual ${title}`}
+            label={backHref === '/portfolio' ? label : undefined}
+            aspect="aspect-[16/8]"
+            sizes="(max-width: 1400px) 100vw, 1400px"
+            priority
+          />
+        )}
       </Container>
     </header>
   );
