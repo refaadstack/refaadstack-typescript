@@ -572,8 +572,9 @@ export async function getBlogPosts() {
   const { data, error } = await supabaseAdmin
     .from('blog_posts')
     .select('*')
+    .order('updated_at', { ascending: false, nullsFirst: false })
     .order('published_at', { ascending: false, nullsFirst: false })
-    .order('updated_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false });
+    .order('created_at', { ascending: false });
 
   if (error) throw new Error(error.message);
   return data || [];
