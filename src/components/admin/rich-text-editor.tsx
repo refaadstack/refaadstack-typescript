@@ -10,8 +10,8 @@ import {
   Link as LinkIcon,
   Minus,
   Quotes,
-  Strikethrough,
-  TextBolder,
+  TextStrikethrough,
+  TextB,
   TextH,
   TextHThree,
   TextItalic,
@@ -153,10 +153,10 @@ export function RichTextEditor({
     <div className="border border-border bg-background">
       <div className="flex flex-wrap items-center gap-1 border-b border-border p-1.5">
         <BtnGroup>
-          <Tb label="Bold (Ctrl+B)" onClick={() => runCommand('bold')}><TextBolder className="size-4" /></Tb>
+          <Tb label="Bold (Ctrl+B)" onClick={() => runCommand('bold')}><TextB className="size-4" /></Tb>
           <Tb label="Italic (Ctrl+I)" onClick={() => runCommand('italic')}><TextItalic className="size-4" /></Tb>
           <Tb label="Underline (Ctrl+U)" onClick={() => runCommand('underline')}><TextUnderline className="size-4" /></Tb>
-          <Tb label="Strikethrough" onClick={() => runCommand('strikeThrough')}><Strikethrough className="size-4" /></Tb>
+          <Tb label="Strikethrough" onClick={() => runCommand('strikeThrough')}><TextStrikethrough className="size-4" /></Tb>
         </BtnGroup>
         <BtnDivider />
         <BtnGroup>

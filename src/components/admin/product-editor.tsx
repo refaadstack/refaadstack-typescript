@@ -44,7 +44,7 @@ export function ProductEditor({ id }: ProductEditorProps) {
   const router = useRouter();
   const isEditing = Boolean(id);
   const pendingImageRef = useRef<PendingImage | null>(null);
-  const [directImageUrl, setDirectImageUrl] = useState(product?.image_url || '');
+  const [directImageUrl, setDirectImageUrl] = useState('');
   const [user, setUser] = useState<AdminUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -76,6 +76,7 @@ export function ProductEditor({ id }: ProductEditorProps) {
           if (!mounted) return;
 
           setProduct(data);
+          setDirectImageUrl(data.image_url || '');
           setFormData({
             name: data.name || '',
             tagline: data.tagline || '',
