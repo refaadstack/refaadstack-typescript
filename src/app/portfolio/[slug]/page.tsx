@@ -86,7 +86,7 @@ export default async function PortfolioDetailPage({
               Galeri Screenshot
             </h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {portfolio.images.map((img, i) => (
+              {portfolio.images.slice(1).map((img, i) => (
                 <ScreenshotFrame
                   key={img.id || i}
                   src={resolveImageSrc(img.imageUrl)}
