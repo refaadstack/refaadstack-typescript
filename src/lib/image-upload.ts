@@ -16,11 +16,9 @@ export function validateImageFile(file: File) {
   if (!file.type.startsWith('image/')) {
     return 'File harus berupa gambar.';
   }
-
   if (file.size > MAX_IMAGE_SIZE) {
     return 'Ukuran gambar maksimal 5MB.';
   }
-
   return null;
 }
 
@@ -37,17 +35,23 @@ export function revokePendingImages(images: PendingImage[]) {
 }
 
 export async function fileToUploadData(file: File): Promise<UploadFileData> {
-  const arrayBuffer = await file.arrayBuffer();
-  const bytes = new Uint8Array(arrayBuffer);
-  let binary = '';
-
-  bytes.forEach((byte) => {
-    binary += String.fromCharCode(byte);
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      // strip "data:image/png;base64," prefix
+      const base64 = dataUrl.split(',')[1];
+      if (!base64) {
+        reject(new Error('Gagal membaca file gambar.'));
+        return;
+      }
+      resolve({
+        name: file.name,
+        type: file.type,
+        data: base64,
+      });
+    };
+    reader.onerror = () => reject(new Error('Gagal membaca file gambar.'));
+    reader.readAsDataURL(file);
   });
-
-  return {
-    name: file.name,
-    type: file.type,
-    data: btoa(binary),
-  };
 }
