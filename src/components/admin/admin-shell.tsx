@@ -25,7 +25,6 @@ import { Button } from '@/components/ui/button';
 
 const ADMIN_NAV = [
   { title: 'Dashboard', href: '/admin/dashboard', icon: Gauge },
-  { title: 'Projects', href: '/admin/projects', icon: Folder },
   { title: 'Blog', href: '/admin/blog', icon: BookOpen },
   { title: 'Portfolio', href: '/admin/portfolio', icon: ImageSquare },
   { title: 'Products', href: '/admin/products', icon: ShoppingCart },

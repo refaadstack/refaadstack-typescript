@@ -12,9 +12,8 @@ export const COMPANY = {
 
 export const NAV_LINKS = [
   { href: '/#services', label: 'Layanan' },
-  { href: '/projects', label: 'Project' },
-  { href: '/products', label: 'Produk' },
   { href: '/portfolio', label: 'Portfolio' },
+  { href: '/products', label: 'Produk' },
   { href: '/blog', label: 'Blog' },
 ] as const;
 

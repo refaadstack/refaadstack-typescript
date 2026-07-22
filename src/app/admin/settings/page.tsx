@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { MagnifyingGlass, ShareNetwork } from '@phosphor-icons/react';
@@ -20,6 +20,8 @@ export default function AdminSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const heroFileRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     ...DEFAULT_SITE_SETTINGS,
     site_keywords: DEFAULT_SITE_SETTINGS.site_keywords.join(', '),
@@ -67,6 +69,35 @@ export default function AdminSettingsPage() {
       ...prev,
       [name]: type === 'checkbox' ? (event.target as HTMLInputElement).checked : value,
     }));
+  };
+
+  const handleHeroUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { setError('File harus berupa gambar.'); return; }
+    setUploading(true); setError('');
+    try {
+      const body = new FormData();
+      body.append('file', file);
+      body.append('folder', 'hero');
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'x-api-key': 'rs_blog_UZWhN_zlbD1UFBlpJAtEPG__' },
+        body,
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFormData((prev) => ({ ...prev, hero_image_url: data.url }));
+        setSuccess('Hero image berhasil diupload. Jangan lupa simpan settings.');
+      } else {
+        setError(data.error || 'Upload gagal');
+      }
+    } catch {
+      setError('Upload gagal.');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -234,14 +265,25 @@ export default function AdminSettingsPage() {
         >
           <div className="grid gap-4 lg:grid-cols-2">
             <AdminField label="Hero image URL" htmlFor="hero_image_url" hint="URL gambar untuk hero section homepage. Upload ke Supabase Storage atau pakai link eksternal.">
-              <Input
-                id="hero_image_url"
-                name="hero_image_url"
-                value={formData.hero_image_url}
-                onChange={(e) => setFormData((prev) => ({ ...prev, hero_image_url: e.target.value }))}
-                placeholder="/images/hero/main.png"
-                className="mt-2 rounded-md bg-surface"
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="hero_image_url"
+                  name="hero_image_url"
+                  value={formData.hero_image_url}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, hero_image_url: e.target.value }))}
+                  placeholder="/images/hero/main.png"
+                  className="mt-2 rounded-md bg-surface flex-1"
+                />
+                <input ref={heroFileRef} type="file" accept="image/*" className="hidden" onChange={handleHeroUpload} />
+                <button
+                  type="button"
+                  onClick={() => heroFileRef.current?.click()}
+                  disabled={uploading}
+                  className="mt-2 rounded-md border border-border bg-surface px-4 text-sm font-semibold text-foreground transition hover:bg-primary hover:text-black disabled:opacity-50"
+                >
+                  {uploading ? 'Uploading...' : 'Upload'}
+                </button>
+              </div>
             </AdminField>
             <AdminField label="OG image URL" htmlFor="og_image_url">
               <Input

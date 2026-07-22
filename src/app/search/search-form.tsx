@@ -18,7 +18,7 @@ interface SearchResult {
 }
 
 const TYPE_LABELS: Record<string, string> = {
-  blog: 'Blog', project: 'Project', portfolio: 'Portfolio', product: 'Produk',
+  blog: 'Blog', portfolio: 'Portfolio', product: 'Produk',
 };
 
 export function SearchForm() {

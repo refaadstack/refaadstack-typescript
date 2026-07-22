@@ -20,6 +20,20 @@ const nextConfig = {
       bodySizeLimit: '4mb',
     },
   },
+  async redirects() {
+    return [
+      {
+        source: '/projects',
+        destination: '/portfolio',
+        permanent: true,
+      },
+      {
+        source: '/projects/:slug',
+        destination: '/portfolio/:slug',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

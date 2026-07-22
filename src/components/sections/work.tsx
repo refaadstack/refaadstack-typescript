@@ -79,13 +79,6 @@ export function Work({
           />
           <div className="flex shrink-0 items-center gap-6">
             <Link
-              href="/projects"
-              className="inline-flex items-center gap-2 text-sm font-bold text-primary-strong transition hover:text-foreground"
-            >
-              Semua project
-              <ArrowRight className="size-4" weight="bold" />
-            </Link>
-            <Link
               href="/portfolio"
               className="inline-flex items-center gap-2 text-sm font-bold text-primary-strong transition hover:text-foreground"
             >
