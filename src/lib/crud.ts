@@ -183,7 +183,7 @@ export async function getPortfolios() {
   const { data, error } = await supabaseAdmin
     .from('portfolios')
     .select('*, portfolio_images(*)')
-    .order('created_at', { ascending: false });
+    .order('updated_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false });
 
   if (error) throw new Error(error.message);
   return data || [];
@@ -317,7 +317,7 @@ export async function getProducts() {
   const { data, error } = await supabaseAdmin
     .from('products')
     .select('*')
-    .order('created_at', { ascending: false });
+    .order('updated_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false });
 
   if (error) throw new Error(error.message);
   return data || [];
@@ -464,7 +464,7 @@ export async function getTestimonials() {
   const { data, error } = await supabaseAdmin
     .from('testimonials')
     .select('*')
-    .order('created_at', { ascending: false });
+    .order('updated_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false });
 
   if (error) throw new Error(error.message);
   return data || [];
@@ -518,7 +518,7 @@ export async function getProjects() {
   const { data, error } = await supabaseAdmin
     .from('projects')
     .select('*')
-    .order('created_at', { ascending: false });
+    .order('updated_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false });
 
   if (error) throw new Error(error.message);
   return data || [];
@@ -573,7 +573,7 @@ export async function getBlogPosts() {
     .from('blog_posts')
     .select('*')
     .order('published_at', { ascending: false, nullsFirst: false })
-    .order('created_at', { ascending: false });
+    .order('updated_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false });
 
   if (error) throw new Error(error.message);
   return data || [];
@@ -694,7 +694,7 @@ export async function getAdminOverviewData() {
 
   const [projects, blogPosts, portfolios, products, services, testimonials] = await Promise.all([
     readRows<any>('projects', [], (query) =>
-      query.order('updated_at', { ascending: false }).order('created_at', { ascending: false }).limit(4)
+      query.order('updated_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false }).limit(4)
     ),
     readRows<any>('blog_posts', [], (query) =>
       query
